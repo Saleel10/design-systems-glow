@@ -1,0 +1,321 @@
+export interface Project {
+  slug: string;
+  title: string;
+  category: string;
+  desc: string;
+  color: string;
+  client: string;
+  year: string;
+  duration: string;
+  tools: string[];
+  overview: string;
+  problem: string;
+  research: string[];
+  process: string[];
+  results: string[];
+  testimonial?: { text: string; author: string; role: string };
+  mockups: { label: string; gradient: string }[];
+}
+
+export const projects: Project[] = [
+  {
+    slug: "nexus-brand-system",
+    title: "Nexus Brand System",
+    category: "Branding",
+    desc: "Complete brand identity for a fintech startup.",
+    color: "from-secondary to-primary",
+    client: "Nexus Finance",
+    year: "2024",
+    duration: "8 weeks",
+    tools: ["Figma", "Illustrator", "After Effects"],
+    overview: "Nexus Finance needed a cohesive brand identity that communicated trust, innovation, and accessibility in the competitive fintech space. We built a comprehensive brand system from the ground up.",
+    problem: "Nexus had outgrown their initial DIY branding. Inconsistent visuals across platforms were eroding trust with potential enterprise clients and investors.",
+    research: [
+      "Audited 12 competitor brands in the fintech space",
+      "Conducted 8 stakeholder interviews to define brand values",
+      "Surveyed 200+ target users on brand perception",
+      "Mapped brand positioning against market leaders",
+    ],
+    process: [
+      "Discovery workshops with founding team",
+      "Moodboarding and creative direction",
+      "Logo explorations (60+ concepts)",
+      "Typography and color system definition",
+      "Brand guidelines documentation",
+      "Asset creation and handoff",
+    ],
+    results: [
+      "40% increase in brand recognition within 3 months",
+      "Consistent brand presence across 8 platforms",
+      "Successfully closed Series A with new brand positioning",
+      "Design system adopted by 3 product teams",
+    ],
+    testimonial: { text: "The brand system transformed how people perceive us. We went from a scrappy startup to a serious contender overnight.", author: "Alex Chen", role: "CEO, Nexus Finance" },
+    mockups: [
+      { label: "Logo & Mark", gradient: "from-secondary to-primary" },
+      { label: "Brand Guidelines", gradient: "from-primary to-accent" },
+      { label: "Business Cards", gradient: "from-accent to-secondary" },
+      { label: "Social Templates", gradient: "from-secondary to-accent" },
+      { label: "Presentation Deck", gradient: "from-primary to-secondary" },
+      { label: "Merchandise", gradient: "from-accent to-primary" },
+    ],
+  },
+  {
+    slug: "healthtrack-dashboard",
+    title: "HealthTrack Dashboard",
+    category: "UI/UX",
+    desc: "Patient management platform redesign.",
+    color: "from-primary to-accent",
+    client: "HealthTrack Inc.",
+    year: "2024",
+    duration: "12 weeks",
+    tools: ["Figma", "Maze", "Hotjar", "Principle"],
+    overview: "A complete UX overhaul of a patient management dashboard used by 500+ healthcare professionals daily. The goal was to reduce task completion time and improve data accessibility.",
+    problem: "Healthcare staff were spending 40% more time than necessary on routine tasks due to poor information architecture and cluttered UI. Error rates were unacceptably high for a medical platform.",
+    research: [
+      "Shadowed 15 healthcare professionals during daily workflows",
+      "Analyzed 3 months of usage analytics and heatmaps",
+      "Conducted usability testing on existing platform (SUS score: 48)",
+      "Benchmarked against 5 competing healthcare platforms",
+    ],
+    process: [
+      "User journey mapping for 6 key workflows",
+      "Information architecture restructuring",
+      "Low-fidelity wireframes and user testing",
+      "High-fidelity prototypes with interaction design",
+      "Design system component library creation",
+      "Developer handoff and QA support",
+    ],
+    results: [
+      "65% reduction in average task completion time",
+      "SUS score improved from 48 to 82",
+      "90% reduction in data entry errors",
+      "User satisfaction increased by 73%",
+    ],
+    testimonial: { text: "Our staff actually enjoy using the platform now. The redesign has measurably improved patient care quality.", author: "Dr. Sarah Mitchell", role: "CTO, HealthTrack" },
+    mockups: [
+      { label: "Dashboard Overview", gradient: "from-primary to-accent" },
+      { label: "Patient Records", gradient: "from-secondary to-primary" },
+      { label: "Analytics View", gradient: "from-accent to-secondary" },
+      { label: "Mobile Responsive", gradient: "from-primary to-secondary" },
+    ],
+  },
+  {
+    slug: "shopflow-design-system",
+    title: "ShopFlow Design System",
+    category: "Systems",
+    desc: "Scalable component library for e-commerce.",
+    color: "from-accent to-secondary",
+    client: "ShopFlow",
+    year: "2023",
+    duration: "16 weeks",
+    tools: ["Figma", "Storybook", "Zeroheight"],
+    overview: "Built a comprehensive design system with 200+ components, enabling 4 product teams to ship consistent experiences 3x faster.",
+    problem: "Four product teams were designing in silos, creating visual inconsistencies and duplicating effort. New features took weeks to design because nothing was reusable.",
+    research: [
+      "Audited 400+ existing screens for pattern inconsistencies",
+      "Interviewed designers and developers from all 4 teams",
+      "Analyzed component usage across the entire product suite",
+      "Studied design systems from Shopify, Atlassian, and Material Design",
+    ],
+    process: [
+      "Component inventory and pattern consolidation",
+      "Design token architecture (color, spacing, typography)",
+      "Core component library (atoms → molecules → organisms)",
+      "Documentation and usage guidelines",
+      "Migration strategy and team training",
+      "Governance model and contribution workflow",
+    ],
+    results: [
+      "200+ reusable components documented",
+      "3x faster feature design-to-dev cycle",
+      "100% visual consistency across 4 products",
+      "50% reduction in design-related bugs",
+    ],
+    testimonial: { text: "This design system is the foundation of everything we build now. It's saved us countless hours and arguments.", author: "James Park", role: "VP Product, ShopFlow" },
+    mockups: [
+      { label: "Component Library", gradient: "from-accent to-secondary" },
+      { label: "Token System", gradient: "from-primary to-accent" },
+      { label: "Documentation", gradient: "from-secondary to-primary" },
+      { label: "Usage Examples", gradient: "from-accent to-primary" },
+    ],
+  },
+  {
+    slug: "greenleaf-identity",
+    title: "GreenLeaf Identity",
+    category: "Branding",
+    desc: "Sustainable brand identity and packaging.",
+    color: "from-secondary to-accent",
+    client: "GreenLeaf Organics",
+    year: "2023",
+    duration: "6 weeks",
+    tools: ["Illustrator", "Photoshop", "Figma"],
+    overview: "Created an eco-conscious brand identity and packaging system for an organic food startup, emphasizing sustainability and natural origins.",
+    problem: "GreenLeaf needed to stand out in the crowded organic food market while authentically communicating their commitment to sustainability without resorting to clichéd green imagery.",
+    research: [
+      "Analyzed 20+ organic food brands' visual identities",
+      "Consumer focus groups on sustainability perception",
+      "Material research for eco-friendly packaging options",
+    ],
+    process: [
+      "Brand strategy and positioning workshops",
+      "Visual identity concept development",
+      "Packaging structural and graphic design",
+      "Print production management",
+    ],
+    results: [
+      "35% increase in shelf pickup rate",
+      "Brand recognized as 'Most Innovative Packaging' at FoodExpo 2023",
+      "100% recyclable packaging materials",
+    ],
+    mockups: [
+      { label: "Brand Identity", gradient: "from-secondary to-accent" },
+      { label: "Packaging Design", gradient: "from-primary to-secondary" },
+      { label: "Label System", gradient: "from-accent to-primary" },
+    ],
+  },
+  {
+    slug: "finstack-landing-page",
+    title: "Finstack Landing Page",
+    category: "Web",
+    desc: "High-converting SaaS landing page.",
+    color: "from-primary to-secondary",
+    client: "Finstack",
+    year: "2023",
+    duration: "4 weeks",
+    tools: ["Figma", "Webflow", "Lottie"],
+    overview: "Designed and built a high-converting landing page for a B2B SaaS platform, optimized for demo bookings and free trial signups.",
+    problem: "Finstack's existing landing page had a 0.8% conversion rate. The messaging was unclear and the user journey from landing to signup had too much friction.",
+    research: [
+      "Heatmap and session recording analysis on existing page",
+      "A/B tested 4 hero section variants",
+      "Competitor landing page teardown of 8 SaaS products",
+    ],
+    process: [
+      "Conversion-focused wireframing",
+      "Copywriting collaboration",
+      "Visual design with micro-interactions",
+      "Webflow development and optimization",
+    ],
+    results: [
+      "Conversion rate increased from 0.8% to 4.2%",
+      "Average time on page increased by 45%",
+      "Demo bookings up 320% in first month",
+    ],
+    mockups: [
+      { label: "Hero Section", gradient: "from-primary to-secondary" },
+      { label: "Features Grid", gradient: "from-accent to-primary" },
+      { label: "Mobile View", gradient: "from-secondary to-accent" },
+    ],
+  },
+  {
+    slug: "urban-studio-print",
+    title: "Urban Studio Print",
+    category: "Print",
+    desc: "Editorial design and print collateral.",
+    color: "from-accent to-primary",
+    client: "Urban Studio",
+    year: "2023",
+    duration: "5 weeks",
+    tools: ["InDesign", "Illustrator", "Photoshop"],
+    overview: "Designed a full suite of print collateral including editorial layouts, event materials, and promotional pieces for a creative agency.",
+    problem: "Urban Studio's print materials didn't match the quality of their digital work. They needed cohesive print collateral that reflected their creative expertise.",
+    research: [
+      "Reviewed existing brand assets and guidelines",
+      "Studied print trends in the creative agency space",
+      "Paper stock and finishing technique research",
+    ],
+    process: [
+      "Editorial grid system development",
+      "Typography and layout design",
+      "Print production and color management",
+      "Press check and quality assurance",
+    ],
+    results: [
+      "Complete print collateral suite delivered",
+      "Featured in Print Magazine's annual review",
+      "Client reported 25% increase in event attendance",
+    ],
+    mockups: [
+      { label: "Magazine Spread", gradient: "from-accent to-primary" },
+      { label: "Business Cards", gradient: "from-secondary to-primary" },
+      { label: "Event Posters", gradient: "from-primary to-accent" },
+    ],
+  },
+  {
+    slug: "pulse-app-redesign",
+    title: "Pulse App Redesign",
+    category: "UI/UX",
+    desc: "Fitness tracking app UX overhaul.",
+    color: "from-secondary to-primary",
+    client: "Pulse Fitness",
+    year: "2023",
+    duration: "10 weeks",
+    tools: ["Figma", "ProtoPie", "Maze"],
+    overview: "Redesigned a fitness tracking mobile app to improve engagement, reduce churn, and create a more motivating workout experience.",
+    problem: "Pulse had a 70% churn rate within the first month. Users found the app confusing, the workout tracking cumbersome, and the progress visualization unmotivating.",
+    research: [
+      "Analyzed churn data and exit surveys",
+      "Competitive analysis of 10 fitness apps",
+      "User interviews with 20 active and churned users",
+    ],
+    process: [
+      "User persona refinement",
+      "Gamification strategy development",
+      "UI redesign with focus on motivation",
+      "Prototype testing with 50 users",
+    ],
+    results: [
+      "Churn reduced from 70% to 28%",
+      "Daily active users increased by 150%",
+      "App Store rating improved from 3.2 to 4.7",
+    ],
+    mockups: [
+      { label: "Home Screen", gradient: "from-secondary to-primary" },
+      { label: "Workout Tracker", gradient: "from-primary to-accent" },
+      { label: "Progress Dashboard", gradient: "from-accent to-secondary" },
+      { label: "Social Features", gradient: "from-secondary to-accent" },
+    ],
+  },
+  {
+    slug: "coreui-components",
+    title: "CoreUI Components",
+    category: "Systems",
+    desc: "Enterprise design system with 200+ components.",
+    color: "from-primary to-accent",
+    client: "CoreUI Enterprise",
+    year: "2024",
+    duration: "20 weeks",
+    tools: ["Figma", "Storybook", "Chromatic", "Zeroheight"],
+    overview: "Architected an enterprise-grade design system powering 6 products across web and mobile, with comprehensive documentation and governance.",
+    problem: "The enterprise had 6 products with completely different design languages, making cross-product features impossible and onboarding new designers a months-long process.",
+    research: [
+      "Full design audit across 6 products (1200+ screens)",
+      "Developer and designer workflow interviews",
+      "Accessibility compliance assessment (WCAG 2.1 AA)",
+    ],
+    process: [
+      "Design token foundation architecture",
+      "Multi-brand theming system",
+      "Component design and specification",
+      "Accessibility-first implementation",
+      "Documentation platform setup",
+      "Team training and rollout strategy",
+    ],
+    results: [
+      "200+ accessible components shipped",
+      "6 products unified under one design language",
+      "Designer onboarding reduced from 3 months to 2 weeks",
+      "WCAG 2.1 AA compliance achieved across all products",
+    ],
+    testimonial: { text: "CoreUI's design system is best-in-class. It's transformed how our entire organization thinks about design.", author: "Maria Santos", role: "Design Director, CoreUI" },
+    mockups: [
+      { label: "Component Catalog", gradient: "from-primary to-accent" },
+      { label: "Theming Engine", gradient: "from-secondary to-primary" },
+      { label: "Documentation", gradient: "from-accent to-secondary" },
+      { label: "Accessibility Suite", gradient: "from-primary to-secondary" },
+    ],
+  },
+];
+
+export const filters = ["All", "Branding", "UI/UX", "Systems", "Print", "Web"];

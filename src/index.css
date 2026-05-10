@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 96 70% 37%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 174 92% 24%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 76 68% 44%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 96 70% 37%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 3%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 96 70% 37%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 96 70% 37%;
+
+    /* Custom tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(174, 92%, 24%), hsl(96, 70%, 37%));
+    --gradient-hero: radial-gradient(ellipse at 50% 0%, hsl(174, 92%, 24%, 0.15) 0%, transparent 60%);
+    --gradient-glow: radial-gradient(ellipse at 50% 50%, hsl(96, 70%, 37%, 0.12) 0%, transparent 70%);
+    --glass-bg: hsl(0 0% 100% / 0.03);
+    --glass-border: hsl(0 0% 100% / 0.08);
+    --glass-border-hover: hsl(0 0% 100% / 0.15);
+    --shadow-glow: 0 0 30px hsl(96, 70%, 37%, 0.15);
+    --shadow-glow-strong: 0 0 50px hsl(96, 70%, 37%, 0.25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .glass-card-hover:hover {
+    border-color: var(--glass-border-hover);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-button {
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-glow);
+    transition: all 0.3s ease;
+  }
+
+  .glow-button:hover {
+    box-shadow: var(--shadow-glow-strong);
+    transform: translateY(-1px);
+  }
+
+  .hero-glow {
+    background: var(--gradient-hero);
+  }
+
+  .section-glow {
+    background: var(--gradient-glow);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(0 0% 5%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(0 0% 20%);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(0 0% 30%);
+}
