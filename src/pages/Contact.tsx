@@ -96,7 +96,6 @@ const Contact = () => {
           <div className="space-y-6">
             {[
               { icon: Mail, label: "Email", value: "workwithsaleel@gmail.com", href: "mailto:workwithsaleel@gmail.com" },
-              { icon: Phone, label: "Phone", value: "+91 70349 16695", href: "tel:+91 70349 16695" },
               { icon: MapPin, label: "Location", value: "Malappuram,Kerala, India", href: "#" },
               { icon: MessageSquare, label: "WhatsApp", value: "Quick Connect", href: "https://wa.me/7034916695" },
             ].map((item) => (

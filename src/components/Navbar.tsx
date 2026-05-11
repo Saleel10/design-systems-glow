@@ -35,8 +35,8 @@ const Navbar = () => {
     >
       <div className="container flex items-center justify-between">
         <Link to="/" className="font-heading text-xl font-bold tracking-tight">
-          <span className="gradient-text">Port</span>
-          <span className="text-foreground">folio</span>
+          <span className="text-foreground">Saleel</span>
+          <span className="gradient-text">designs</span>
         </Link>
 
         {/* Desktop */}
