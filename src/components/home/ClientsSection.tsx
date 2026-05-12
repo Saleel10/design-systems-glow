@@ -22,26 +22,26 @@ import taxverseLogo from "@/assets/taxverse-logo.png";
 import trevioLogo from "@/assets/trevio-logo.png";
 
 const clients = [
-  { logo: boobooLogo },
-  { logo: buraqLogo },
-  { logo: crafterlineLogo },
-  { logo: destinifyLogo },
-  { logo: falahLogo },
-  { logo: gazpachoLogo },
-  { logo: gloryboardLogo },
-  { logo: innostaLogo },
-  { logo: kidozyLogo },
-  { logo: kimsLogo },
-  { logo: kmsLogo },
-  { logo: mediflowLogo },
-  { logo: mediwellLogo },
-  { logo: navigatorLogo },
-  { logo: pspLogo },
-  { logo: raidhanLogo },
-  { logo: secondstreetLogo },
-  { logo: shadLogo },
-  { logo: taxverseLogo },
-  { logo: trevioLogo },
+  boobooLogo,
+  buraqLogo,
+  crafterlineLogo,
+  destinifyLogo,
+  falahLogo,
+  gazpachoLogo,
+  gloryboardLogo,
+  innostaLogo,
+  kidozyLogo,
+  kimsLogo,
+  kmsLogo,
+  mediflowLogo,
+  mediwellLogo,
+  navigatorLogo,
+  pspLogo,
+  raidhanLogo,
+  secondstreetLogo,
+  shadLogo,
+  taxverseLogo,
+  trevioLogo,
 ];
 
 const ClientsSection = () => {
@@ -81,7 +81,7 @@ const ClientsSection = () => {
               repeat: Infinity,
             }}
           >
-            {[...clients, ...clients].map(({ logo }, i) => (
+            {[...clients, ...clients].map((logo, i) => (
               <div
                 key={i}
                 className="flex items-center justify-center min-w-[220px] h-28 px-8 rounded-3xl border border-border/40 bg-background/60 backdrop-blur-xl hover:border-primary/50 transition-all duration-300"
