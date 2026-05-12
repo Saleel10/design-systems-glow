@@ -53,14 +53,14 @@ const ClientsSection = () => {
           <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
 
           <motion.div
-            className="flex gap-8 md:gap-10 w-max"
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{
-              duration: 35,
-              ease: "linear",
-              repeat: Infinity,
-            }}
-          >
+  className="flex gap-8 md:gap-10 w-max"
+  animate={{ x: ["0%", "-50%"] }}
+  transition={{
+    duration: 60,
+    ease: "linear",
+    repeat: Infinity,
+  }}
+>
             {[...clients, ...clients].map((logo, i) => (
               <div
                 key={i}
