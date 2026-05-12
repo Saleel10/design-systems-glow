@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 
+
 import buraqLogo from "@/assets/buraq-logo.png";
 import crafterlineLogo from "@/assets/crafterline-logo.png";
 import destinifyLogo from "@/assets/destinify-logo.png";
