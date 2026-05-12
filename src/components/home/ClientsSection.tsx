@@ -37,7 +37,7 @@ const ClientsSection = () => {
             Brands I've worked with
           </h3>
           <p className="mt-2 text-muted-foreground text-sm">
-            50+ companies across SaaS, fintech, and product startups
+            Worked with 50+ brands in marketing, medical, fitness, sports, and education sectors
           </p>
         </div>
 
