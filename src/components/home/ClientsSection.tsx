@@ -1,47 +1,47 @@
 import { motion } from "framer-motion";
 
-import boobooLogo from "@/assets/booboo-logo.png";
-import buraqLogo from "@/assets/buraq-logo.png";
-import crafterlineLogo from "@/assets/crafterline-logo.png";
-import destinifyLogo from "@/assets/destinify-logo.png";
-import falahLogo from "@/assets/falah-logo.png";
-import gazpachoLogo from "@/assets/gazpacho-logo.png";
-import gloryboardLogo from "@/assets/gloryboard-logo.png";
-import innostaLogo from "@/assets/innosta-logo.png";
-import kidozyLogo from "@/assets/kidozy-logo.png";
-import kimsLogo from "@/assets/kims-logo.png";
-import kmsLogo from "@/assets/kms-logo.png";
-import mediflowLogo from "@/assets/mediflow-logo.png";
-import mediwellLogo from "@/assets/mediwell-logo.png";
-import navigatorLogo from "@/assets/navigator-logo.png";
-import pspLogo from "@/assets/psp-logo.png";
-import raidhanLogo from "@/assets/raidhan-logo.png";
-import secondstreetLogo from "@/assets/secondstreet-logo.png";
-import shadLogo from "@/assets/shad-logo.png";
-import taxverseLogo from "@/assets/taxverse-logo.png";
-import trevioLogo from "@/assets/trevio-logo.png";
+import boobooLogo from "@/assets/booboologo.png";
+import buraqLogo from "@/assets/buraqlogo.png";
+import crafterlineLogo from "@/assets/crafterlinelogo.png";
+import destinifyLogo from "@/assets/destinifylogo.png";
+import falahLogo from "@/assets/falahlogo.png";
+import gazpachoLogo from "@/assets/gazpachologo.png";
+import gloryboardLogo from "@/assets/gloryboardlogo.png";
+import innostaLogo from "@/assets/innostalogo.png";
+import kidozyLogo from "@/assets/kidozylogo.png";
+import kimsLogo from "@/assets/kimslogo.png";
+import kmsLogo from "@/assets/kmslogo.png";
+import mediflowLogo from "@/assets/mediflowlogo.png";
+import mediwellLogo from "@/assets/mediwelllogo.png";
+import navigatorLogo from "@/assets/navigatorlogo.png";
+import pspLogo from "@/assets/psplogo.png";
+import raidhanLogo from "@/assets/raidhanlogo.png";
+import secondstreetLogo from "@/assets/secondstreetlogo.png";
+import shadLogo from "@/assets/shadlogo.png";
+import taxverseLogo from "@/assets/taxverselogo.png";
+import trevioLogo from "@/assets/treviologo.png";
 
 const clients = [
-  { logo: boobooLogo },
-  { logo: buraqLogo },
-  { logo: crafterlineLogo },
-  { logo: destinifyLogo },
-  { logo: falahLogo },
-  { logo: gazpachoLogo },
-  { logo: gloryboardLogo },
-  { logo: innostaLogo },
-  { logo: kidozyLogo },
-  { logo: kimsLogo },
-  { logo: kmsLogo },
-  { logo: mediflowLogo },
-  { logo: mediwellLogo },
-  { logo: navigatorLogo },
-  { logo: pspLogo },
-  { logo: raidhanLogo },
-  { logo: secondstreetLogo },
-  { logo: shadLogo },
-  { logo: taxverseLogo },
-  { logo: trevioLogo },
+  boobooLogo,
+  buraqLogo,
+  crafterlineLogo,
+  destinifyLogo,
+  falahLogo,
+  gazpachoLogo,
+  gloryboardLogo,
+  innostaLogo,
+  kidozyLogo,
+  kimsLogo,
+  kmsLogo,
+  mediflowLogo,
+  mediwellLogo,
+  navigatorLogo,
+  pspLogo,
+  raidhanLogo,
+  secondstreetLogo,
+  shadLogo,
+  taxverseLogo,
+  trevioLogo,
 ];
 
 const ClientsSection = () => {
@@ -66,10 +66,10 @@ const ClientsSection = () => {
 
         {/* Logo Slider */}
         <div className="relative">
-          {/* Left Blur */}
+          {/* Left Gradient */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
 
-          {/* Right Blur */}
+          {/* Right Gradient */}
           <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
 
           <motion.div
@@ -81,7 +81,7 @@ const ClientsSection = () => {
               repeat: Infinity,
             }}
           >
-            {[...clients, ...clients].map(({ logo }, i) => (
+            {[...clients, ...clients].map((logo, i) => (
               <div
                 key={i}
                 className="flex items-center justify-center min-w-[220px] h-28 px-8 rounded-3xl border border-border/40 bg-background/60 backdrop-blur-xl hover:border-primary/50 transition-all duration-300"
