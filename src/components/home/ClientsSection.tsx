@@ -19,7 +19,7 @@ const clients = [
   "/src/assets/raidhan logo.png",
   "/src/assets/Secondstreet logo.png",
   "/src/assets/shad logo.png",
-  "/src/assets/spnge logo.png",
+  "/src/assets/spunge logo.png",
   "/src/assets/Taxverse logo.png",
   "/src/assets/trevio logo.png",
 ];
@@ -37,8 +37,10 @@ const ClientsSection = () => {
           <h3 className="mt-3 font-heading text-3xl md:text-4xl font-bold text-foreground">
             Brands I've worked with
           </h3>
-          <p className="mt-2 text-muted-foreground text-sm">
-            Worked with 50+ brands in marketing, medical, fitness, sports, and education sectors
+
+          <p className="mt-3 text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
+            Worked with 50+ brands in marketing, medical, fitness,
+            sports, and education sectors
           </p>
         </div>
 
@@ -51,14 +53,14 @@ const ClientsSection = () => {
           <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
 
           <motion.div
-  className="flex gap-8 md:gap-10 w-max"
-  animate={{ x: ["0%", "-50%"] }}
-  transition={{
-    duration: 60,
-    ease: "linear",
-    repeat: Infinity,
-  }}
->
+            className="flex gap-8 md:gap-10 w-max"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{
+              duration: 35,
+              ease: "linear",
+              repeat: Infinity,
+            }}
+          >
             {[...clients, ...clients].map((logo, i) => (
               <div
                 key={i}
