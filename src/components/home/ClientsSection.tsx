@@ -1,27 +1,47 @@
 import { motion } from "framer-motion";
 
+import boobooLogo from "@/assets/booboo-logo.png";
+import buraqLogo from "@/assets/buraq-logo.png";
+import crafterlineLogo from "@/assets/crafterline-logo.png";
+import destinifyLogo from "@/assets/destinify-logo.png";
+import falahLogo from "@/assets/falah-logo.png";
+import gazpachoLogo from "@/assets/gazpacho-logo.png";
+import gloryboardLogo from "@/assets/gloryboard-logo.png";
+import innostaLogo from "@/assets/innosta-logo.png";
+import kidozyLogo from "@/assets/kidozy-logo.png";
+import kimsLogo from "@/assets/kims-logo.png";
+import kmsLogo from "@/assets/kms-logo.png";
+import mediflowLogo from "@/assets/mediflow-logo.png";
+import mediwellLogo from "@/assets/mediwell-logo.png";
+import navigatorLogo from "@/assets/navigator-logo.png";
+import pspLogo from "@/assets/psp-logo.png";
+import raidhanLogo from "@/assets/raidhan-logo.png";
+import secondstreetLogo from "@/assets/secondstreet-logo.png";
+import shadLogo from "@/assets/shad-logo.png";
+import taxverseLogo from "@/assets/taxverse-logo.png";
+import trevioLogo from "@/assets/trevio-logo.png";
+
 const clients = [
-  "/src/assets/booboo logo.png",
-  "/src/assets/buraq logo.png",
-  "/src/assets/Crafterline logo.png",
-  "/src/assets/destinify logo.png",
-  "/src/assets/falah logo.png",
-  "/src/assets/gazpacho logo.png",
-  "/src/assets/Gloryboard logo.png",
-  "/src/assets/innosta logo.png",
-  "/src/assets/kidozy logo.png",
-  "/src/assets/kims logo.png",
-  "/src/assets/kms logo.png",
-  "/src/assets/mediflow logo.png",
-  "/src/assets/mediwell logo.png",
-  "/src/assets/Navigator logo.png",
-  "/src/assets/psp logo.png",
-  "/src/assets/raidhan logo.png",
-  "/src/assets/Secondstreet logo.png",
-  "/src/assets/shad logo.png",
-  "/src/assets/spunge logo.png",
-  "/src/assets/Taxverse logo.png",
-  "/src/assets/trevio logo.png",
+  { logo: boobooLogo },
+  { logo: buraqLogo },
+  { logo: crafterlineLogo },
+  { logo: destinifyLogo },
+  { logo: falahLogo },
+  { logo: gazpachoLogo },
+  { logo: gloryboardLogo },
+  { logo: innostaLogo },
+  { logo: kidozyLogo },
+  { logo: kimsLogo },
+  { logo: kmsLogo },
+  { logo: mediflowLogo },
+  { logo: mediwellLogo },
+  { logo: navigatorLogo },
+  { logo: pspLogo },
+  { logo: raidhanLogo },
+  { logo: secondstreetLogo },
+  { logo: shadLogo },
+  { logo: taxverseLogo },
+  { logo: trevioLogo },
 ];
 
 const ClientsSection = () => {
@@ -35,7 +55,7 @@ const ClientsSection = () => {
           </span>
 
           <h3 className="mt-3 font-heading text-3xl md:text-4xl font-bold text-foreground">
-            Brands I've worked with
+            Brands I’ve worked with
           </h3>
 
           <p className="mt-3 text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
@@ -44,24 +64,24 @@ const ClientsSection = () => {
           </p>
         </div>
 
-        {/* Logo Marquee */}
+        {/* Logo Slider */}
         <div className="relative">
-          {/* Left Fade */}
+          {/* Left Blur */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
 
-          {/* Right Fade */}
+          {/* Right Blur */}
           <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
 
           <motion.div
-  className="flex gap-8 md:gap-10 w-max"
-  animate={{ x: ["0%", "-50%"] }}
-  transition={{
-    duration: 60,
-    ease: "linear",
-    repeat: Infinity,
-  }}
->
-            {[...clients, ...clients].map((logo, i) => (
+            className="flex gap-8 md:gap-10 w-max"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{
+              duration: 60,
+              ease: "linear",
+              repeat: Infinity,
+            }}
+          >
+            {[...clients, ...clients].map(({ logo }, i) => (
               <div
                 key={i}
                 className="flex items-center justify-center min-w-[220px] h-28 px-8 rounded-3xl border border-border/40 bg-background/60 backdrop-blur-xl hover:border-primary/50 transition-all duration-300"
