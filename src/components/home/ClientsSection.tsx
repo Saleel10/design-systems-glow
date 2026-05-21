@@ -6,19 +6,19 @@ import crafterlineLogo from "@/assets/Crafterline-logo.png";
 import destinifyLogo from "@/assets/destinify-logo.png";
 import falahLogo from "@/assets/falah-logo.png";
 import gazpachoLogo from "@/assets/gazpacho-logo.png";
-import gloryboardLogo from "@/assets/gloryboard-logo.png";
+import gloryboardLogo from "@/assets/Gloryboard-logo.png";
 import innostaLogo from "@/assets/innosta-logo.png";
 import kidozyLogo from "@/assets/kidozy-logo.png";
 import kimsLogo from "@/assets/kims-logo.png";
 import kmsLogo from "@/assets/kms-logo.png";
 import mediflowLogo from "@/assets/mediflow-logo.png";
 import mediwellLogo from "@/assets/mediwell-logo.png";
-import navigatorLogo from "@/assets/navigator-logo.png";
+import navigatorLogo from "@/assets/Navigator-logo.png";
 import pspLogo from "@/assets/psp-logo.png";
 import raidhanLogo from "@/assets/raidhan-logo.png";
 import secondstreetLogo from "@/assets/Secondstreet-logo.png";
 import shadLogo from "@/assets/shad-logo.png";
-import taxverseLogo from "@/assets/taxverse-logo.png";
+import taxverseLogo from "@/assets/Taxverse-logo.png";
 import trevioLogo from "@/assets/trevio-logo.png";
 
 const clients = [
