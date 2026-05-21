@@ -1,25 +1,26 @@
 import { motion } from "framer-motion";
 
 
-import buraqLogo from "@/assets/buraq-logo.png";
-import crafterlineLogo from "@/assets/crafterline-logo.png";
-import destinifyLogo from "@/assets/destinify-logo.png";
-import falahLogo from "@/assets/falah-logo.png";
-import gazpachoLogo from "@/assets/gazpacho-logo.png";
-import gloryboardLogo from "@/assets/gloryboard-logo.png";
-import innostaLogo from "@/assets/innosta-logo.png";
-import kidozyLogo from "@/assets/kidozy-logo.png";
-import kimsLogo from "@/assets/kims-logo.png";
-import kmsLogo from "@/assets/kms-logo.png";
-import mediflowLogo from "@/assets/mediflow-logo.png";
-import mediwellLogo from "@/assets/mediwell-logo.png";
-import navigatorLogo from "@/assets/navigator-logo.png";
-import pspLogo from "@/assets/psp-logo.png";
-import raidhanLogo from "@/assets/raidhan-logo.png";
-import secondstreetLogo from "@/assets/secondstreet-logo.png";
-import shadLogo from "@/assets/shad-logo.png";
-import taxverseLogo from "@/assets/taxverse-logo.png";
-import trevioLogo from "@/assets/trevio-logo.png";
+import boobooLogo from "@/assets/booboologo.png";
+import buraqLogo from "@/assets/buraqlogo.png";
+import crafterlineLogo from "@/assets/Crafterlinelogo.png";
+import destinifyLogo from "@/assets/destinifylogo.png";
+import falahLogo from "@/assets/falahlogo.png";
+import gazpachoLogo from "@/assets/gazpachologo.png";
+import gloryboardLogo from "@/assets/Gloryboardlogo.png";
+import innostaLogo from "@/assets/innostalogo.png";
+import kidozyLogo from "@/assets/kidozylogo.png";
+import kimsLogo from "@/assets/kimslogo.png";
+import kmsLogo from "@/assets/kmslogo.png";
+import mediflowLogo from "@/assets/mediflowlogo.png";
+import mediwellLogo from "@/assets/mediwelllogo.png";
+import navigatorLogo from "@/assets/Navigatorlogo.png";
+import pspLogo from "@/assets/psplogo.png";
+import raidhanLogo from "@/assets/raidhanlogo.png";
+import secondstreetLogo from "@/assets/Secondstreetlogo.png";
+import shadLogo from "@/assets/shadlogo.png";
+import taxverseLogo from "@/assets/Taxverselogo.png";
+import trevioLogo from "@/assets/treviologo.png";
 
 const clients = [
   buraqLogo,
