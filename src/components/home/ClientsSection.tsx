@@ -63,38 +63,38 @@ const ClientsSection = () => {
             sports, and education sectors
           </p>
         </div>
+      </div>
 
-        {/* Logo Slider */}
-        <div className="relative">
-          {/* Left Gradient */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
+      {/* Logo Slider */}
+      <div className="relative">
+        {/* Left Gradient */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
 
-          {/* Right Gradient */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
+        {/* Right Gradient */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
 
-          <motion.div
-            className="flex gap-8 md:gap-10 w-max"
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{
-              duration: 60,
-              ease: "linear",
-              repeat: Infinity,
-            }}
-          >
-            {[...clients, ...clients].map((logo, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-center min-w-[220px] h-28 px-8 rounded-3xl border border-border/40 bg-background/60 backdrop-blur-xl hover:border-primary/50 transition-all duration-300"
-              >
-                <img
-                  src={logo}
-                  alt="client-logo"
-                  className="h-24 md:h-28 w-auto object-contain grayscale hover:grayscale-0 hover:scale-110 transition-all duration-300"
-                />
-              </div>
-            ))}
-          </motion.div>
-        </div>
+        <motion.div
+          className="flex gap-8 md:gap-10 w-max"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{
+            duration: 60,
+            ease: "linear",
+            repeat: Infinity,
+          }}
+        >
+          {[...clients, ...clients].map((logo, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-center min-w-[220px] h-28 px-8 rounded-3xl border border-border/40 bg-background/60 backdrop-blur-xl hover:border-primary/50 transition-all duration-300"
+            >
+              <img
+                src={logo}
+                alt="client-logo"
+                className="h-24 md:h-28 w-auto object-contain grayscale hover:grayscale-0 hover:scale-110 transition-all duration-300"
+              />
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

@@ -9,11 +9,45 @@ import { useToast } from "@/hooks/use-toast";
 const Contact = () => {
   const { toast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Message sent!", description: "I'll get back to you within 24 hours." });
-    setForm({ name: "", email: "", subject: "", message: "" });
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast({
+          title: "Message sent!",
+          description: "I'll get back to you within 24 hours.",
+        });
+        setForm({ name: "", email: "", subject: "", message: "" });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Failed to send message",
+          description: data.error || "Please try again later.",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "An error occurred",
+        description: "Please check your network and try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -86,8 +120,12 @@ const Contact = () => {
                   placeholder="Tell me about your project..."
                 />
               </div>
-              <button type="submit" className="glow-button px-8 py-3.5 rounded-xl text-sm font-semibold text-primary-foreground inline-flex items-center gap-2">
-                Send Message <Send size={16} />
+              <button
+                type="submit"
+                disabled={loading}
+                className="glow-button px-8 py-3.5 rounded-xl text-sm font-semibold text-primary-foreground inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Sending..." : "Send Message"} <Send size={16} />
               </button>
             </form>
           </div>
