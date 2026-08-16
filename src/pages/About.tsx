@@ -5,6 +5,7 @@ import Section from "@/components/Section";
 import SectionHeader from "@/components/SectionHeader";
 import profileImage from "@/assets/profileimage.png";
 import { Briefcase, BookOpen, Code, Users } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const uiuxSkills = ["UX Research", "Wireframing", "Prototyping", "Design Systems", "Interaction Design", "User Flows", "Usability Testing", "Information Architecture"];
 const graphicSkills = ["Brand Identity", "Visual Systems", "Typography", "Color Theory", "Print Design", "Social Media Design", "Packaging Design", "Creative Direction"];
@@ -20,6 +21,7 @@ const timeline = [
 const About = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="About | Saleeldesigns" url="https://saleeldesigns.com/about" />
       <Navbar />
 
       {/* Hero */}

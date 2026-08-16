@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Section from "@/components/Section";
+import SEO from "@/components/SEO";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 
@@ -88,6 +89,12 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={`${post.title} | Saleeldesigns`} 
+        description={post.excerpt} 
+        image={post.image_url} 
+        url={`https://saleeldesigns.com/blog/${post.slug}`} 
+      />
       <Navbar />
 
       {/* Hero */}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Phone, MessageSquare } from "lucide-react";
+import SEO from "@/components/SEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Section from "@/components/Section";
@@ -52,6 +53,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Contact | Saleeldesigns" description="Get in touch to discuss your next project." url="https://saleeldesigns.com/contact" />
       <Navbar />
 
       <section className="pt-32 pb-16">

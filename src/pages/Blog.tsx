@@ -6,6 +6,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Section from "@/components/Section";
 import { supabase } from "@/lib/supabase";
+import { format } from "date-fns";
+import SEO from "@/components/SEO";
 
 type BlogPost = {
   id: string;
@@ -71,6 +73,7 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Blog | Saleeldesigns" description="Read my latest articles on design, processes, and more." url="https://saleeldesigns.com/blog" />
       <Navbar />
 
       <section className="pt-32 pb-16">

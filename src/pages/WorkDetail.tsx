@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Loader2, ChevronLeft, ChevronRight, X, ExternalLink, Images } from "lucide-react";
+import SEO from "@/components/SEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Section from "@/components/Section";
@@ -125,6 +126,12 @@ const WorkDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={`${work.title} | Saleeldesigns`} 
+        description={work.description} 
+        image={work.image_url} 
+        url={`https://saleeldesigns.com/works/${work.slug}`} 
+      />
       <Navbar />
 
       {/* Hero */}

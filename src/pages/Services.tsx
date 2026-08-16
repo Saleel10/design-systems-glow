@@ -4,6 +4,7 @@ import { ArrowRight, Palette, Layout, Layers, Globe, Lightbulb, Compass } from "
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Section from "@/components/Section";
+import SEO from "@/components/SEO";
 
 const services = [
   {
@@ -59,6 +60,7 @@ const services = [
 const Services = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Services | Saleeldesigns" description="UI/UX and Graphic Design services." url="https://saleeldesigns.com/services" />
       <Navbar />
 
       <section className="pt-32 pb-16">
