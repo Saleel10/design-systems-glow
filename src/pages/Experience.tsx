@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Section from "@/components/Section";
 import SectionHeader from "@/components/SectionHeader";
+import SEO from "@/components/SEO";
 
 const experiences = [
   {
@@ -50,6 +51,7 @@ const experiences = [
 const Experience = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Experience | Saleeldesigns" description="My professional journey and academic background." url="https://saleeldesigns.com/experience" />
       <Navbar />
 
       <section className="pt-32 pb-16">

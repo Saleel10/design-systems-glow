@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Section from "@/components/Section";
 import { supabase } from "@/lib/supabase";
+import SEO from "@/components/SEO";
 
 type Work = {
   id: string;
@@ -60,6 +61,7 @@ const Works = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Works | Saleeldesigns" description="View my portfolio of UI/UX and Graphic Design works." url="https://saleeldesigns.com/works" />
       <Navbar />
 
       <section className="pt-32 pb-16">

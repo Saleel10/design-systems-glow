@@ -8,10 +8,12 @@ import ProcessSection from "@/components/home/ProcessSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import PricingPreview from "@/components/home/PricingPreview";
 import CTABanner from "@/components/home/CTABanner";
+import SEO from "@/components/SEO";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Saleeldesigns | Creative & UI/UX Designer" url="https://saleeldesigns.com/" />
       <Navbar />
       <HeroSection />
       <ClientsSection />

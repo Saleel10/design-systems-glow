@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Section from "@/components/Section";
+import SEO from "@/components/SEO";
 import SectionHeader from "@/components/SectionHeader";
 
 const plans = [
@@ -60,6 +61,7 @@ const plans = [
 const Pricing = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Pricing | Saleeldesigns" description="Transparent pricing for structured brand and design solutions." url="https://saleeldesigns.com/pricing" />
       <Navbar />
 
       <section className="pt-32 pb-16">
