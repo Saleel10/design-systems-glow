@@ -91,7 +91,7 @@ const HeroSection = () => {
 
               <div className="relative glass-card rounded-[2rem] p-2 overflow-hidden">
                 <img
-                  src="/hero-portrait.png"
+                  src="/hero-portrait.webp"
                   alt="Professional portrait of the designer"
                   width={1024}
                   height={1024}

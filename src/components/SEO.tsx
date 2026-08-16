@@ -11,9 +11,9 @@ interface SEOProps {
 const SEO = ({ 
   title = "Saleeldesigns | Creative & UI/UX Designer", 
   description = "Creative Designer & UI/UX Designer with 5+ years experience building structured digital experiences.", 
-  image = "https://saleeldesigns.com/hero-portrait.png", 
+  image = "https://saleeldesigns.com/hero-portrait.webp", 
   url = "https://saleeldesigns.com",
-  keywords = "UI/UX Designer, Graphic Designer, Creative Designer, Web Design, Branding, Saleel, Portfolio, India"
+  keywords = "Freelance UI/UX Designer India, Creative Designer, Digital Product Designer, Branding Expert, Web Designer, App Designer, SaaS UI Designer, Design Systems, Visual Designer, User Experience Design, User Interface Design, Figma Expert, Website Redesign, Packaging Design, Saleel"
 }: SEOProps) => {
   return (
     <Helmet>

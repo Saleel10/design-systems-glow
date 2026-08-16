@@ -5,9 +5,18 @@ import Section from "../Section";
 import SectionHeader from "../SectionHeader";
 
 const testimonials = [
-  { quote: "One of the most structured designers I've worked with. Delivered a complete brand system that transformed our identity.", name: "Sarah Chen", role: "CEO, NexTech", },
-  { quote: "The design system they built for our product saved us months of development time. Strategic thinking at its finest.", name: "Mark Rivera", role: "CTO, FinStack", },
-  { quote: "Not just a designer — a strategic partner who understands business goals and translates them into powerful visual systems.", name: "Aisha Patel", role: "Founder, BrandLab", },
+  { 
+    quote: "Working with Muhammed Saleel CP has been a wonderful experience. He understands the idea behind a brand and brings it to life with thoughtful, fresh, and purposeful designs. More than a designer, he feels like a creative partner who genuinely cares about the brand.", 
+    name: "Mridul M Mahesh", 
+    role: "Founder & MD, Quizzario Pvt Ltd",
+    link: "https://www.linkedin.com/in/mridul-m-mahesh"
+  },
+  { 
+    quote: "I’ve watched Muhammed Saleel grow from a passionate learner into a confident and committed designer. What stands out most is his consistency, willingness to learn, and dedication to improving his craft. His journey in design is a reflection of his hard work, curiosity, and genuine passion for creating meaningful work.", 
+    name: "Salmanul Faris CC", 
+    role: "Co-Founder of Connect Foundation",
+    link: "https://www.linkedin.com/in/salmanulfariscc/"
+  },
 ];
 
 const TestimonialsSection = () => {
@@ -35,7 +44,18 @@ const TestimonialsSection = () => {
               "{testimonials[current].quote}"
             </p>
             <div className="mt-8">
-              <p className="font-heading font-semibold text-foreground">{testimonials[current].name}</p>
+              {testimonials[current].link ? (
+                <a 
+                  href={testimonials[current].link} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="font-heading font-semibold text-foreground hover:text-primary transition-colors inline-block"
+                >
+                  {testimonials[current].name}
+                </a>
+              ) : (
+                <p className="font-heading font-semibold text-foreground">{testimonials[current].name}</p>
+              )}
               <p className="text-sm text-muted-foreground">{testimonials[current].role}</p>
             </div>
           </motion.div>
