@@ -12,15 +12,12 @@ jobs:
     steps:
       - name: Health Check / Ping Database
         run: |
-          echo "Pinging Supabase to prevent inactivity pause..."
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/works?select=id&limit=1")
+          echo "Pinging Works page to prevent inactivity pause..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://saleeldesigns.com/works")
           
           if [ "$HTTP_STATUS" -eq 200 ]; then
-            echo "✅ Successfully pinged Supabase (Status: $HTTP_STATUS)"
+            echo "✅ Successfully pinged Works page (Status: $HTTP_STATUS)"
           else
-            echo "❌ Failed to ping Supabase (Status: $HTTP_STATUS)"
+            echo "❌ Failed to ping Works page (Status: $HTTP_STATUS)"
             exit 1
           fi
