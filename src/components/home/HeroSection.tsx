@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
-import portrait from "@/assets/portrait.jpg";
 
 const stats = [
-  { value: "4+", label: "Years Experience" },
-  { value: "500+", label: "Projects" },
+  { value: "5+", label: "Years Experience" },
+  { value: "800+", label: "Projects" },
   { value: "50+", label: "Brands" },
 ];
 
@@ -92,7 +91,7 @@ const HeroSection = () => {
 
               <div className="relative glass-card rounded-[2rem] p-2 overflow-hidden">
                 <img
-                  src={portrait}
+                  src="/hero-portrait.png"
                   alt="Professional portrait of the designer"
                   width={1024}
                   height={1024}

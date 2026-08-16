@@ -40,7 +40,7 @@ const About = () => {
           <div>
 <div className="glass-card rounded-2xl aspect-[4/5] overflow-hidden">
   <img
-    src={profileImage}
+    src="/about-profile.jpeg"
     alt="Profile"
     className="w-full h-full object-cover"
   />
@@ -51,15 +51,15 @@ const About = () => {
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>My journey into design started with graphic design — creating posters, social media creatives, brand identities, and visual campaigns that helped brands communicate their story with clarity and emotion. What began as a passion for visuals gradually evolved into a deeper understanding of how design influences perception, experience, and human interaction.</p>
               <p>As I worked across different creative projects, I realized that impactful design is not just about making things look good. The strongest digital experiences are built on thoughtful structure, clear strategy, usability, and purposeful systems that solve real problems.</p>
-              <p>Over the past 4+ years, I’ve worked across brand identity design, UI/UX design, website experiences, and scalable product systems — collaborating with startups, businesses, communities, and creative teams. Through these experiences, I’ve learned how to balance aesthetics with functionality while aligning user needs with business goals.</p>
+              <p>Over the past 5+ years, I’ve worked across brand identity design, UI/UX design, website experiences, and scalable product systems — collaborating with startups, businesses, communities, and creative teams. Through these experiences, I’ve learned how to balance aesthetics with functionality while aligning user needs with business goals.</p>
               <p>My approach combines creativity with strategy. I focus on building intuitive interfaces, consistent design systems, and meaningful digital experiences that not only look modern but also improve usability, engagement, and communication. Every layout, interaction, and visual decision is created with intention and purpose.</p>
               <p>Today, I see design as more than visuals — it’s a way to create clarity, build trust, and shape experiences that people genuinely connect with.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mt-10">
               {[
-                { icon: Briefcase, label: "4+ Years Experience" },
-                { icon: Code, label: "500+ Projects" },
+                { icon: Briefcase, label: "5+ Years Experience" },
+                { icon: Code, label: "800+ Projects" },
                 { icon: Users, label: "50+ Brands" },
                 { icon: BookOpen, label: "BSc Computer Science" },
               ].map((item) => (

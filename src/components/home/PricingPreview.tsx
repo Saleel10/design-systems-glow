@@ -6,24 +6,51 @@ import SectionHeader from "../SectionHeader";
 const plans = [
   {
     name: "Starter",
-    price: "$499",
+    price: "₹20,000",
     desc: "Logo + Basic Brand Kit",
     popular: false,
-    features: ["Logo Design (3 concepts)", "Color Palette", "Typography Selection", "Basic Brand Guide", "Social Media Templates (3)", "5-day delivery"],
+    features: [
+      "Logo Design (2 Concepts)",
+      "Color Palette",
+      "Typography Selection",
+      "Basic Brand Guide",
+      "Social Media Templates (5)",
+      "Profile & Cover image",
+      "5–7 Day Delivery"
+    ],
   },
   {
     name: "Professional",
-    price: "$1,499",
-    desc: "Full Brand Identity + Social Kit",
+    price: "₹32,000",
+    desc: "Complete Brand Identity",
     popular: true,
-    features: ["Logo Design (5 concepts)", "Complete Brand Identity", "Brand Guidelines Document", "Social Media Kit (10 templates)", "Business Card & Letterhead", "Presentation Template", "10-day delivery"],
+    features: [
+      "Logo Design (4 Concepts)",
+      "Complete Brand Identity",
+      "Brand Guidelines Document",
+      "Business Card & Stationery Design",
+      "Social Media Kit (8 Templates)",
+      "Packaging Design (1 Product)",
+      "Presentation Template",
+      "12–16 Day Delivery"
+    ],
   },
   {
     name: "Premium",
-    price: "$3,999",
-    desc: "Brand + Website + Design System",
+    price: "₹55,000",
+    desc: "Brand + Digital Experience",
     popular: false,
-    features: ["Everything in Professional", "Website Design (5 pages)", "Design System & Components", "Icon Set (20 custom icons)", "Motion Guidelines", "Ongoing Support (30 days)", "21-day delivery"],
+    features: [
+      "Everything in Professional",
+      "UI/UX Design (Up to 5 Pages)",
+      "Design System & Components",
+      "Website Prototype (Figma)",
+      "Packaging Design (Up to 3 Products)",
+      "Custom Icons & Illustrations",
+      "Pitch Deck",
+      "15 Days Design Support",
+      "18–25 Day Delivery"
+    ],
   },
 ];
 
@@ -40,7 +67,7 @@ const PricingPreview = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1, duration: 0.5 }}
-            className={`rounded-2xl p-8 relative transition-all ${
+            className={`flex flex-col rounded-2xl p-8 relative transition-all ${
               plan.popular
                 ? "glass-card border-primary/30 shadow-[0_0_40px_hsl(96_70%_37%/0.1)]"
                 : "glass-card glass-card-hover"
@@ -68,15 +95,17 @@ const PricingPreview = () => {
               ))}
             </div>
 
-            <button
-              className={`w-full mt-8 py-3 rounded-xl text-sm font-semibold transition-all ${
-                plan.popular
-                  ? "glow-button text-primary-foreground"
-                  : "glass-card glass-card-hover text-foreground"
-              }`}
-            >
-              Book a Call
-            </button>
+            <div className="mt-auto pt-8">
+              <button
+                className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
+                  plan.popular
+                    ? "glow-button text-primary-foreground"
+                    : "glass-card glass-card-hover text-foreground"
+                }`}
+              >
+                Book a Call
+              </button>
+            </div>
           </motion.div>
         ))}
       </div>

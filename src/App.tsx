@@ -15,6 +15,15 @@ import BlogPost from "./pages/BlogPost";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./components/AdminLayout";
+import Login from "./pages/admin/Login";
+import Dashboard from "./pages/admin/Dashboard";
+import CategoriesList from "./pages/admin/categories/CategoriesList";
+import CategoryForm from "./pages/admin/categories/CategoryForm";
+import WorksAdminList from "./pages/admin/works/WorksList";
+import WorkForm from "./pages/admin/works/WorkForm";
+import BlogsAdminList from "./pages/admin/blogs/BlogsList";
+import BlogForm from "./pages/admin/blogs/BlogForm";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +45,21 @@ const App = () => (
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact" element={<Contact />} />
+          
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="categories" element={<CategoriesList />} />
+            <Route path="categories/new" element={<CategoryForm />} />
+            <Route path="categories/:id" element={<CategoryForm />} />
+            <Route path="works" element={<WorksAdminList />} />
+            <Route path="works/new" element={<WorkForm />} />
+            <Route path="works/:id" element={<WorkForm />} />
+            <Route path="blogs" element={<BlogsAdminList />} />
+            <Route path="blogs/new" element={<BlogForm />} />
+            <Route path="blogs/:id" element={<BlogForm />} />
+          </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -116,7 +116,6 @@ const Experience = () => {
         <SectionHeader label="Education" title="Academic Background" align="left" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
           {[
-            { title: "Master in Computer Applications", place: "Indira Gandhi National Open University", year: "2025-Present" },
             { title: "BSc Computer Science", place: "EMEA College of Arts and Science, Kondotty", year: "2022-2025" },
             { title: "UI/UX Design Certification", place: "Teachnook", year: "2022" },
           ].map((edu, i) => (
