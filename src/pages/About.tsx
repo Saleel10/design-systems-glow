@@ -42,7 +42,7 @@ const About = () => {
           <div>
 <div className="glass-card rounded-2xl aspect-[4/5] overflow-hidden">
   <img
-    src="/about-profile.jpeg"
+    src="/about-profile.webp"
     alt="Profile"
     className="w-full h-full object-cover"
   />

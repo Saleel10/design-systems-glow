@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import ScrollToTop from "./components/ScrollToTop";
+import SmoothScrollProvider from "./components/SmoothScrollProvider";
+import CustomCursor from "./components/CustomCursor";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
@@ -32,38 +34,41 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
         <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/works" element={<Works />} />
-            <Route path="/works/:slug" element={<WorkDetail />} />
-            <Route path="/experience" element={<Experience />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/contact" element={<Contact />} />
-            
-            <Route path="/admin/login" element={<Login />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="categories" element={<CategoriesList />} />
-              <Route path="categories/new" element={<CategoryForm />} />
-              <Route path="categories/:id" element={<CategoryForm />} />
-              <Route path="works" element={<WorksAdminList />} />
-              <Route path="works/new" element={<WorkForm />} />
-              <Route path="works/:id" element={<WorkForm />} />
-              <Route path="blogs" element={<BlogsAdminList />} />
-              <Route path="blogs/new" element={<BlogForm />} />
-              <Route path="blogs/:id" element={<BlogForm />} />
-            </Route>
+          <SmoothScrollProvider>
+            <CustomCursor />
+            <Toaster />
+            <Sonner />
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/works" element={<Works />} />
+              <Route path="/works/:slug" element={<WorkDetail />} />
+              <Route path="/experience" element={<Experience />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/contact" element={<Contact />} />
+              
+              <Route path="/admin/login" element={<Login />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="categories" element={<CategoriesList />} />
+                <Route path="categories/new" element={<CategoryForm />} />
+                <Route path="categories/:id" element={<CategoryForm />} />
+                <Route path="works" element={<WorksAdminList />} />
+                <Route path="works/new" element={<WorkForm />} />
+                <Route path="works/:id" element={<WorkForm />} />
+                <Route path="blogs" element={<BlogsAdminList />} />
+                <Route path="blogs/new" element={<BlogForm />} />
+                <Route path="blogs/:id" element={<BlogForm />} />
+              </Route>
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </SmoothScrollProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

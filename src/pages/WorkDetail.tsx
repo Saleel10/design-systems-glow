@@ -127,10 +127,10 @@ const WorkDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title={`${work.title} | Saleeldesigns`} 
-        description={work.description} 
-        image={work.image_url} 
-        url={`https://saleeldesigns.com/works/${work.slug}`} 
+        title={`${project.title} | Saleeldesigns`} 
+        description={project.description} 
+        image={project.image_url} 
+        url={`https://saleeldesigns.com/works/${project.slug}`} 
       />
       <Navbar />
 
