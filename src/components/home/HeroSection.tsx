@@ -51,15 +51,7 @@ const HeroSection = () => {
               >
                 Work With Me <ArrowRight size={16} />
               </Link>
-              <a
-                href="/Resume-Muhammed-Saleel.pdf"
-                download="Resume-Muhammed-Saleel.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass-card glass-card-hover px-8 py-3.5 rounded-xl text-sm font-semibold text-foreground inline-flex items-center justify-center gap-2 transition-all"
-              >
-                <Download size={16} /> Download Resume
-              </a>
+
             </div>
 
             {/* Stats */}

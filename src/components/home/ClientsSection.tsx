@@ -76,7 +76,7 @@ const ClientsSection = () => {
           className="flex gap-8 md:gap-10 w-max"
           animate={{ x: ["0%", "-50%"] }}
           transition={{
-            duration: 60,
+            duration: 40,
             ease: "linear",
             repeat: Infinity,
           }}
