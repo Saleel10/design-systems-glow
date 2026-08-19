@@ -17,6 +17,24 @@ const testimonials = [
     role: "Co-Founder of Connect Foundation",
     link: "https://www.linkedin.com/in/salmanulfariscc/"
   },
+  { 
+    quote: "I’ve known and worked with Saleel since 2023 across 10+ projects. Even when he started working with me while still in college, his professionalism, communication, and commitment always stood out. I always knew he had great potential, and it’s great to see how far he has come. He’s reliable, takes ownership of his work, and delivers professionally and on time. I highly recommend him and wish him continued success!", 
+    name: "Rishad Cheruthottathil", 
+    role: "Founder & Principal Strategist INNOSTAA | Business Growth Agency",
+    link: "https://www.linkedin.com/in/rishad-digitalgrowth?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+  },
+  { 
+    quote: "I would recommend Saleel over other designers because of his openness to understanding our design language and his ability to align his skillset with it. One reference and a conversation are all it takes to get a killer design done!", 
+    name: "Shad Muhammed T", 
+    role: "Founder & Director of HW Growth Studio",
+    link: "https://www.linkedin.com/in/shad-muhammed?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+  },
+  { 
+    quote: "Working with Muhammed Saleel on projects for KIMS Group of Companies has been a great experience. His creativity, attention to detail, and ability to understand requirements quickly make him a reliable designer to work with. I’ve seen his growth firsthand, and his commitment to delivering quality work consistently stands out. I’m happy to recommend Saleel for his professionalism, creativity, and dedication.", 
+    name: "Ahammed Yamil K", 
+    role: "Chief operation officer Kims Group of companies",
+    link: "https://www.linkedin.com/in/ahammed-yamil?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+  }
 ];
 
 const TestimonialsSection = () => {
