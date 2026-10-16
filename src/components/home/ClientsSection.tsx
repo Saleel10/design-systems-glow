@@ -54,7 +54,7 @@ export default function ClientsSection() {
   const isLight = theme === 'light';
 
   return (
-    <section className="py-16 sm:py-24 text-center border-t border-[var(--line)] bg-[var(--bg)] transition-colors">
+    <section className="pt-20 sm:pt-28 pb-16 sm:pb-24 text-center border-t border-[var(--line)] bg-[var(--bg)] transition-colors">
       <div className="font-heading text-xs tracking-[0.14em] uppercase text-[var(--accent)] font-semibold">
         Trusted clients
       </div>

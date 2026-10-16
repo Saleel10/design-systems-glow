@@ -119,7 +119,7 @@ export default function VisitorPassCard() {
           className={`${isDesktop ? 'fixed' : 'absolute'} ${
             isDesktop
               ? 'top-0 right-4 xl:right-10'
-              : 'top-[58px] sm:top-[66px] right-2 sm:right-3'
+              : 'top-[48px] sm:top-[56px] right-2 sm:right-3'
           } z-40 flex flex-col items-center select-none pointer-events-auto`}
         >
           {/* Hanging Pendulum Sway Animation Wrapper */}
@@ -144,15 +144,15 @@ export default function VisitorPassCard() {
           >
             {/* Lanyard Top Attachment: Ribbon hangs from top: 0 on desktop, or from below navbar on mobile */}
             <div className="flex flex-col items-center -mb-1 sm:-mb-1.5 xl:-mb-2 relative z-10 pointer-events-none">
-              {/* Green Lanyard Ribbon: short clip on mobile so card is 100% fully visible below navbar */}
-              <div className="w-1.5 sm:w-2.5 md:w-3.5 xl:w-5 h-[10px] sm:h-[18px] md:h-[45px] xl:h-[110px] bg-gradient-to-b from-[#13806f] via-[#1ea87a] to-[#56a933] shadow-md border-x border-[#13806f]/40" />
+              {/* Green Lanyard Ribbon: lengthened on mobile to look like a true hanging lanyard strap */}
+              <div className="w-2 sm:w-2.5 md:w-3.5 xl:w-5 h-[26px] sm:h-[34px] md:h-[50px] xl:h-[110px] bg-gradient-to-b from-[#13806f] via-[#1ea87a] to-[#56a933] shadow-md border-x border-[#13806f]/40" />
               {/* Silver Metallic Clip holding card */}
-              <div className="w-2 sm:w-3 md:w-4.5 xl:w-6.5 h-0.5 sm:h-1 xl:h-2.5 bg-neutral-300 rounded-t-xs shadow-inner border border-neutral-400" />
+              <div className="w-2.5 sm:w-3 md:w-4.5 xl:w-6.5 h-1 sm:h-1.5 xl:h-2.5 bg-neutral-300 rounded-t-xs shadow-inner border border-neutral-400" />
             </div>
 
             {/* Main Physical Visitor Pass Card */}
-            {/* Compact width (w-[76px] on mobile) so it never sits on top of any texts or floating cards */}
-            <div className="relative w-[76px] sm:w-[98px] md:w-[145px] xl:w-[250px] flex flex-col justify-between rounded-[8px] sm:rounded-[12px] xl:rounded-[24px] bg-[#0c0e0c]/85 sm:bg-[#0c0e0c]/90 xl:bg-[#0c0e0c]/95 border border-white/20 p-1 sm:p-1.5 md:p-2.5 xl:p-5 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.75),0_0_10px_rgba(92,184,71,0.12)] backdrop-blur-md overflow-hidden text-left">
+            {/* Compact width (w-[78px] on mobile) so it never sits on top of any texts or floating cards */}
+            <div className="relative w-[78px] sm:w-[98px] md:w-[145px] xl:w-[250px] flex flex-col justify-between rounded-[8px] sm:rounded-[12px] xl:rounded-[24px] bg-[#0c0e0c]/85 sm:bg-[#0c0e0c]/90 xl:bg-[#0c0e0c]/95 border border-white/20 p-1 sm:p-1.5 md:p-2.5 xl:p-5 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.75),0_0_10px_rgba(92,184,71,0.12)] backdrop-blur-md overflow-hidden text-left">
               {/* Card Top Punch Hole Notch for Lanyard */}
               <div className="w-2.5 sm:w-4 md:w-6 xl:w-9 h-0.5 xl:h-1.5 bg-black/60 rounded-full mx-auto -mt-0.5 mb-0.5 sm:mb-1 xl:mb-2.5 border border-white/10" />
 
