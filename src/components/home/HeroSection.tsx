@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTheme } from '@/hooks/use-theme';
 import profileLight from '@/assets/profile-light.png';
 import profileDark from '@/assets/profile-dark.png';
@@ -10,7 +10,6 @@ import clientAvatar3 from '@/assets/client-avatar-3.png';
 
 export default function HeroSection() {
   const { theme } = useTheme();
-  const profileImg = theme === 'light' ? profileLight : profileDark;
 
   // Ensure initial scroll position on mobile responsive is at top (0, 0)
   useEffect(() => {
@@ -19,6 +18,12 @@ export default function HeroSection() {
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     }
+
+    // Preload both theme portrait images so switching themes has ZERO lag or decoding delay
+    const imgLight = new Image();
+    imgLight.src = profileLight;
+    const imgDark = new Image();
+    imgDark.src = profileDark;
   }, []);
 
   return (
@@ -246,19 +251,25 @@ export default function HeroSection() {
             {/* Ambient Glow behind portrait */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[380px] sm:w-[440px] lg:w-[580px] xl:w-[640px] h-[380px] sm:h-[440px] lg:h-[580px] xl:h-[640px] rounded-full bg-[radial-gradient(circle,rgba(86,169,51,0.22),transparent_70%)] pointer-events-none blur-3xl" />
 
-            {/* Profile cutout image with theme-reactive transition */}
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={theme}
-                src={profileImg}
+            {/* Profile cutout images: pre-rendered and layered for lag-free instant theme cross-fade */}
+            <div className="relative w-full h-full flex items-end justify-center pointer-events-none select-none z-10">
+              <img
+                src={profileDark}
                 alt="Muhammed Saleel CP - Designer"
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.35, ease: 'easeInOut' }}
-                className="w-[124%] sm:w-[110%] md:w-full h-full max-w-none md:max-w-full object-contain object-bottom relative z-10 dark:drop-shadow-[0_16px_30px_rgba(0,0,0,0.38)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.12)] pointer-events-none select-none"
+                decoding="async"
+                className={`w-[124%] sm:w-[110%] md:w-full h-full max-w-none md:max-w-full object-contain object-bottom transition-opacity duration-200 ease-linear dark:drop-shadow-[0_16px_30px_rgba(0,0,0,0.38)] pointer-events-none select-none ${
+                  theme === 'dark' ? 'opacity-100 z-10' : 'opacity-0 z-0 absolute inset-0'
+                }`}
               />
-            </AnimatePresence>
+              <img
+                src={profileLight}
+                alt="Muhammed Saleel CP - Designer"
+                decoding="async"
+                className={`w-[124%] sm:w-[110%] md:w-full h-full max-w-none md:max-w-full object-contain object-bottom transition-opacity duration-200 ease-linear drop-shadow-[0_12px_24px_rgba(0,0,0,0.12)] pointer-events-none select-none ${
+                  theme === 'light' ? 'opacity-100 z-10' : 'opacity-0 z-0 absolute inset-0'
+                }`}
+              />
+            </div>
 
             {/* Action Pills anchored at chest position - comfortably sitting on hoodie */}
             <div className="absolute left-1/2 bottom-[26px] sm:bottom-[34px] md:bottom-[40px] lg:bottom-[82px] xl:bottom-[94px] 2xl:bottom-[102px] -translate-x-1/2 z-30 flex flex-nowrap sm:flex-wrap justify-center items-center gap-1.5 sm:gap-2.5 lg:gap-3.5 w-max max-w-[96vw]">

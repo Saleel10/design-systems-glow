@@ -73,7 +73,7 @@ export default function ClientsSection() {
       {/* Marquee with mask */}
       <div className="overflow-hidden mt-8 sm:mt-10 py-5 sm:py-6 [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
         <motion.div
-          className="flex gap-4 sm:gap-5 w-max py-2"
+          className="flex gap-2.5 sm:gap-5 w-max py-2"
           animate={{ x: ['0%', '-50%'] }}
           transition={{
             duration: 35,
@@ -89,13 +89,13 @@ export default function ClientsSection() {
             return (
               <div
                 key={`${client.name}-${i}`}
-                className="group flex-none w-[240px] sm:w-[270px] h-[104px] sm:h-[118px] rounded-[20px] bg-[var(--card)] border border-[var(--line)] flex items-center justify-center p-4 sm:p-5 shadow-sm hover:border-[#5cb847]/40 hover:bg-[#5cb847]/[0.03] hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.3)] hover:scale-[1.02] cursor-pointer transition-all duration-300"
+                className="group flex-none w-[148px] sm:w-[270px] h-[68px] sm:h-[118px] rounded-[14px] sm:rounded-[20px] bg-[var(--card)] border border-[var(--line)] flex items-center justify-center p-2.5 sm:p-5 shadow-sm hover:border-[#5cb847]/40 hover:bg-[#5cb847]/[0.03] hover:shadow-[0_8px_20px_-8px_rgba(0,0,0,0.3)] hover:scale-[1.02] cursor-pointer transition-all duration-300"
               >
                 {logoSrc ? (
                   <img
                     src={logoSrc}
                     alt={client.name}
-                    className={`w-auto h-auto max-h-[38px] sm:max-h-[46px] max-w-[135px] sm:max-w-[160px] object-contain transition-all duration-300 group-hover:scale-105 ${
+                    className={`w-auto h-auto max-h-[24px] sm:max-h-[46px] max-w-[95px] sm:max-w-[160px] object-contain transition-all duration-300 group-hover:scale-105 ${
                       client.logoLight
                         ? 'opacity-85 group-hover:opacity-100'
                         : isLight
@@ -104,7 +104,7 @@ export default function ClientsSection() {
                     }`}
                   />
                 ) : (
-                  <span className="text-lg sm:text-xl font-semibold tracking-tight text-[var(--ink)] group-hover:text-[#5cb847] transition-colors">
+                  <span className="text-sm sm:text-xl font-semibold tracking-tight text-[var(--ink)] group-hover:text-[#5cb847] transition-colors">
                     {client.name}
                   </span>
                 )}

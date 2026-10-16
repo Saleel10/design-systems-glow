@@ -201,7 +201,7 @@ const Pricing = () => {
                 </div>
 
                 <a
-                  href="https://cal.com/muhammed-saleel-yjtcye/30min"
+                  href="https://cal.com/callwithsaleeldesigns"
                   target="_blank"
                   rel="noreferrer"
                   className={`pricing-cta mt-7 text-center py-3.5 px-6 rounded-full text-[15px] font-medium transition-all duration-300 block no-underline ${

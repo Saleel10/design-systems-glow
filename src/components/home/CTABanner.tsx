@@ -21,7 +21,7 @@ export default function CTABanner() {
           </p>
 
           <a
-            href="https://cal.com/muhammed-saleel-yjtcye/30min"
+            href="https://cal.com/callwithsaleeldesigns"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-3 mt-7 brand-gradient text-white px-6 sm:px-8 py-3.5 rounded-full text-sm sm:text-base font-medium shadow-[0_4px_24px_rgba(29,133,90,0.35)] hover:opacity-95 active:scale-95 transition-all no-underline"

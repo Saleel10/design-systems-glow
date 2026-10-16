@@ -10,10 +10,16 @@ const Contact = () => {
   const { toast } = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [selectedInterest, setSelectedInterest] = useState("Branding");
+  const [selectedInterests, setSelectedInterests] = useState<string[]>(["Branding"]);
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const toggleInterest = (item: string) => {
+    setSelectedInterests((prev) =>
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +32,8 @@ const Contact = () => {
       return;
     }
 
+    const interestsString = selectedInterests.length > 0 ? selectedInterests.join(", ") : "General";
+
     setSubmitting(true);
     try {
       await fetch("/api/send-email", {
@@ -34,8 +42,8 @@ const Contact = () => {
         body: JSON.stringify({
           name,
           email,
-          subject: `Portfolio Inquiry: ${selectedInterest}`,
-          message: `Interest: ${selectedInterest}\n\n${message}`,
+          subject: `Portfolio Inquiry: ${interestsString}`,
+          message: `Interest: ${interestsString}\n\n${message}`,
         }),
       });
     } catch {
@@ -50,7 +58,7 @@ const Contact = () => {
     setName("");
     setEmail("");
     setMessage("");
-    setSelectedInterest("Branding");
+    setSelectedInterests(["Branding"]);
     setSent(false);
   };
 
@@ -236,24 +244,31 @@ const Contact = () => {
                   }}
                 >
                   {INTERESTS.map((item) => {
-                    const isSelected = selectedInterest === item;
+                    const isSelected = selectedInterests.includes(item);
                     return (
                       <button
                         key={item}
                         type="button"
-                        onClick={() => setSelectedInterest(item)}
+                        onClick={() => toggleInterest(item)}
+                        aria-pressed={isSelected}
                         style={{
                           padding: "8px 14px",
                           borderRadius: "999px",
                           fontSize: "13.5px",
-                          border: "1px solid var(--line)",
+                          border: isSelected ? "1px solid var(--ink)" : "1px solid var(--line)",
                           background: isSelected ? "var(--ink)" : "var(--soft)",
                           color: isSelected ? "var(--bg)" : "var(--body)",
                           cursor: "pointer",
                           transition: "all 0.2s ease",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
                         }}
                       >
-                        {item}
+                        {isSelected && (
+                          <span style={{ fontSize: "11px", fontWeight: 700, lineHeight: 1 }}>✓</span>
+                        )}
+                        <span>{item}</span>
                       </button>
                     );
                   })}
@@ -317,7 +332,7 @@ const Contact = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {/* Featured Book 1:1 Call Card */}
             <a
-              href="https://cal.com/muhammed-saleel-yjtcye/30min"
+              href="https://cal.com/callwithsaleeldesigns"
               target="_blank"
               rel="noreferrer"
               style={{
