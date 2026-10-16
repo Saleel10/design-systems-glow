@@ -1,133 +1,269 @@
-import { motion } from "framer-motion";
-import { Check, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Section from "@/components/Section";
+import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-import SectionHeader from "@/components/SectionHeader";
-
-const plans = [
-  {
-    name: "Starter",
-    price: "₹20,000",
-    desc: "Logo + Basic Brand Kit",
-    popular: false,
-    features: [
-      "Logo Design (2 Concepts)",
-      "Color Palette",
-      "Typography Selection",
-      "Basic Brand Guide",
-      "Social Media Templates (5)",
-      "Profile & Cover image",
-      "5–7 Day Delivery"
-    ],
-  },
-  {
-    name: "Professional",
-    price: "₹32,000",
-    desc: "Complete Brand Identity",
-    popular: true,
-    features: [
-      "Logo Design (4 Concepts)",
-      "Complete Brand Identity",
-      "Brand Guidelines Document",
-      "Business Card & Stationery Design",
-      "Social Media Kit (8 Templates)",
-      "Packaging Design (1 Product)",
-      "Presentation Template",
-      "12–16 Day Delivery"
-    ],
-  },
-  {
-    name: "Premium",
-    price: "₹55,000",
-    desc: "Brand + Digital Experience",
-    popular: false,
-    features: [
-      "Everything in Professional",
-      "UI/UX Design (Up to 5 Pages)",
-      "Design System & Components",
-      "Website Prototype (Figma)",
-      "Packaging Design (Up to 3 Products)",
-      "Custom Icons & Illustrations",
-      "Pitch Deck",
-      "15 Days Design Support",
-      "18–25 Day Delivery"
-    ],
-  },
-];
+import { PLANS } from "@/data/portfolioData";
+import { useTheme } from "@/hooks/use-theme";
 
 const Pricing = () => {
+  const { theme } = useTheme();
+  const isDarkTheme = theme === "dark";
+
   return (
-    <div className="min-h-screen bg-background">
-      <SEO title="Pricing | Saleeldesigns" description="Transparent pricing for structured brand and design solutions." url="https://saleeldesigns.com/pricing" />
-      <Navbar />
+    <PageContainer>
+      <SEO
+        title="Pricing | Saleel Designs"
+        description="Transparent freelance packages for structured brand and design solutions. Brand Essentials, Brand Identity, and Brand & Digital Experience packages."
+        url="https://saleeldesigns.com/pricing"
+      />
 
-      <section className="pt-32 pb-16">
-        <div className="container">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-3 block">Pricing</span>
-            <h1 className="font-heading text-4xl md:text-6xl font-bold text-foreground leading-tight max-w-3xl">
-              Freelance <span className="gradient-text">Packages</span>
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground max-w-xl">Transparent pricing. Structured deliverables. No surprises.</p>
-          </motion.div>
+      <main style={{ padding: "40px clamp(20px,5vw,64px) 96px" }} className="max-w-7xl mx-auto w-full">
+        <div
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: "12px",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "var(--accent)",
+          }}
+        >
+          Pricing
         </div>
-      </section>
 
-      <Section>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.map((plan, i) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className={`flex flex-col rounded-2xl p-8 relative transition-all ${
-                plan.popular ? "glass-card border-primary/30 shadow-[0_0_40px_hsl(96_70%_37%/0.1)]" : "glass-card glass-card-hover"
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 glow-button px-4 py-1 rounded-full text-xs font-semibold text-primary-foreground flex items-center gap-1">
-                  <Star size={12} /> Most Popular
-                </div>
-              )}
+        <h1
+          style={{
+            margin: "14px 0 0",
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 600,
+            fontSize: "clamp(44px,6.4vw,90px)",
+            lineHeight: 1,
+            letterSpacing: "-0.04em",
+          }}
+        >
+          Freelance{" "}
+          <span className="font-serif-italic brand-gradient-text">
+            packages.
+          </span>
+        </h1>
 
-              <h3 className="font-heading text-xl font-bold text-foreground">{plan.name}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{plan.desc}</p>
-              <div className="mt-6">
-                <span className="font-heading text-4xl font-bold text-foreground">{plan.price}</span>
-                <span className="text-sm text-muted-foreground ml-1">/project</span>
-              </div>
+        <p
+          style={{
+            margin: "22px 0 0",
+            maxWidth: "520px",
+            fontSize: "17px",
+            lineHeight: 1.55,
+            color: "var(--muted)",
+          }}
+        >
+          Transparent pricing for structured brand and design solutions.
+        </p>
 
-              <div className="mt-8 space-y-3">
-                {plan.features.map((feature) => (
-                  <div key={feature} className="flex items-center gap-3 text-sm">
-                    <Check size={14} className="text-primary flex-shrink-0" />
-                    <span className="text-muted-foreground">{feature}</span>
+        {/* Pricing Cards */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
+            gap: "16px",
+            marginTop: "56px",
+            alignItems: "stretch",
+          }}
+        >
+          {PLANS.map((p) => {
+            const isFeatured = p.dark || p.name === "Brand Identity";
+            const isFeaturedInDark = isFeatured && isDarkTheme;
+            const isDark = p.dark;
+
+            const bg = isFeaturedInDark ? "#ffffff" : isDark ? "var(--panel)" : "var(--card)";
+            const fg = isFeaturedInDark ? "#000000" : isDark ? "#ffffff" : "var(--ink)";
+            const subColor = isFeaturedInDark ? "#525252" : isDark ? "rgba(255,255,255,0.7)" : "var(--muted)";
+            const line = isFeaturedInDark ? "rgba(0,0,0,0.08)" : isDark ? "rgba(255,255,255,0.12)" : "var(--line)";
+            const featColor = isFeaturedInDark ? "#171717" : fg;
+
+            return (
+              <div
+                key={p.name}
+                style={{
+                  background: bg,
+                  color: fg,
+                  borderRadius: "26px",
+                  padding: "32px 30px",
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
+                }}
+                className={`pricing-card group border transition-all duration-300 ${
+                  isFeaturedInDark
+                    ? "border-transparent shadow-[0_20px_45px_-12px_rgba(255,255,255,0.12)]"
+                    : isDark
+                    ? "border-[var(--line)] shadow-[0_16px_34px_-24px_rgba(0,0,0,0.25)]"
+                    : "border-[var(--line)] shadow-[0_16px_34px_-24px_rgba(0,0,0,0.25)]"
+                }`}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div style={{ fontSize: "21px", fontWeight: isFeaturedInDark ? 600 : 500, color: fg }}>
+                    {p.name}
                   </div>
-                ))}
-              </div>
+                  {p.badge && (
+                    <div
+                      style={{
+                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontSize: "11px",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        padding: "4px 10px",
+                        borderRadius: "999px",
+                        background: isFeaturedInDark
+                          ? "#e8f7ee"
+                          : isDark
+                          ? "rgba(95,208,143,0.18)"
+                          : "var(--tint)",
+                        color: isFeaturedInDark
+                          ? "#1e834b"
+                          : isDark
+                          ? "#5fd08f"
+                          : "var(--accent)",
+                        border: isFeaturedInDark ? "1px solid rgba(30,131,75,0.2)" : "none",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {p.badge}
+                    </div>
+                  )}
+                </div>
 
-              <div className="mt-auto pt-8">
-                <Link
-                  to="/contact"
-                  className={`block w-full py-3 rounded-xl text-sm font-semibold text-center transition-all ${
-                    plan.popular ? "glow-button text-primary-foreground" : "glass-card glass-card-hover text-foreground"
+                <div style={{ fontSize: "14px", color: subColor, marginTop: "4px" }}>
+                  {p.sub}
+                </div>
+
+                <div
+                  style={{
+                    fontWeight: 600,
+                    letterSpacing: "-0.02em",
+                    fontSize: "56px",
+                    lineHeight: 1,
+                    marginTop: "24px",
+                    color: fg,
+                  }}
+                >
+                  {p.price}
+                  <span
+                    style={{
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "14px",
+                      color: isFeaturedInDark ? "#737373" : undefined,
+                      opacity: isFeaturedInDark ? 1 : 0.6,
+                      fontWeight: 400,
+                    }}
+                  >
+                    {" "}
+                    /project
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    height: "1px",
+                    background: line,
+                    margin: "26px 0 20px",
+                  }}
+                />
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "11px",
+                    flex: 1,
+                  }}
+                >
+                  {p.feats.map((f, fi) => (
+                    <div
+                      key={fi}
+                      style={{
+                        fontSize: "15px",
+                        display: "flex",
+                        gap: "12px",
+                        alignItems: "baseline",
+                        lineHeight: 1.45,
+                        color: featColor,
+                      }}
+                    >
+                      <span style={{ opacity: 0.9, color: "var(--accent)" }}>✓</span>
+                      {f}
+                    </div>
+                  ))}
+                </div>
+
+                <a
+                  href="https://cal.com/muhammed-saleel-yjtcye/30min"
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`pricing-cta mt-7 text-center py-3.5 px-6 rounded-full text-[15px] font-medium transition-all duration-300 block no-underline ${
+                    isFeatured
+                      ? 'brand-gradient text-white shadow-[0_8px_24px_-6px_rgba(92,184,71,0.45)]'
+                      : 'bg-[var(--ink)] text-[var(--bg)] active:scale-95'
                   }`}
                 >
-                  Book a Call
-                </Link>
+                  Book a call ↗
+                </a>
               </div>
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
-      </Section>
 
-      <Footer />
-    </div>
+        {/* Custom Retainer Banner */}
+        <div
+          style={{
+            marginTop: "20px",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "16px",
+            padding: "24px 30px",
+            borderRadius: "22px",
+            border: "1px dashed var(--line2)",
+          }}
+        >
+          <div>
+            <div style={{ fontSize: "17px", fontWeight: 500, color: "var(--ink)" }}>
+              Need something custom?
+            </div>
+            <div
+              style={{
+                fontSize: "14px",
+                color: "var(--muted)",
+                marginTop: "4px",
+              }}
+            >
+              Ongoing retainers and product design engagements are quoted per scope.
+            </div>
+          </div>
+
+          <Link
+            to="/contact"
+            style={{
+              padding: "12px 20px",
+              borderRadius: "999px",
+              background: "var(--grad)",
+              color: "#ffffff",
+              fontSize: "14px",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+            className="hover:opacity-90 transition-opacity"
+          >
+            Request a quote →
+          </Link>
+        </div>
+      </main>
+    </PageContainer>
   );
 };
 

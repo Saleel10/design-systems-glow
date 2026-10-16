@@ -1,407 +1,495 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Loader2, ChevronLeft, ChevronRight, X, ExternalLink, Images } from "lucide-react";
+import { ArrowLeft, ImageIcon } from "lucide-react";
+import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Section from "@/components/Section";
 import { supabase } from "@/lib/supabase";
-import Autoplay from "embla-carousel-autoplay";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import { WORKS, CASES } from "@/data/portfolioData";
 
-type WorkDetails = {
-  overview?: string;
-  tools?: string;
-  problem?: string;
-  insights?: { text: string }[];
-  progress?: { title: string; description: string }[];
-  screens?: { title: string; urls: string[] }[];
-};
-
-type Work = {
-  id: string;
+interface WorkProjectData {
   title: string;
-  slug: string;
-  description: string;
-  image_url: string;
-  categories: { name: string };
-  details?: WorkDetails;
+  category: string;
+  heroPlaceholder?: string;
+  heroImage?: string;
+  overview: string;
+  problem: string;
+  tools: string[];
+  client: string;
+  year: string;
+  insights: string[];
+  steps: {
+    number: string;
+    title: string;
+    desc: string;
+  }[];
+  outputs: {
+    title: string;
+    type: string;
+    image_url?: string;
+  }[];
+}
+
+const DEFAULT_TAXVERSE: WorkProjectData = {
+  title: "Taxverse",
+  category: "BRANDING • BRAND IDENTITY",
+  heroPlaceholder: "Project hero image",
+  overview:
+    "A complete visual identity for Taxverse — built from positioning and research into a logo, colour, type and asset system that works across every touchpoint.",
+  problem:
+    "The brand lacked a consistent visual voice. Assets looked different on every platform, weakening recognition and trust.",
+  tools: ["Illustrator", "Photoshop", "Figma"],
+  client: "Taxverse",
+  year: "2025",
+  insights: [
+    "Competitors in the category look nearly identical — there was room to stand out.",
+    "Customers associated the brand with reliability, but nothing visual expressed it.",
+    "The internal team needed templates they could use without a designer.",
+  ],
+  steps: [
+    {
+      number: "Step 01",
+      title: "Discover",
+      desc: "Brief, research and audit of existing material and competitors.",
+    },
+    {
+      number: "Step 02",
+      title: "Define",
+      desc: "Positioning, goals and design direction agreed with the client.",
+    },
+    {
+      number: "Step 03",
+      title: "Design",
+      desc: "Concepts explored and refined through feedback rounds.",
+    },
+    {
+      number: "Step 04",
+      title: "Deliver",
+      desc: "Final files, guidelines and handoff.",
+    },
+  ],
+  outputs: [
+    { title: "Logo system", type: "Identity" },
+    { title: "Brand guidelines", type: "Document" },
+    { title: "Stationery & collateral", type: "Print" },
+    { title: "Social media kit", type: "Digital" },
+  ],
 };
 
-const WorkDetail = () => {
-  const { slug } = useParams();
-  const [project, setProject] = useState<Work | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [lightboxState, setLightboxState] = useState<{ groupIndex: number; imageIndex: number } | null>(null);
+const PROJECT_DICTIONARY: Record<string, WorkProjectData> = {
+  taxverse: DEFAULT_TAXVERSE,
+  trevio: {
+    title: "Trevio",
+    category: "PRODUCT DESIGN • UI/UX & DESIGN SYSTEM",
+    heroPlaceholder: "Trevio app screens and product hero",
+    overview:
+      "A fast, dependable booking experience and multi-platform design system for travel and hospitality management.",
+    problem:
+      "Legacy booking funnels suffered high drop-off rates on mobile with inconsistent form controls across checkout.",
+    tools: ["Figma", "FigJam", "Miro", "Tokens Studio"],
+    client: "Trevio",
+    year: "2025",
+    insights: [
+      "Fewer steps and upfront pricing transparency increased booking completion by 34%.",
+      "Mobile users prioritized rapid date selection over extraneous visual media.",
+      "Reusable design system components slashed engineering handover time in half.",
+    ],
+    steps: [
+      {
+        number: "Step 01",
+        title: "Discover",
+        desc: "User interviews, funnel audit, and heat map analytics across booking stages.",
+      },
+      {
+        number: "Step 02",
+        title: "Define",
+        desc: "Information architecture simplification and streamlined checkout user flows.",
+      },
+      {
+        number: "Step 03",
+        title: "Design",
+        desc: "High-fidelity wireframes, interactive mobile prototypes, and accessibility audits.",
+      },
+      {
+        number: "Step 04",
+        title: "Deliver",
+        desc: "Tokenized design system in Figma and verified developer handover specs.",
+      },
+    ],
+    outputs: [
+      { title: "Mobile app UI", type: "Product" },
+      { title: "Design system", type: "Figma Library" },
+      { title: "Checkout flow", type: "Prototype" },
+      { title: "Web dashboard", type: "Responsive Web" },
+    ],
+  },
+  shad: {
+    title: "Shad Creative Education",
+    category: "BRANDING • VISUAL SYSTEM",
+    heroPlaceholder: "Shad identity system showcase",
+    overview:
+      "A modern, vibrant visual system for a creative education institute inspiring the next generation of designers.",
+    problem:
+      "The institution lacked a distinctive campus and digital identity that resonated with prospective creative students.",
+    tools: ["Illustrator", "Photoshop", "InDesign", "Figma"],
+    client: "Shad Education",
+    year: "2024",
+    insights: [
+      "Dynamic geometric symbols resonated strongly with young creative applicants.",
+      "Faculty and staff required accessible modular templates for course announcements.",
+      "Unified stationery and certificate design elevated graduation prestige.",
+    ],
+    steps: [
+      {
+        number: "Step 01",
+        title: "Discover",
+        desc: "Student surveys, stakeholder discovery sessions, and educational benchmarking.",
+      },
+      {
+        number: "Step 02",
+        title: "Define",
+        desc: "Core brand values: clarity, creativity, and structured growth.",
+      },
+      {
+        number: "Step 03",
+        title: "Design",
+        desc: "Exploration of modular typography, geometric marks, and vibrant palettes.",
+      },
+      {
+        number: "Step 04",
+        title: "Deliver",
+        desc: "Brand guidelines book, print collateral, campus signage, and social kit.",
+      },
+    ],
+    outputs: [
+      { title: "Identity & mark", type: "Identity" },
+      { title: "Curriculum guides", type: "Print" },
+      { title: "Campus signage", type: "Environmental" },
+      { title: "Social media templates", type: "Digital" },
+    ],
+  },
+};
+
+export default function WorkDetail() {
+  const { slug, id } = useParams<{ slug?: string; id?: string }>();
+  const [project, setProject] = useState<WorkProjectData>(DEFAULT_TAXVERSE);
 
   useEffect(() => {
-    const fetchProject = async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from("works")
-        .select(`
-          *,
-          categories(name)
-        `)
-        .eq("slug", slug)
-        .single();
-      
-      if (data) {
-        // Normalize schema just in case old { url } data exists
-        const details = data.details || {};
-        if (details.screens) {
-          details.screens = details.screens.map((s: any) => ({
-            title: s.title || "",
-            urls: s.urls || (s.url ? [s.url] : [])
-          }));
+    const key = (slug || id || "").toLowerCase();
+
+    const fetchWorkFromDb = async () => {
+      try {
+        const { data: work } = await supabase
+          .from("works")
+          .select("*, categories(name)")
+          .or(`slug.eq.${key},id.eq.${key}`)
+          .maybeSingle();
+
+        if (work) {
+          const details = work.details || {};
+          const toolsList = Array.isArray(details.tools)
+            ? details.tools
+            : typeof details.tools === "string"
+            ? details.tools.split(",").map((s: string) => s.trim()).filter(Boolean)
+            : ["Illustrator", "Photoshop", "Figma"];
+
+          const insightsList = Array.isArray(details.insights)
+            ? details.insights.map((item: any) => typeof item === "string" ? item : item.text || "").filter(Boolean)
+            : DEFAULT_TAXVERSE.insights;
+
+          const stepsList = Array.isArray(details.steps)
+            ? details.steps.map((st: any, i: number) => ({
+                number: st.number || `Step 0${i + 1}`,
+                title: st.title || "",
+                desc: st.desc || st.description || "",
+              }))
+            : DEFAULT_TAXVERSE.steps;
+
+          const outputsList = Array.isArray(details.outputs)
+            ? details.outputs.map((out: any) => ({
+                title: out.title || "Output",
+                type: out.type || "Design",
+                image_url: out.image_url || "",
+              }))
+            : DEFAULT_TAXVERSE.outputs;
+
+          setProject({
+            title: work.title,
+            category: work.categories?.name
+              ? `${work.categories.name.toUpperCase()} • BRAND IDENTITY`
+              : "BRANDING • BRAND IDENTITY",
+            heroPlaceholder: `${work.title} showcase`,
+            heroImage: work.image_url || undefined,
+            overview: details.overview || work.description || DEFAULT_TAXVERSE.overview,
+            problem: details.problem || DEFAULT_TAXVERSE.problem,
+            tools: toolsList.length > 0 ? toolsList : DEFAULT_TAXVERSE.tools,
+            client: details.client || work.title,
+            year: details.year || "2025",
+            insights: insightsList.length > 0 ? insightsList : DEFAULT_TAXVERSE.insights,
+            steps: stepsList.length > 0 ? stepsList : DEFAULT_TAXVERSE.steps,
+            outputs: outputsList.length > 0 ? outputsList : DEFAULT_TAXVERSE.outputs,
+          });
+          return;
         }
-        setProject({ ...data, details } as any);
+      } catch (e) {
+        // Fallback below
       }
-      setLoading(false);
+
+      // Check project dictionary
+      if (PROJECT_DICTIONARY[key]) {
+        setProject(PROJECT_DICTIONARY[key]);
+        return;
+      }
+
+      // Check WORKS or CASES
+      const workItem = WORKS.find((w) => w.slug === slug || w.id === slug);
+      const caseItem = CASES.find((c) => c.id === slug);
+
+      if (workItem || caseItem) {
+        const title = workItem?.title || caseItem?.client || "Selected Work";
+        const cat = workItem?.cat ? `${workItem.cat.toUpperCase()} • ${workItem.cta?.toUpperCase() || "IDENTITY"}` : "BRANDING • BRAND IDENTITY";
+        const desc = caseItem?.overview || workItem?.ph || DEFAULT_TAXVERSE.overview;
+        const prob = caseItem?.challenge || DEFAULT_TAXVERSE.problem;
+        const client = caseItem?.client || workItem?.title || "Client";
+        const year = caseItem?.year || workItem?.year || "2025";
+
+        setProject({
+          title,
+          category: cat,
+          heroPlaceholder: `${title} showcase`,
+          overview: desc,
+          problem: prob,
+          tools: ["Illustrator", "Photoshop", "Figma"],
+          client,
+          year,
+          insights: caseItem?.outcome || DEFAULT_TAXVERSE.insights,
+          steps: DEFAULT_TAXVERSE.steps,
+          outputs: DEFAULT_TAXVERSE.outputs,
+        });
+        return;
+      }
+
+      // Default to Taxverse matching image 3
+      setProject(DEFAULT_TAXVERSE);
     };
 
-    fetchProject();
-  }, [slug]);
-
-  const openLightbox = (groupIndex: number, imageIndex: number = 0) => {
-    setLightboxState({ groupIndex, imageIndex });
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeLightbox = () => {
-    setLightboxState(null);
-    document.body.style.overflow = "auto";
-  };
-
-  const nextLightboxImage = () => {
-    if (!project?.details?.screens || !lightboxState) return;
-    const { groupIndex, imageIndex } = lightboxState;
-    const currentGroup = project.details.screens[groupIndex];
-    if (imageIndex === currentGroup.urls.length - 1) {
-      setLightboxState({ groupIndex, imageIndex: 0 });
-    } else {
-      setLightboxState({ groupIndex, imageIndex: imageIndex + 1 });
-    }
-  };
-
-  const prevLightboxImage = () => {
-    if (!project?.details?.screens || !lightboxState) return;
-    const { groupIndex, imageIndex } = lightboxState;
-    const currentGroup = project.details.screens[groupIndex];
-    if (imageIndex === 0) {
-      setLightboxState({ groupIndex, imageIndex: currentGroup.urls.length - 1 });
-    } else {
-      setLightboxState({ groupIndex, imageIndex: imageIndex - 1 });
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!project) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-heading font-bold text-foreground mb-4">Project Not Found</h1>
-          <Link to="/works" className="text-primary hover:underline">← Back to Works</Link>
-        </div>
-      </div>
-    );
-  }
-
-  const { details } = project;
-  const toolsList = details?.tools ? details.tools.split(',').map(t => t.trim()).filter(Boolean) : [];
+    fetchWorkFromDb();
+  }, [slug, id]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <SEO 
-        title={`${project.title} | Saleeldesigns`} 
-        description={project.description} 
-        image={project.image_url} 
-        url={`https://saleeldesigns.com/works/${project.slug}`} 
+    <PageContainer showCta={false}>
+      <SEO
+        title={`${project.title} — Work Explanation | Muhammed Saleel CP`}
+        description={project.overview}
+        url={`https://saleeldesigns.com/works/${slug || "taxverse"}`}
       />
-      <Navbar />
 
-      {/* Hero */}
-      <section className="pt-32 pb-16">
-        <div className="container">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <Link to="/works" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8">
-              <ArrowLeft size={16} /> Back to Works
-            </Link>
-            <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-3 block">{project.categories?.name || "Uncategorized"}</span>
-            <h1 className="font-heading text-4xl md:text-6xl font-bold text-foreground leading-tight max-w-4xl mb-6">
-              {project.title}
-            </h1>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Hero Mockup */}
-      <div className="container mb-24">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.7 }}
-          className="h-64 md:h-[40rem] rounded-3xl relative overflow-hidden shadow-2xl shadow-primary/10 border border-primary/5"
+      <article className="max-w-5xl mx-auto w-full px-6 md:px-12 pt-8 sm:pt-14 pb-28">
+        {/* Navigation link: ← BACK TO WORKS */}
+        <Link
+          to="/works"
+          className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-[var(--muted)] hover:text-[var(--ink)] transition-colors mb-6 font-semibold"
         >
-          {project.image_url ? (
-            <img src={project.image_url} alt={project.title} className="object-cover w-full h-full" />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-secondary/20 to-primary/20 opacity-30" />
-          )}
-        </motion.div>
-      </div>
+          <ArrowLeft size={14} />
+          <span>Back to works</span>
+        </Link>
 
-      <div className="container">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 mb-24">
-          
-          {/* Overview & Tools (Left Column / Main) */}
-          <div className="lg:col-span-8 space-y-12">
-            <div>
-              <h2 className="font-heading text-3xl font-bold text-foreground mb-6">Overview</h2>
-              <p className="text-muted-foreground leading-relaxed text-lg whitespace-pre-wrap">
-                {details?.overview || project.description || "No overview provided."}
-              </p>
+        {/* Category: BRANDING • BRAND IDENTITY in green */}
+        <div className="font-heading text-xs tracking-[0.14em] uppercase text-[#5cb847] font-semibold mb-3">
+          {project.category}
+        </div>
+
+        {/* Project Title */}
+        <h1 className="font-heading font-semibold text-5xl sm:text-7xl md:text-8xl tracking-tight text-[var(--ink)] mb-10">
+          {project.title}
+        </h1>
+
+        {/* Hero showcase container */}
+        {project.heroImage ? (
+          <div className="relative w-full aspect-[16/9] sm:aspect-[2.1/1] rounded-[28px] sm:rounded-[36px] border border-[var(--line)] overflow-hidden shadow-sm mb-16">
+            <img src={project.heroImage} alt={project.title} className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className="relative w-full aspect-[16/9] sm:aspect-[2.1/1] rounded-[28px] sm:rounded-[36px] border border-dashed border-[var(--line2)] bg-[var(--card)]/40 flex flex-col items-center justify-center p-8 text-center group hover:border-[#5cb847]/50 transition-colors shadow-sm mb-16 overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(92,184,71,0.06),transparent_70%)] pointer-events-none" />
+
+            <div className="w-12 h-12 rounded-2xl bg-[var(--soft)] border border-[var(--line)] flex items-center justify-center text-[var(--muted2)] mb-2 group-hover:scale-105 transition-transform">
+              <ImageIcon className="w-5 h-5 stroke-[1.5]" />
             </div>
+            <span className="text-sm font-medium text-[var(--ink)]">Project hero image</span>
+            <span className="text-xs text-[var(--muted2)] mt-0.5 underline cursor-pointer hover:text-[var(--accent)]">
+              or browse files
+            </span>
+          </div>
+        )}
 
-            {details?.problem && (
-              <div className="p-8 rounded-2xl bg-secondary/30 border border-border/50 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-                <h3 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                  <span className="text-primary">The</span> Problem
-                </h3>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                  {details.problem}
+        {/* Project Overview Section */}
+        <section className="mb-20">
+          <h2 className="font-heading font-semibold text-3xl sm:text-4xl text-[var(--ink)] tracking-tight mb-8">
+            Project{" "}
+            <span className="font-serif-italic font-medium text-[#5cb847]">
+              overview
+            </span>
+          </h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left description + The Problem callout */}
+            <div className="lg:col-span-8 flex flex-col gap-6">
+              <p className="text-base sm:text-[17px] leading-relaxed text-[var(--body)]">
+                {project.overview}
+              </p>
+
+              {/* The problem callout box */}
+              <div className="p-6 sm:p-7 rounded-[22px] bg-[#142318] border border-[#5cb847]/35 shadow-[0_10px_30px_-10px_rgba(92,184,71,0.15)]">
+                <div className="text-sm font-semibold text-[#5cb847] mb-1.5 flex items-center gap-2">
+                  <span>The problem</span>
+                </div>
+                <p className="text-sm sm:text-base leading-relaxed text-[#c7e9ce]">
+                  {project.problem}
                 </p>
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Sidebar / Meta */}
-          <div className="lg:col-span-4">
-            {toolsList.length > 0 && (
-              <div className="sticky top-32 p-6 rounded-2xl border border-border/50 bg-card/30 backdrop-blur-sm">
-                <h3 className="font-heading text-lg font-bold text-foreground mb-4">Tools Used</h3>
+            {/* Right Meta Column: Tools used + Client/Year */}
+            <div className="lg:col-span-4 flex flex-col gap-4">
+              {/* Tools used card */}
+              <div className="bg-[var(--card)] border border-[var(--line)] rounded-[22px] p-5 sm:p-6 shadow-sm">
+                <div className="text-xs font-semibold uppercase tracking-wider text-[var(--muted2)] mb-3">
+                  Tools used
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {toolsList.map((tool, idx) => (
-                    <span key={idx} className="px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                      {tool}
+                  {project.tools.map((t) => (
+                    <span
+                      key={t}
+                      className="px-3.5 py-1.5 rounded-full bg-[var(--soft)] border border-[var(--line)] text-xs font-medium text-[var(--ink)] hover:border-[#5cb847]/40 transition-colors"
+                    >
+                      {t}
                     </span>
                   ))}
                 </div>
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Research Insights */}
-        {details?.insights && details.insights.length > 0 && (
-          <div className="mb-32">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-12">Research <span className="text-primary">Insights</span></h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {details.insights.map((insight, idx) => (
-                <div key={idx} className="p-8 h-full rounded-2xl border border-border/50 bg-card hover:border-primary/50 transition-colors group flex items-center gap-6">
-                  <div className="w-12 h-12 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">
-                    {idx + 1}
+              {/* Client & Year card */}
+              <div className="bg-[var(--card)] border border-[var(--line)] rounded-[22px] p-5 sm:p-6 shadow-sm flex items-center justify-between">
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted2)]">
+                    Client
                   </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {insight.text}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Design Progress */}
-        {details?.progress && details.progress.length > 0 && (
-          <div className="mb-32">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-16">Design <span className="text-primary">Process</span></h2>
-            <div className="relative border-l-2 border-primary/20 ml-4 space-y-12">
-              {details.progress.map((step, idx) => (
-                <div key={idx} className="relative pl-8 md:pl-12">
-                  {/* Timeline Dot */}
-                  <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-primary ring-4 ring-background" />
-                  
-                  <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-foreground mb-3">{step.title}</h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {step.description}
-                      </p>
-                    </div>
+                  <div className="text-sm sm:text-base font-semibold text-[var(--ink)] mt-0.5">
+                    {project.client}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Final Screens */}
-        {details?.screens && details.screens.length > 0 && (
-          <div className="mb-32">
-            <h2 className="font-heading text-3xl font-bold text-foreground mb-12">Final <span className="text-primary">Outputs</span></h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {details.screens.map((screenGroup, idx) => {
-                if (!screenGroup.urls || screenGroup.urls.length === 0) return null;
-                const imageCount = screenGroup.urls.length;
-                
-                return (
-                  <div 
-                    key={idx} 
-                    className="group rounded-2xl overflow-hidden border border-border/50 bg-card flex flex-col"
-                  >
-                    <div className="relative overflow-hidden aspect-[4/3] bg-muted/30">
-                      {imageCount > 1 ? (
-                        <Carousel 
-                          className="w-full h-full"
-                          opts={{ loop: true }}
-                          plugins={[
-                            Autoplay({
-                              delay: 3000,
-                              stopOnInteraction: true,
-                            }),
-                          ]}
-                        >
-                          <CarouselContent className="h-full">
-                            {screenGroup.urls.map((url, imgIdx) => (
-                              <CarouselItem key={imgIdx} className="h-full">
-                                <div className="w-full h-full relative cursor-pointer" onClick={() => openLightbox(idx, imgIdx)}>
-                                  <img 
-                                    src={url} 
-                                    alt={`${screenGroup.title} - ${imgIdx + 1}`} 
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                                  />
-                                </div>
-                              </CarouselItem>
-                            ))}
-                          </CarouselContent>
-                          <CarouselPrevious className="left-4 opacity-0 group-hover:opacity-100 transition-opacity z-10" />
-                          <CarouselNext className="right-4 opacity-0 group-hover:opacity-100 transition-opacity z-10" />
-                        </Carousel>
-                      ) : (
-                        <div className="w-full h-full relative cursor-pointer" onClick={() => openLightbox(idx, 0)}>
-                          <img 
-                            src={screenGroup.urls[0]} 
-                            alt={screenGroup.title} 
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                          />
-                        </div>
-                      )}
-                      
-                      {imageCount > 1 && (
-                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm pointer-events-none z-20">
-                          <Images size={12} /> {imageCount}
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{screenGroup.title || `Screen Group ${idx + 1}`}</h3>
-                    </div>
+                <div className="text-right">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted2)]">
+                    Year
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-      </div>
-
-      {/* CTA */}
-      <Section className="bg-secondary/20">
-        <div className="text-center">
-          <h2 className="font-heading text-3xl md:text-5xl font-bold text-foreground mb-6">Ready to start your next project?</h2>
-          <p className="text-muted-foreground text-lg mb-10 max-w-2xl mx-auto">Let's collaborate and build something extraordinary together.</p>
-          <Link to="/contact" className="glow-button px-10 py-4 rounded-xl font-semibold text-primary-foreground text-lg">
-            Get in Touch
-          </Link>
-        </div>
-      </Section>
-
-      <Footer />
-
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {lightboxState !== null && details?.screens && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl"
-          >
-            {/* Close Button */}
-            <button 
-              onClick={closeLightbox}
-              className="absolute top-6 right-6 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-50"
-            >
-              <X size={24} />
-            </button>
-
-            {/* Navigation Buttons (only show if multiple images in group) */}
-            {details.screens[lightboxState.groupIndex].urls.length > 1 && (
-              <>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); prevLightboxImage(); }}
-                  className="absolute left-6 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-50"
-                >
-                  <ChevronLeft size={32} />
-                </button>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); nextLightboxImage(); }}
-                  className="absolute right-6 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-50"
-                >
-                  <ChevronRight size={32} />
-                </button>
-              </>
-            )}
-
-            {/* Main Image */}
-            <motion.div 
-              key={`${lightboxState.groupIndex}-${lightboxState.imageIndex}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="w-full h-full max-w-6xl max-h-[85vh] p-6 flex flex-col items-center justify-center relative"
-              onClick={closeLightbox}
-            >
-              <img 
-                src={details.screens[lightboxState.groupIndex].urls[lightboxState.imageIndex]} 
-                alt={`${details.screens[lightboxState.groupIndex].title} - ${lightboxState.imageIndex + 1}`} 
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" 
-                onClick={(e) => e.stopPropagation()}
-              />
-              <div className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
-                <div className="inline-block bg-black/60 backdrop-blur-md px-6 py-3 rounded-full">
-                  <h3 className="text-white font-medium text-lg shadow-black drop-shadow-md">
-                    {details.screens[lightboxState.groupIndex].title || `Group ${lightboxState.groupIndex + 1}`}
-                  </h3>
-                  {details.screens[lightboxState.groupIndex].urls.length > 1 && (
-                    <p className="text-white/60 text-sm mt-1">
-                      {lightboxState.imageIndex + 1} of {details.screens[lightboxState.groupIndex].urls.length}
-                    </p>
-                  )}
+                  <div className="text-sm sm:text-base font-semibold text-[var(--ink)] mt-0.5">
+                    {project.year}
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
+            </div>
+          </div>
+        </section>
 
-export default WorkDetail;
+        {/* Research insights Section */}
+        <section className="mb-20">
+          <h2 className="font-heading font-semibold text-3xl sm:text-4xl text-[var(--ink)] tracking-tight mb-8">
+            Research{" "}
+            <span className="font-serif-italic font-medium text-[#5cb847]">
+              insights
+            </span>
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {project.insights.map((insight, idx) => (
+              <div
+                key={idx}
+                className="bg-[var(--card)] border border-[var(--line)] rounded-[22px] p-6 shadow-sm flex items-start gap-4 hover:border-[var(--line2)] transition-colors"
+              >
+                <div className="w-7 h-7 rounded-full bg-[#5cb847] text-zinc-950 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_12px_rgba(92,184,71,0.35)]">
+                  {idx + 1}
+                </div>
+                <p className="text-sm sm:text-[14.5px] leading-relaxed text-[var(--body)]">
+                  {insight}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Design process Section */}
+        <section className="mb-20">
+          <h2 className="font-heading font-semibold text-3xl sm:text-4xl text-[var(--ink)] tracking-tight mb-8">
+            Design{" "}
+            <span className="font-serif-italic font-medium text-[#5cb847]">
+              process
+            </span>
+          </h2>
+
+          <div className="relative pl-6 sm:pl-8 border-l border-[var(--line2)] space-y-8">
+            {project.steps.map((st, i) => (
+              <div key={i} className="relative group">
+                {/* Green marker dot on vertical line */}
+                <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#142318] border-2 border-[#5cb847] flex items-center justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#5cb847]" />
+                </div>
+
+                <div className="text-xs font-semibold uppercase tracking-wider text-[#5cb847] mb-1">
+                  {st.number}
+                </div>
+                <h3 className="font-heading font-semibold text-lg sm:text-xl text-[var(--ink)] tracking-tight mb-1">
+                  {st.title}
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-[var(--muted)] max-w-2xl">
+                  {st.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Final outputs Section */}
+        <section className="mb-10">
+          <h2 className="font-heading font-semibold text-3xl sm:text-4xl text-[var(--ink)] tracking-tight mb-8">
+            Final{" "}
+            <span className="font-serif-italic font-medium text-[#5cb847]">
+              outputs
+            </span>
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {project.outputs.map((out, oi) => (
+              <div
+                key={oi}
+                className="group bg-[var(--card)] border border-[var(--line)] rounded-[22px] p-5 shadow-sm hover:border-[var(--line2)] hover:-translate-y-1 transition-all"
+              >
+                {/* Output image or placeholder */}
+                <div className="w-full aspect-[4/3] rounded-[16px] border border-dashed border-[var(--line2)] bg-[var(--soft)]/50 flex flex-col items-center justify-center p-4 text-center mb-4 group-hover:border-[#5cb847]/50 transition-colors overflow-hidden">
+                  {out.image_url ? (
+                    <img src={out.image_url} alt={out.title} className="w-full h-full object-cover rounded-[12px]" />
+                  ) : (
+                    <>
+                      <div className="w-10 h-10 rounded-xl bg-[var(--card)] border border-[var(--line)] flex items-center justify-center text-[var(--muted2)] mb-2 group-hover:scale-105 transition-transform">
+                        <ImageIcon className="w-5 h-5 stroke-[1.4]" />
+                      </div>
+                      <span className="text-xs font-medium text-[var(--ink)]">{out.title}</span>
+                      <span className="text-[10px] text-[var(--muted2)] underline mt-0.5">
+                        or browse files
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* Bottom title */}
+                <div className="flex items-center justify-between text-xs sm:text-sm pt-1">
+                  <span className="font-semibold text-[var(--ink)]">{out.title}</span>
+                  {out.type ? <span className="text-xs text-[var(--muted2)] font-medium">{out.type}</span> : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </article>
+    </PageContainer>
+  );
+}

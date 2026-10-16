@@ -1,30 +1,29 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import PageContainer from "@/components/PageContainer";
 import HeroSection from "@/components/home/HeroSection";
 import ClientsSection from "@/components/home/ClientsSection";
-import SelectedWorks from "@/components/home/SelectedWorks";
 import ServicesOverview from "@/components/home/ServicesOverview";
+import SelectedWorks from "@/components/home/SelectedWorks";
 import ProcessSection from "@/components/home/ProcessSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import PricingPreview from "@/components/home/PricingPreview";
-import CTABanner from "@/components/home/CTABanner";
 import SEO from "@/components/SEO";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <SEO title="Saleeldesigns | Creative & UI/UX Designer" url="https://saleeldesigns.com/" />
-      <Navbar />
+    <PageContainer showCta={true}>
+      <SEO
+        title="Saleel Designs — Designing systems, not just screens"
+        description="Creative Designer & UI/UX Designer with 5+ years experience building structured digital experiences."
+        url="https://saleeldesigns.com/"
+      />
       <HeroSection />
       <ClientsSection />
-      <SelectedWorks />
       <ServicesOverview />
+      <SelectedWorks />
       <ProcessSection />
       <TestimonialsSection />
       <PricingPreview />
-      <CTABanner />
-      <Footer />
-    </div>
+    </PageContainer>
   );
 };
 

@@ -23,21 +23,47 @@ export default function CategoriesList() {
     fetchCategories();
   }, []);
 
+  const defaultCategories: Category[] = [
+    { id: "1", name: "Branding", slug: "branding", type: "work", created_at: new Date().toISOString() },
+    { id: "2", name: "UI/UX Design", slug: "ui-ux-design", type: "work", created_at: new Date().toISOString() },
+    { id: "3", name: "Design Systems", slug: "design-systems", type: "work", created_at: new Date().toISOString() },
+    { id: "4", name: "Web Design", slug: "web-design", type: "work", created_at: new Date().toISOString() },
+    { id: "5", name: "Mobile App", slug: "mobile-app", type: "work", created_at: new Date().toISOString() },
+    { id: "case-1", name: "FinTech & Banking", slug: "fintech-banking", type: "case", created_at: new Date().toISOString() },
+    { id: "case-2", name: "SaaS Platforms", slug: "saas-platforms", type: "case", created_at: new Date().toISOString() },
+    { id: "case-3", name: "Strategic Branding", slug: "strategic-branding", type: "case", created_at: new Date().toISOString() },
+    { id: "case-4", name: "Design Systems", slug: "case-design-systems", type: "case", created_at: new Date().toISOString() },
+    { id: "6", name: "Design Thinking", slug: "design-thinking", type: "blog", created_at: new Date().toISOString() },
+    { id: "7", name: "System Architecture", slug: "system-architecture", type: "blog", created_at: new Date().toISOString() },
+  ];
+
   const fetchCategories = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("categories")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error fetching categories",
-        description: error.message,
-      });
-    } else {
-      setCategories(data || []);
+      if (!error && data && data.length > 0) {
+        setCategories(data);
+      } else {
+        const stored = localStorage.getItem("admin_categories");
+        if (stored) {
+          setCategories(JSON.parse(stored));
+        } else {
+          setCategories(defaultCategories);
+          localStorage.setItem("admin_categories", JSON.stringify(defaultCategories));
+        }
+      }
+    } catch {
+      const stored = localStorage.getItem("admin_categories");
+      if (stored) {
+        setCategories(JSON.parse(stored));
+      } else {
+        setCategories(defaultCategories);
+        localStorage.setItem("admin_categories", JSON.stringify(defaultCategories));
+      }
     }
     setLoading(false);
   };
@@ -45,19 +71,21 @@ export default function CategoriesList() {
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this category?")) return;
 
-    const { error } = await supabase.from("categories").delete().eq("id", id);
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error deleting category",
-        description: error.message,
-      });
-    } else {
-      toast({
-        title: "Category deleted",
-      });
-      fetchCategories();
+    try {
+      await supabase.from("categories").delete().eq("id", id);
+    } catch (err) {
+      console.log(err);
     }
+
+    const stored = localStorage.getItem("admin_categories");
+    const list = stored ? JSON.parse(stored) : defaultCategories;
+    const updated = list.filter((c: Category) => c.id !== id);
+    localStorage.setItem("admin_categories", JSON.stringify(updated));
+    setCategories(updated);
+
+    toast({
+      title: "Category deleted",
+    });
   };
 
   const CategoryTable = ({ title, data }: { title: string, data: Category[] }) => (
@@ -90,15 +118,15 @@ export default function CategoriesList() {
               </TableRow>
             ) : (
               data.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell className="font-medium">{category.name}</TableCell>
-                  <TableCell>{category.slug}</TableCell>
-                  <TableCell>
+                <TableRow key={category.id} className="group hover:bg-[#5cb847]/5 transition-colors">
+                  <TableCell className="font-medium group-hover:text-[#5cb847] transition-colors">{category.name}</TableCell>
+                  <TableCell className="text-muted-foreground group-hover:text-foreground transition-colors">{category.slug}</TableCell>
+                  <TableCell className="text-muted-foreground">
                     {new Date(category.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="icon" asChild>
+                      <Button variant="ghost" size="icon" className="hover:text-[#5cb847] hover:bg-[#5cb847]/10 transition-colors" asChild>
                         <Link to={`/admin/categories/${category.id}`}>
                           <Pencil className="h-4 w-4" />
                           <span className="sr-only">Edit</span>
@@ -136,8 +164,9 @@ export default function CategoriesList() {
         </Button>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-8 lg:grid-cols-3">
         <CategoryTable title="Work Categories" data={categories.filter(c => c.type === 'work')} />
+        <CategoryTable title="Case Study Categories" data={categories.filter(c => c.type === 'case')} />
         <CategoryTable title="Blog Categories" data={categories.filter(c => c.type === 'blog')} />
       </div>
     </div>

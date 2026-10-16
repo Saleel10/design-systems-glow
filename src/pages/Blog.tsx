@@ -1,146 +1,285 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Clock, ArrowRight, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Section from "@/components/Section";
-import { supabase } from "@/lib/supabase";
-import { format } from "date-fns";
+import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-
-type BlogPost = {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  image_url: string;
-  created_at: string;
-  categories: { name: string } | null;
-};
+import { POSTS } from "@/data/portfolioData";
 
 const Blog = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allPosts, setAllPosts] = useState(POSTS);
 
   useEffect(() => {
-    fetchBlogs();
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("admin_blogs");
+      if (stored) {
+        try {
+          const list = JSON.parse(stored);
+          if (Array.isArray(list) && list.length > 0) {
+            const formatted = list
+              .filter((b: any) => b.published !== false)
+              .map((b: any, i: number) => ({
+                slug: b.slug,
+                title: b.title,
+                cat: b.categories?.name || b.category || "Branding",
+                read: b.read_time || "5 min read",
+                ex:
+                  b.subtitle ||
+                  b.excerpt ||
+                  (typeof b.content === "string"
+                    ? b.content.slice(0, 140)
+                    : b.content?.intro || ""),
+                img: `blog-${(i % 4) + 1}`,
+                image_url: b.image_url,
+              }));
+            if (formatted.length > 0) {
+              setAllPosts(formatted);
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
   }, []);
 
-  const fetchBlogs = async () => {
-    // Fetch categories
-    const { data: catsData } = await supabase
-      .from("categories")
-      .select("name")
-      .eq("type", "blog");
-
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("blogs")
-      .select(`
-        *,
-        categories(name)
-      `)
-      .eq("published", true)
-      .order("created_at", { ascending: false });
-
-    if (data) {
-      setBlogPosts(data);
-    }
-    setLoading(false);
-  };
-
-  // Rough estimation of read time
-  const getReadTime = (content: string) => {
-    if (!content) return "1 min read";
-    const textContent = content.replace(/<[^>]*>?/gm, '');
-    const words = textContent.trim().split(/\s+/).length;
-    const time = Math.ceil(words / 200); // 200 words per min
-    return `${time} min read`;
-  };
-
-  const getExcerpt = (content: string) => {
-    if (!content) return "";
-    let textContent = content.replace(/<[^>]*>?/gm, '');
-    textContent = textContent.replace(/!?\[([^\]]+)\]\([^)]+\)/g, '$1'); // links/images
-    textContent = textContent.replace(/^[#]+\s+/gm, ''); // headings
-    textContent = textContent.replace(/([*_~`]+)(.*?)\1/g, '$2'); // bold/italic/code
-    textContent = textContent.replace(/[*_~`]/g, ''); // leftover markers
-    textContent = textContent.replace(/^[>*-]\s+/gm, ''); // quotes/lists
-    textContent = textContent.replace(/\s+/g, ' ').trim(); // clean whitespace
-    return textContent.length > 120 ? textContent.substring(0, 120) + "..." : textContent;
-  };
+  const featured = allPosts[0] || POSTS[0];
+  const restPosts = allPosts.slice(1);
 
   return (
-    <div className="min-h-screen bg-background">
-      <SEO title="Blog | Saleeldesigns" description="Read my latest articles on design, processes, and more." url="https://saleeldesigns.com/blog" />
-      <Navbar />
+    <PageContainer>
+      <SEO
+        title="Notes on Design | Saleel Designs"
+        description="Thoughts on branding, systems, and building things people connect with. Articles by Muhammed Saleel CP."
+        url="https://saleeldesigns.com/blog"
+      />
 
-      <section className="pt-32 pb-16">
-        <div className="container">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-3 block">Blog</span>
-            <h1 className="font-heading text-4xl md:text-6xl font-bold text-foreground leading-tight max-w-3xl">
-              Thoughts & <span className="gradient-text">Insights</span>
-            </h1>
-          </motion.div>
+      <main style={{ padding: "40px clamp(20px,5vw,64px) 96px" }} className="max-w-7xl mx-auto w-full">
+        <div className="font-heading text-xs tracking-[0.14em] uppercase text-[#5cb847] hover:text-[#76d65e] transition-colors font-semibold">
+          Blog
         </div>
-      </section>
 
-      <Section>
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogPosts.map((post, i) => (
-              <motion.article
-                key={post.slug}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08, duration: 0.5 }}
+        <h1
+          style={{
+            margin: "14px 0 0",
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 600,
+            fontSize: "clamp(44px,6.4vw,90px)",
+            lineHeight: 1,
+            letterSpacing: "-0.04em",
+          }}
+        >
+          Notes on{" "}
+          <span className="font-serif-italic brand-gradient-text">
+            design.
+          </span>
+        </h1>
+
+        <p
+          style={{
+            margin: "22px 0 0",
+            maxWidth: "520px",
+            fontSize: "17px",
+            lineHeight: 1.55,
+            color: "var(--muted)",
+          }}
+        >
+          Thoughts on branding, systems, and building things people connect with.
+        </p>
+
+        {/* Featured Post */}
+        {featured && (
+          <Link
+            to={`/blog/${featured.slug}`}
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
+              gap: "28px",
+              marginTop: "56px",
+              alignItems: "center",
+              textDecoration: "none",
+              color: "inherit",
+            }}
+            className="group"
+          >
+            <div
+              style={{
+                position: "relative",
+                aspectRatio: "16/10",
+                borderRadius: "24px",
+                overflow: "hidden",
+                background: "var(--soft)",
+                border: "1px solid var(--line)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "30px",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "radial-gradient(ellipse at 50% 50%, rgba(19, 128, 111, 0.12) 0%, transparent 70%)",
+                }}
+              />
+              <div
+                style={{
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: "13px",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--accent)",
+                  background: "var(--card)",
+                  padding: "8px 16px",
+                  borderRadius: "999px",
+                  border: "1px solid var(--line)",
+                }}
               >
-                <Link
-                  to={`/blog/${post.slug}`}
-                  className="glass-card glass-card-hover rounded-2xl overflow-hidden group cursor-pointer transition-all block h-full flex flex-col"
-                >
-                  {post.image_url ? (
-                    <div className="h-48 relative">
-                      <img src={post.image_url} alt={post.title} className="object-cover w-full h-full opacity-90 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  ) : (
-                    <div className="h-48 bg-gradient-to-br from-secondary/20 to-primary/20" />
-                  )}
-                  <div className="p-6 flex-1 flex flex-col">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-xs text-primary font-medium">{post.categories?.name || "Uncategorized"}</span>
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock size={12} /> {getReadTime(post.content)}
-                      </span>
-                    </div>
-                    <h3 className="font-heading text-lg font-semibold text-foreground leading-snug mb-2">{post.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed flex-1">{getExcerpt(post.content)}</p>
-                    <span className="mt-4 text-sm text-primary font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Read More <ArrowRight size={14} />
-                    </span>
-                  </div>
-                </Link>
-              </motion.article>
-            ))}
-          </div>
-        )}
-        
-        {!loading && blogPosts.length === 0 && (
-          <div className="text-center py-20 text-muted-foreground">
-            No published blog posts yet.
-          </div>
-        )}
-      </Section>
+                Featured Article
+              </div>
+            </div>
 
-      <Footer />
-    </div>
+            <div>
+              <div
+                style={{
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: "12px",
+                  color: "var(--muted2)",
+                }}
+              >
+                Featured · {featured.cat} · {featured.read}
+              </div>
+
+              <div
+                style={{
+                  fontWeight: 600,
+                  fontSize: "clamp(32px, 3.4vw, 48px)",
+                  lineHeight: 1.05,
+                  marginTop: "14px",
+                  letterSpacing: "-0.01em",
+                  color: "var(--ink)",
+                }}
+                className="group-hover:text-primary transition-colors"
+              >
+                {featured.title}
+              </div>
+
+              <div
+                style={{
+                  fontSize: "16px",
+                  lineHeight: 1.6,
+                  color: "var(--muted)",
+                  marginTop: "14px",
+                }}
+              >
+                {featured.ex}
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--line)] bg-[var(--card)] text-sm font-medium text-[var(--ink)] shadow-sm group-hover:border-[#5cb847] group-hover:text-[#5cb847] group-hover:bg-[#5cb847]/10 group-hover:shadow-[0_0_16px_rgba(92,184,71,0.25)] group-hover:scale-[1.02] transition-all duration-200 w-fit mt-5">
+                <span>Read article</span>
+                <span className="text-base leading-none">→</span>
+              </div>
+            </div>
+          </Link>
+        )}
+
+        {/* Post Grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
+            gap: "28px 20px",
+            marginTop: "64px",
+            paddingTop: "40px",
+            borderTop: "1px solid var(--line)",
+          }}
+        >
+          {restPosts.map((p) => (
+            <Link
+              key={p.slug}
+              to={`/blog/${p.slug}`}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+              className="group"
+            >
+              <div
+                style={{
+                  position: "relative",
+                  aspectRatio: "3/2",
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                  background: "var(--soft)",
+                  border: "1px solid var(--line)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "24px",
+                }}
+                className="transition-transform duration-300 group-hover:scale-[1.01]"
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "radial-gradient(circle at center, rgba(19, 128, 111, 0.08) 0%, transparent 70%)",
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontSize: "11px",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: "var(--muted2)",
+                    background: "var(--card)",
+                    padding: "6px 12px",
+                    borderRadius: "999px",
+                  }}
+                >
+                  {p.cat}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: "12px",
+                  color: "var(--muted2)",
+                }}
+              >
+                <span className="text-[#5cb847] font-medium group-hover:text-[#76d65e] transition-colors">{p.cat}</span> · {p.read}
+              </div>
+
+              <div
+                style={{
+                  fontSize: "20px",
+                  fontWeight: 500,
+                  lineHeight: 1.25,
+                  letterSpacing: "-0.01em",
+                  color: "var(--ink)",
+                }}
+                className="group-hover:text-[#5cb847] transition-colors"
+              >
+                {p.title}
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--line)] bg-[var(--card)] text-xs font-medium text-[var(--ink)] shadow-sm group-hover:border-[#5cb847] group-hover:text-[#5cb847] group-hover:bg-[#5cb847]/10 group-hover:shadow-[0_0_14px_rgba(92,184,71,0.25)] group-hover:scale-[1.02] transition-all duration-200 w-fit mt-2">
+                <span>Read article</span>
+                <span className="text-sm leading-none">→</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </main>
+    </PageContainer>
   );
 };
 

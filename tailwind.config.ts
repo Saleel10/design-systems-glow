@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         heading: ["Space Grotesk", "sans-serif"],
         body: ["Inter", "sans-serif"],
+        serif: ["'Playfair Display'", "Georgia", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -40,8 +41,8 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "hsl(var(--accent-hsl, 107 45% 50%))",
+          foreground: "hsl(var(--accent-foreground, 0 0% 100%))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",

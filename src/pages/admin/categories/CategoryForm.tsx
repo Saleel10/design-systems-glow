@@ -33,7 +33,7 @@ const formSchema = z.object({
   }).regex(/^[a-z0-9-]+$/, {
     message: "Slug can only contain lowercase letters, numbers, and hyphens.",
   }),
-  type: z.enum(["work", "blog"]),
+  type: z.enum(["work", "case", "blog"]),
 });
 
 export default function CategoryForm() {
@@ -59,24 +59,38 @@ export default function CategoryForm() {
   }, [id]);
 
   const fetchCategory = async () => {
-    const { data, error } = await supabase
-      .from("categories")
-      .select("*")
-      .eq("id", id)
-      .single();
+    let catData: any = null;
+    try {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (!error && data) catData = data;
+    } catch {
+      // Ignore
+    }
 
-    if (error) {
+    if (!catData) {
+      const stored = localStorage.getItem("admin_categories");
+      if (stored) {
+        const list = JSON.parse(stored);
+        catData = list.find((c: any) => c.id === id || c.slug === id);
+      }
+    }
+
+    if (!catData) {
       toast({
         variant: "destructive",
-        title: "Error fetching category",
-        description: error.message,
+        title: "Category not found",
+        description: "Could not find the requested category.",
       });
       navigate("/admin/categories");
-    } else if (data) {
+    } else {
       form.reset({
-        name: data.name,
-        slug: data.slug,
-        type: data.type || "work",
+        name: catData.name,
+        slug: catData.slug,
+        type: catData.type || "work",
       });
     }
     setLoading(false);
@@ -96,14 +110,28 @@ export default function CategoryForm() {
         if (error) throw error;
         toast({ title: "Category created successfully" });
       }
-      navigate("/admin/categories");
-    } catch (error: any) {
+    } catch {
+      // Local storage fallback
+      const stored = localStorage.getItem("admin_categories");
+      let list = stored ? JSON.parse(stored) : [];
+      if (isEditing) {
+        list = list.map((c: any) =>
+          c.id === id || c.slug === id ? { ...c, ...values } : c
+        );
+      } else {
+        list.push({
+          ...values,
+          id: values.slug,
+          created_at: new Date().toISOString(),
+        });
+      }
+      localStorage.setItem("admin_categories", JSON.stringify(list));
       toast({
-        variant: "destructive",
-        title: "Error saving category",
-        description: error.message,
+        title: isEditing ? "Category updated (Local Storage)" : "Category created (Local Storage)",
       });
     }
+
+    navigate("/admin/categories");
   };
 
   if (loading) {
@@ -173,6 +201,7 @@ export default function CategoryForm() {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="work">Work</SelectItem>
+                      <SelectItem value="case">Case Study</SelectItem>
                       <SelectItem value="blog">Blog</SelectItem>
                     </SelectContent>
                   </Select>

@@ -1,9 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
+import { getDefaultWorks } from "./WorksList";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -31,7 +32,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, ArrowLeft, Trash2, Plus, X, GripVertical } from "lucide-react";
+import { Loader2, ArrowLeft, Trash2, Plus, GripVertical, Image as ImageIcon, Upload } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
@@ -39,16 +40,33 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 const formSchema = z.object({
   title: z.string().min(2, { message: "Title must be at least 2 characters." }),
   slug: z.string().min(2),
-  description: z.string().min(10, { message: "Short description excerpt is required." }),
+  description: z.string().optional().default(""),
   category_id: z.string().min(1, { message: "Please select a category." }),
-  image_url: z.string().optional(),
+  image_url: z.string().optional().default(""),
   details: z.object({
-    overview: z.string().optional(),
-    tools: z.string().optional(),
-    problem: z.string().optional(),
+    // Section 1: Project Overview
+    overview: z.string().optional().default(""),
+    problem: z.string().optional().default(""),
+    client: z.string().optional().default(""),
+    year: z.string().optional().default(""),
+    tools: z.string().optional().default(""),
+
+    // Section 2: Research Insights
     insights: z.array(z.object({ text: z.string() })).default([]),
-    progress: z.array(z.object({ title: z.string(), description: z.string() })).default([]),
-    screens: z.array(z.object({ title: z.string(), urls: z.array(z.string()) })).default([]),
+
+    // Section 3: Design Process
+    steps: z.array(z.object({
+      number: z.string().default(""),
+      title: z.string().default(""),
+      desc: z.string().default(""),
+    })).default([]),
+
+    // Section 4: Final Outputs
+    outputs: z.array(z.object({
+      title: z.string().default(""),
+      type: z.string().default(""),
+      image_url: z.string().optional().default(""),
+    })).default([]),
   }).default({}),
 });
 
@@ -67,7 +85,7 @@ export default function WorkForm() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [screenUploadProgress, setScreenUploadProgress] = useState<Record<number, number>>({});
+  const [outputUploadProgress, setOutputUploadProgress] = useState<Record<number, number>>({});
   
   const [newCatName, setNewCatName] = useState("");
   const [isCatDialogOpen, setIsCatDialogOpen] = useState(false);
@@ -82,12 +100,28 @@ export default function WorkForm() {
       image_url: "",
       details: {
         overview: "",
-        tools: "",
         problem: "",
-        insights: [],
-        progress: [],
-        screens: [],
-      }
+        client: "",
+        year: new Date().getFullYear().toString(),
+        tools: "Illustrator, Photoshop, Figma",
+        insights: [
+          { text: "Competitors in the category look nearly identical — there was room to stand out." },
+          { text: "Customers associated the brand with reliability, but nothing visual expressed it." },
+          { text: "The internal team needed templates they could use without a designer." },
+        ],
+        steps: [
+          { number: "Step 01", title: "Discover", desc: "Brief, research and audit of existing material and competitors." },
+          { number: "Step 02", title: "Define", desc: "Positioning, goals and design direction agreed with the client." },
+          { number: "Step 03", title: "Design", desc: "Concepts explored and refined through feedback rounds." },
+          { number: "Step 04", title: "Deliver", desc: "Final files, guidelines and handoff." },
+        ],
+        outputs: [
+          { title: "Logo system", type: "Identity", image_url: "" },
+          { title: "Brand guidelines", type: "Document", image_url: "" },
+          { title: "Stationery & collateral", type: "Print", image_url: "" },
+          { title: "Social media kit", type: "Digital", image_url: "" },
+        ],
+      },
     },
   });
 
@@ -96,9 +130,14 @@ export default function WorkForm() {
     name: "details.insights",
   });
 
-  const { fields: progressFields, append: appendProgress, remove: removeProgress, move: moveProgress } = useFieldArray({
+  const { fields: stepFields, append: appendStep, remove: removeStep, move: moveStep } = useFieldArray({
     control: form.control,
-    name: "details.progress",
+    name: "details.steps",
+  });
+
+  const { fields: outputFields, append: appendOutput, remove: removeOutput } = useFieldArray({
+    control: form.control,
+    name: "details.outputs",
   });
 
   const onDragEndInsights = (result: DropResult) => {
@@ -106,66 +145,128 @@ export default function WorkForm() {
     moveInsight(result.source.index, result.destination.index);
   };
 
-  const onDragEndProgress = (result: DropResult) => {
+  const onDragEndSteps = (result: DropResult) => {
     if (!result.destination) return;
-    moveProgress(result.source.index, result.destination.index);
+    moveStep(result.source.index, result.destination.index);
   };
-
-  const { fields: screenFields, append: appendScreen, remove: removeScreen } = useFieldArray({
-    control: form.control,
-    name: "details.screens",
-  });
 
   useEffect(() => {
     fetchData();
   }, [id]);
 
+  const defaultCategories = [
+    { id: "branding", name: "Branding" },
+    { id: "ui-ux-design", name: "UI/UX Design" },
+    { id: "design-systems", name: "Design Systems" },
+    { id: "web-design", name: "Web Design" },
+    { id: "mobile-app", name: "Mobile App" },
+  ];
+
   const fetchData = async () => {
     setLoading(true);
-    const { data: cats, error: catsError } = await supabase
-      .from("categories")
-      .select("id, name")
-      .eq("type", "work")
-      .order("name");
 
-    if (cats) setCategories(cats);
-    if (catsError) {
-      toast({ variant: "destructive", title: "Error fetching categories", description: catsError.message });
+    try {
+      const { data: cats } = await supabase
+        .from("categories")
+        .select("id, name")
+        .eq("type", "work")
+        .order("name");
+
+      if (cats && cats.length > 0) {
+        setCategories(cats);
+      } else {
+        setCategories(defaultCategories);
+      }
+    } catch {
+      setCategories(defaultCategories);
     }
 
     if (isEditing) {
-      const { data: work, error: workError } = await supabase
-        .from("works")
-        .select("*")
-        .eq("id", id)
-        .single();
+      let work: any = null;
 
-      if (workError) {
-        toast({ variant: "destructive", title: "Error fetching work", description: workError.message });
+      try {
+        const { data, error } = await supabase
+          .from("works")
+          .select("*")
+          .eq("id", id)
+          .single();
+        if (!error && data) work = data;
+      } catch {
+        // Fallback to local
+      }
+
+      if (!work) {
+        const stored = localStorage.getItem("admin_works");
+        const list = stored ? JSON.parse(stored) : getDefaultWorks();
+        work = list.find((w: any) => w.id === id || w.slug === id);
+      }
+
+      if (!work) {
+        toast({ variant: "destructive", title: "Work not found", description: "Could not locate work item." });
         navigate("/admin/works");
-      } else if (work) {
+        return;
+      }
+
+      if (work) {
         const details = work.details || {};
-        
-        // Normalize legacy { url: string } to { urls: string[] } just in case
-        const normalizedScreens = (details.screens || []).map((s: any) => ({
-          title: s.title || "",
-          urls: s.urls || (s.url ? [s.url] : [])
-        }));
-        
+
+        // Normalize insights
+        const normalizedInsights = Array.isArray(details.insights)
+          ? details.insights.map((ins: any) => typeof ins === "string" ? { text: ins } : ins)
+          : [];
+
+        // Normalize steps
+        const normalizedSteps = Array.isArray(details.steps)
+          ? details.steps
+          : Array.isArray(details.progress)
+          ? details.progress.map((p: any, i: number) => ({
+              number: `Step 0${i + 1}`,
+              title: p.title || "",
+              desc: p.description || p.desc || "",
+            }))
+          : [];
+
+        // Normalize outputs
+        const normalizedOutputs = Array.isArray(details.outputs)
+          ? details.outputs
+          : Array.isArray(details.screens)
+          ? details.screens.map((s: any) => ({
+              title: s.title || "Output",
+              type: "Design",
+              image_url: s.urls?.[0] || s.url || "",
+            }))
+          : [];
+
         form.reset({
-          title: work.title,
-          slug: work.slug,
+          title: work.title || "",
+          slug: work.slug || "",
           description: work.description || "",
           category_id: work.category_id || "",
           image_url: work.image_url || "",
           details: {
             overview: details.overview || "",
-            tools: details.tools || "",
             problem: details.problem || "",
-            insights: details.insights || [],
-            progress: details.progress || [],
-            screens: normalizedScreens,
-          }
+            client: details.client || work.title || "",
+            year: details.year || "2025",
+            tools: Array.isArray(details.tools) ? details.tools.join(", ") : details.tools || "Illustrator, Photoshop, Figma",
+            insights: normalizedInsights.length > 0 ? normalizedInsights : [
+              { text: "Competitors in the category look nearly identical — there was room to stand out." },
+              { text: "Customers associated the brand with reliability, but nothing visual expressed it." },
+              { text: "The internal team needed templates they could use without a designer." },
+            ],
+            steps: normalizedSteps.length > 0 ? normalizedSteps : [
+              { number: "Step 01", title: "Discover", desc: "Brief, research and audit of existing material and competitors." },
+              { number: "Step 02", title: "Define", desc: "Positioning, goals and design direction agreed with the client." },
+              { number: "Step 03", title: "Design", desc: "Concepts explored and refined through feedback rounds." },
+              { number: "Step 04", title: "Deliver", desc: "Final files, guidelines and handoff." },
+            ],
+            outputs: normalizedOutputs.length > 0 ? normalizedOutputs : [
+              { title: "Logo system", type: "Identity", image_url: "" },
+              { title: "Brand guidelines", type: "Document", image_url: "" },
+              { title: "Stationery & collateral", type: "Print", image_url: "" },
+              { title: "Social media kit", type: "Digital", image_url: "" },
+            ],
+          },
         });
       }
     }
@@ -178,114 +279,95 @@ export default function WorkForm() {
     
     const { data, error } = await supabase.from("categories").insert([
       { name: newCatName, slug, type: "work" }
-    ]).select().single();
+    ]).select();
 
     if (error) {
       toast({ variant: "destructive", title: "Error creating category", description: error.message });
     } else if (data) {
-      setCategories([...categories, data]);
-      form.setValue("category_id", data.id);
-      setIsCatDialogOpen(false);
+      setCategories([...categories, data[0]]);
+      form.setValue("category_id", data[0].id);
       setNewCatName("");
-      toast({ title: "Category created successfully" });
+      setIsCatDialogOpen(false);
+      toast({ title: "Category created" });
     }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `works/${fileName}`;
-
-    setUploading(true);
-    setUploadProgress(10);
-    
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => (prev >= 90 ? 90 : prev + 10));
-    }, 200);
-
-    const { error: uploadError } = await supabase.storage
-      .from('images')
-      .upload(filePath, file);
-
-    clearInterval(interval);
-
-    if (uploadError) {
-      setUploadProgress(0);
-      toast({ variant: "destructive", title: "Upload failed", description: uploadError.message });
-    } else {
-      setUploadProgress(100);
-      const { data } = supabase.storage.from('images').getPublicUrl(filePath);
-      form.setValue("image_url", data.publicUrl);
-      toast({ title: "Image uploaded successfully" });
-      setTimeout(() => setUploadProgress(0), 1000);
-    }
-    setUploading(false);
-  };
-
-  const handleScreenImagesUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const files = Array.from(e.target.files);
-
-    setScreenUploadProgress(prev => ({ ...prev, [index]: 10 }));
-    
-    const uploadedUrls: string[] = [];
-    let hasError = false;
-
-    const interval = setInterval(() => {
-      setScreenUploadProgress(prev => ({ ...prev, [index]: Math.min((prev[index] || 10) + 5, 90) }));
-    }, 200);
+    const file = e.target.files?.[0];
+    if (!file) return;
 
     try {
-      const uploadPromises = files.map(async (file) => {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `works/screens/${fileName}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('images')
-          .upload(filePath, file);
+      setUploading(true);
+      setUploadProgress(10);
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => (prev >= 90 ? prev : prev + 15));
+      }, 100);
 
-        if (uploadError) throw uploadError;
-        
-        const { data } = supabase.storage.from('images').getPublicUrl(filePath);
-        return data.publicUrl;
-      });
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      const filePath = `works/${fileName}`;
 
-      const urls = await Promise.all(uploadPromises);
-      uploadedUrls.push(...urls);
+      const { error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(filePath, file);
 
-      if (uploadedUrls.length > 0) {
-        const currentUrls = form.getValues(`details.screens.${index}.urls`) || [];
-        form.setValue(`details.screens.${index}.urls`, [...currentUrls, ...uploadedUrls]);
-        toast({ title: "Images uploaded successfully" });
-      }
+      clearInterval(interval);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('images').getPublicUrl(filePath);
+      form.setValue("image_url", data.publicUrl);
+      setUploadProgress(100);
+      toast({ title: "Image uploaded successfully" });
     } catch (err: any) {
       toast({ variant: "destructive", title: "Upload failed", description: err.message });
     } finally {
-      clearInterval(interval);
-      setScreenUploadProgress(prev => ({ ...prev, [index]: 100 }));
-      setTimeout(() => {
-        setScreenUploadProgress(prev => {
-          const newState = { ...prev };
-          delete newState[index];
-          return newState;
-        });
-      }, 1000);
+      setUploading(false);
+      setTimeout(() => setUploadProgress(0), 1000);
       e.target.value = '';
     }
   };
 
-  const handleRemoveImage = async () => {
-    form.setValue("image_url", "");
-    toast({ title: "Image removed" });
-  };
+  const handleOutputImageUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const handleRemoveScreenImage = (screenIndex: number, urlIndex: number) => {
-    const currentUrls = form.getValues(`details.screens.${screenIndex}.urls`) || [];
-    const newUrls = currentUrls.filter((_, idx) => idx !== urlIndex);
-    form.setValue(`details.screens.${screenIndex}.urls`, newUrls);
+    try {
+      setOutputUploadProgress(prev => ({ ...prev, [index]: 20 }));
+      const interval = setInterval(() => {
+        setOutputUploadProgress(prev => ({
+          ...prev,
+          [index]: Math.min((prev[index] || 20) + 20, 90)
+        }));
+      }, 100);
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `output_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      const filePath = `outputs/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(filePath, file);
+
+      clearInterval(interval);
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('images').getPublicUrl(filePath);
+      form.setValue(`details.outputs.${index}.image_url`, data.publicUrl);
+      setOutputUploadProgress(prev => ({ ...prev, [index]: 100 }));
+      toast({ title: "Output image uploaded" });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Upload failed", description: err.message });
+    } finally {
+      setTimeout(() => {
+        setOutputUploadProgress(prev => {
+          const updated = { ...prev };
+          delete updated[index];
+          return updated;
+        });
+      }, 1000);
+      e.target.value = '';
+    }
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -302,14 +384,35 @@ export default function WorkForm() {
         if (error) throw error;
         toast({ title: "Work created successfully" });
       }
-      navigate("/admin/works");
-    } catch (error: any) {
+    } catch {
+      // Local storage fallback
+      const stored = localStorage.getItem("admin_works");
+      let list = stored ? JSON.parse(stored) : getDefaultWorks();
+      const catObj = categories.find((c) => c.id === values.category_id);
+
+      if (isEditing) {
+        list = list.map((w: any) =>
+          w.id === id || w.slug === id
+            ? { ...w, ...values, id: w.id || id, categories: { name: catObj?.name || values.category_id } }
+            : w
+        );
+      } else {
+        list.unshift({
+          ...values,
+          id: values.slug,
+          created_at: new Date().toISOString(),
+          categories: { name: catObj?.name || values.category_id },
+        });
+      }
+
+      localStorage.setItem("admin_works", JSON.stringify(list));
       toast({
-        variant: "destructive",
-        title: "Error saving work",
-        description: error.message,
+        title: isEditing ? "Work updated (Local Storage)" : "Work created (Local Storage)",
+        description: "Saved locally in your browser storage.",
       });
     }
+
+    navigate("/admin/works");
   };
 
   if (loading) {
@@ -328,26 +431,37 @@ export default function WorkForm() {
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </Button>
-        <h1 className="text-3xl font-bold tracking-tight">
-          {isEditing ? "Edit Work" : "Create Work"}
-        </h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {isEditing ? "Edit Work" : "Create Work"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Configure project overview, research insights, design process, and final outputs.
+          </p>
+        </div>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {/* Basic Details */}
+          {/* Section 1: Basic Settings & Cover */}
           <div className="rounded-xl border bg-card p-6 space-y-6">
-            <h2 className="text-xl font-semibold mb-4">Basic Settings</h2>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-primary/10 text-primary uppercase tracking-wider">
+                Section 1
+              </span>
+              <h2 className="text-xl font-semibold">Basic Info & Hero Cover</h2>
+            </div>
+
             <div className="grid gap-6 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>Project Title</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="e.g. Awesome Project"
+                        placeholder="e.g. Taxverse"
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
@@ -360,6 +474,10 @@ export default function WorkForm() {
                                 .replace(/(^-|-$)+/g, "")
                             );
                           }
+                          // Sync client name if empty
+                          if (!form.getValues("details.client")) {
+                            form.setValue("details.client", e.target.value);
+                          }
                         }}
                       />
                     </FormControl>
@@ -367,6 +485,7 @@ export default function WorkForm() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="slug"
@@ -374,8 +493,9 @@ export default function WorkForm() {
                   <FormItem>
                     <FormLabel>Slug</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. awesome-project" {...field} />
+                      <Input placeholder="e.g. taxverse" {...field} />
                     </FormControl>
+                    <FormDescription>URL path: /work/{field.value || "slug"}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -392,7 +512,7 @@ export default function WorkForm() {
                     <Select onValueChange={field.onChange} value={field.value || undefined} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Select a category" />
+                          <SelectValue placeholder="Select a category (e.g. Branding, UI/UX, Web)" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -418,7 +538,7 @@ export default function WorkForm() {
                           <div className="space-y-2">
                             <FormLabel>Category Name</FormLabel>
                             <Input 
-                              placeholder="e.g. App Design" 
+                              placeholder="e.g. Branding" 
                               value={newCatName} 
                               onChange={(e) => setNewCatName(e.target.value)}
                               onKeyDown={(e) => {
@@ -444,11 +564,11 @@ export default function WorkForm() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Short Description Excerpt (for list view)</FormLabel>
+                  <FormLabel>Short Description (for Works grid list)</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Brief excerpt for the works list..."
-                      className="min-h-[80px]"
+                      placeholder="Brief excerpt shown on the portfolio list cards..."
+                      className="min-h-[70px]"
                       {...field}
                     />
                   </FormControl>
@@ -462,7 +582,7 @@ export default function WorkForm() {
               name="image_url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Main Cover Image</FormLabel>
+                  <FormLabel>Project Hero / Cover Image</FormLabel>
                   <div className="flex gap-4 items-start">
                     <div className="flex-1 space-y-4">
                       <FormControl>
@@ -475,7 +595,7 @@ export default function WorkForm() {
                         />
                       </FormControl>
                       {!field.value && (
-                        <FormDescription>Recommended aspect ratio: 16:9 or 4:3 (e.g., 1280x720px)</FormDescription>
+                        <FormDescription>Upload project hero image (16:9 or 2:1 recommended)</FormDescription>
                       )}
                       
                       {uploading && uploadProgress > 0 && (
@@ -486,14 +606,14 @@ export default function WorkForm() {
                       )}
                     </div>
                     {field.value && !uploading && (
-                      <div className="relative group rounded-md overflow-hidden border">
-                        <img src={field.value} alt="Preview" className="h-32 object-cover" />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="relative group rounded-xl overflow-hidden border">
+                        <img src={field.value} alt="Cover Preview" className="h-32 object-cover" />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <Button 
                             type="button" 
                             variant="destructive" 
                             size="icon"
-                            onClick={handleRemoveImage}
+                            onClick={() => form.setValue("image_url", "")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -507,52 +627,51 @@ export default function WorkForm() {
             />
           </div>
 
-          {/* Structured Details Layout */}
-          <div className="rounded-xl border bg-card p-6 space-y-8">
-            <h2 className="text-xl font-semibold mb-6 text-primary">Case Study Content</h2>
-            
-            {/* Overview & Tools */}
-            <div className="space-y-6">
-              <FormField
-                control={form.control}
-                name="details.overview"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Overview</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Full project overview..." className="min-h-[120px]" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="details.tools"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tools Used (comma separated)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Figma, React, Node.js..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* Section 2: Project overview (Matches Screenshot 2) */}
+          <div className="rounded-xl border bg-card p-6 space-y-6">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#5cb847]/10 text-[#5cb847] uppercase tracking-wider">
+                Section 2
+              </span>
+              <h2 className="text-xl font-semibold">
+                Project <span className="font-serif italic text-[#5cb847]">overview</span>
+              </h2>
             </div>
+            
+            <FormField
+              control={form.control}
+              name="details.overview"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Overview Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="A complete visual identity for Taxverse — built from positioning and research into a logo, colour, type and asset system that works across every touchpoint." 
+                      className="min-h-[110px]" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <Separator />
-
-            {/* The Problem */}
-            <div className="space-y-6">
+            {/* The problem callout box matching Screenshot 2 */}
+            <div className="p-4 sm:p-5 rounded-xl border border-[#5cb847]/40 bg-[#5cb847]/5 space-y-3">
               <FormField
                 control={form.control}
                 name="details.problem"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>The Problem</FormLabel>
+                    <FormLabel className="text-[#5cb847] font-semibold flex items-center gap-2">
+                      <span>The problem</span>
+                    </FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Describe the core problem this project solves..." className="min-h-[120px]" {...field} />
+                      <Textarea 
+                        placeholder="The brand lacked a consistent visual voice. Assets looked different on every platform, weakening recognition and trust." 
+                        className="min-h-[90px] bg-background/80" 
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -560,233 +679,386 @@ export default function WorkForm() {
               />
             </div>
 
-            <Separator />
+            <div className="grid gap-6 md:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="details.client"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Client Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Taxverse" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Research Insights */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <FormLabel className="text-base font-semibold">Research Insights</FormLabel>
-                <Button type="button" variant="outline" size="sm" onClick={() => appendInsight({ text: "" })}>
-                  <Plus className="mr-2 h-4 w-4" /> Add Insight
-                </Button>
+              <FormField
+                control={form.control}
+                name="details.year"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Year</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. 2025" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="details.tools"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tools Used</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Illustrator, Photoshop, Figma" {...field} />
+                    </FormControl>
+                    <FormDescription>Comma-separated list</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Section 3: Research insights (Matches Screenshot 2) */}
+          <div className="rounded-xl border bg-card p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#5cb847]/10 text-[#5cb847] uppercase tracking-wider">
+                  Section 3
+                </span>
+                <h2 className="text-xl font-semibold">
+                  Research <span className="font-serif italic text-[#5cb847]">insights</span>
+                </h2>
               </div>
-              <div className="space-y-3">
-                <DragDropContext onDragEnd={onDragEndInsights}>
-                  <Droppable droppableId="insights-list">
-                    {(provided) => (
-                      <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
-                        {insightFields.map((field, index) => (
-                          <Draggable key={field.id} draggableId={field.id} index={index}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                className={`flex gap-2 items-start ${snapshot.isDragging ? 'opacity-75 relative z-50' : ''}`}
-                              >
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                onClick={() => appendInsight({ text: "" })}
+                className="gap-1.5"
+              >
+                <Plus className="h-4 w-4" /> Add Insight Card
+              </Button>
+            </div>
+
+            <DragDropContext onDragEnd={onDragEndInsights}>
+              <Droppable droppableId="insights-list">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
+                    {insightFields.map((field, index) => (
+                      <Draggable key={field.id} draggableId={field.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={`p-4 rounded-xl border bg-background flex items-center gap-3 transition-shadow ${
+                              snapshot.isDragging ? 'shadow-lg border-primary z-50 relative' : ''
+                            }`}
+                          >
+                            <div 
+                              {...provided.dragHandleProps}
+                              className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+                            >
+                              <GripVertical className="h-4 w-4" />
+                            </div>
+
+                            {/* Green number circle matching Screenshot 2 */}
+                            <div className="w-7 h-7 rounded-full bg-[#5cb847] text-zinc-950 font-bold text-xs flex items-center justify-center shrink-0">
+                              {index + 1}
+                            </div>
+
+                            <FormField
+                              control={form.control}
+                              name={`details.insights.${index}.text`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormControl>
+                                    <Input 
+                                      placeholder={`e.g. Competitors look nearly identical — there was room to stand out.`} 
+                                      {...field} 
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className="text-destructive hover:bg-destructive/10" 
+                              onClick={() => removeInsight(index)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+            
+            {insightFields.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6 border rounded-xl border-dashed">
+                No research insights added. Click "Add Insight Card" above.
+              </p>
+            )}
+          </div>
+
+          {/* Section 4: Design process (Matches Screenshot 3) */}
+          <div className="rounded-xl border bg-card p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#5cb847]/10 text-[#5cb847] uppercase tracking-wider">
+                  Section 4
+                </span>
+                <h2 className="text-xl font-semibold">
+                  Design <span className="font-serif italic text-[#5cb847]">process</span>
+                </h2>
+              </div>
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                onClick={() => appendStep({ 
+                  number: `Step 0${stepFields.length + 1}`, 
+                  title: "", 
+                  desc: "" 
+                })}
+                className="gap-1.5"
+              >
+                <Plus className="h-4 w-4" /> Add Process Step
+              </Button>
+            </div>
+
+            <DragDropContext onDragEnd={onDragEndSteps}>
+              <Droppable droppableId="steps-list">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
+                    {stepFields.map((field, index) => (
+                      <Draggable key={field.id} draggableId={field.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={`p-5 rounded-xl border bg-background space-y-4 relative group ${
+                              snapshot.isDragging ? 'shadow-lg border-primary z-50' : ''
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
                                 <div 
                                   {...provided.dragHandleProps}
-                                  className="mt-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+                                  className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
                                 >
                                   <GripVertical className="h-4 w-4" />
                                 </div>
-                                <FormField
-                                  control={form.control}
-                                  name={`details.insights.${index}.text`}
-                                  render={({ field }) => (
-                                    <FormItem className="flex-1">
-                                      <FormControl>
-                                        <Input placeholder={`Insight point ${index + 1}...`} {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <Button type="button" variant="ghost" size="icon" className="text-destructive mt-0.5" onClick={() => removeInsight(index)}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                                <span className="text-xs font-mono font-bold text-[#5cb847] uppercase">
+                                  Step {index + 1}
+                                </span>
                               </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-                {insightFields.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4 border rounded-md border-dashed">No insights added.</p>
-                )}
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Design Progress */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <FormLabel className="text-base font-semibold">Design Progress (Steps)</FormLabel>
-                <Button type="button" variant="outline" size="sm" onClick={() => appendProgress({ title: "", description: "" })}>
-                  <Plus className="mr-2 h-4 w-4" /> Add Step
-                </Button>
-              </div>
-              <div className="space-y-4">
-                <DragDropContext onDragEnd={onDragEndProgress}>
-                  <Droppable droppableId="progress-list">
-                    {(provided) => (
-                      <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
-                        {progressFields.map((field, index) => (
-                          <Draggable key={field.id} draggableId={field.id} index={index}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                className={`p-4 border rounded-lg bg-background relative group ${snapshot.isDragging ? 'border-primary shadow-md opacity-90 z-50' : ''}`}
+                              <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="icon" 
+                                className="text-destructive h-8 w-8 hover:bg-destructive/10" 
+                                onClick={() => removeStep(index)}
                               >
-                                <div 
-                                  {...provided.dragHandleProps}
-                                  className="absolute top-4 left-2 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
-                                >
-                                  <GripVertical className="h-4 w-4" />
-                                </div>
-                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                   <Button type="button" variant="ghost" size="icon" className="text-destructive h-8 w-8" onClick={() => removeProgress(index)}>
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                                <div className="grid gap-4 mt-2 pl-6">
-                                  <FormField
-                                    control={form.control}
-                                    name={`details.progress.${index}.title`}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Step {index + 1} Title</FormLabel>
-                                        <FormControl>
-                                          <Input placeholder="e.g. Wireframing" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                  <FormField
-                                    control={form.control}
-                                    name={`details.progress.${index}.description`}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Step {index + 1} Description</FormLabel>
-                                        <FormControl>
-                                          <Textarea placeholder="Describe this phase..." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-                {progressFields.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4 border rounded-md border-dashed">No progress steps added.</p>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-3">
+                              <FormField
+                                control={form.control}
+                                name={`details.steps.${index}.number`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Step Number Tag</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="e.g. STEP 01" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name={`details.steps.${index}.title`}
+                                render={({ field }) => (
+                                  <FormItem className="sm:col-span-2">
+                                    <FormLabel>Step Title</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="e.g. Discover, Define, Design, Deliver" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <FormField
+                              control={form.control}
+                              name={`details.steps.${index}.desc`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Step Description</FormLabel>
+                                  <FormControl>
+                                    <Textarea 
+                                      placeholder="Brief, research and audit of existing material and competitors..." 
+                                      className="min-h-[70px]" 
+                                      {...field} 
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
                 )}
+              </Droppable>
+            </DragDropContext>
+
+            {stepFields.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6 border rounded-xl border-dashed">
+                No process steps added. Click "Add Process Step" above.
+              </p>
+            )}
+          </div>
+
+          {/* Section 5: Final outputs (Matches Screenshot 3) */}
+          <div className="rounded-xl border bg-card p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#5cb847]/10 text-[#5cb847] uppercase tracking-wider">
+                  Section 5
+                </span>
+                <h2 className="text-xl font-semibold">
+                  Final <span className="font-serif italic text-[#5cb847]">outputs</span>
+                </h2>
               </div>
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                onClick={() => appendOutput({ title: "", type: "Identity", image_url: "" })}
+                className="gap-1.5"
+              >
+                <Plus className="h-4 w-4" /> Add Output Card
+              </Button>
             </div>
 
-            <Separator />
+            <div className="grid gap-6 sm:grid-cols-2">
+              {outputFields.map((field, index) => {
+                const currentImg = form.watch(`details.outputs.${index}.image_url`);
+                const isUploading = !!outputUploadProgress[index];
 
-            {/* Final Output Screens */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <FormLabel className="text-base font-semibold">Final Output Image Groups</FormLabel>
-                <Button type="button" variant="secondary" size="sm" onClick={() => appendScreen({ title: "", urls: [] })}>
-                  <Plus className="mr-2 h-4 w-4" /> Add Image Group
-                </Button>
-              </div>
-              <div className="grid gap-6">
-                {screenFields.map((field, index) => {
-                  const screenUrls = form.watch(`details.screens.${index}.urls`) || [];
-                  const isUploading = !!screenUploadProgress[index];
-                  
-                  return (
-                    <div key={field.id} className="p-4 border rounded-lg bg-background relative flex flex-col gap-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Group {index + 1}</span>
-                        <Button type="button" variant="ghost" size="icon" className="text-destructive h-8 w-8" onClick={() => removeScreen(index)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      
+                return (
+                  <div key={field.id} className="p-5 rounded-xl border bg-background flex flex-col justify-between gap-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold uppercase text-muted-foreground">
+                        Output Card #{index + 1}
+                      </span>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-destructive h-8 w-8 hover:bg-destructive/10" 
+                        onClick={() => removeOutput(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Image Preview / Upload Area */}
+                    <div className="rounded-xl border border-dashed p-4 flex flex-col items-center justify-center text-center bg-muted/20 relative group overflow-hidden min-h-[140px]">
+                      {currentImg ? (
+                        <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border">
+                          <img src={currentImg} alt="Output Preview" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => form.setValue(`details.outputs.${index}.image_url`, "")}
+                            >
+                              Remove Image
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 py-4">
+                          <ImageIcon className="h-8 w-8 text-muted-foreground/60" />
+                          <p className="text-xs text-muted-foreground">Upload output visual</p>
+                          <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                            <Upload className="h-3 w-3" />
+                            <span>Browse files</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleOutputImageUpload(index, e)}
+                              disabled={isUploading}
+                            />
+                          </label>
+                          {isUploading && (
+                            <div className="w-full space-y-1 mt-2">
+                              <Progress value={outputUploadProgress[index]} className="h-1" />
+                              <span className="text-[10px] text-muted-foreground">Uploading...</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid gap-3">
                       <FormField
                         control={form.control}
-                        name={`details.screens.${index}.title`}
+                        name={`details.outputs.${index}.title`}
                         render={({ field }) => (
                           <FormItem>
+                            <FormLabel className="text-xs">Output Title</FormLabel>
                             <FormControl>
-                              <Input placeholder="Group Caption / Title (e.g. Onboarding Flow)" {...field} />
+                              <Input placeholder="e.g. Logo system, Brand guidelines" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-
-                      <div className="flex-1 flex flex-col gap-4">
-                        {screenUrls.length > 0 && (
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mt-2">
-                            {screenUrls.map((url, urlIndex) => (
-                              <div key={urlIndex} className="relative group rounded-md overflow-hidden border aspect-square">
-                                <img src={url} alt={`Preview ${urlIndex + 1}`} className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                  <Button type="button" variant="destructive" size="icon" className="h-6 w-6" onClick={() => handleRemoveScreenImage(index, urlIndex)}>
-                                    <X className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        
-                        <div className="mt-2 space-y-2">
-                          <Input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={(e) => handleScreenImagesUpload(index, e)}
-                            disabled={isUploading}
-                          />
-                          <p className="text-[0.8rem] text-muted-foreground mt-1">Recommended aspect ratio: 4:3 (e.g., 800x600px)</p>
-                          {isUploading && (
-                            <div className="space-y-2 mt-2">
-                              <Progress value={screenUploadProgress[index]} className="h-1" />
-                              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                                <span>Uploading Images...</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
                     </div>
-                  );
-                })}
-                {screenFields.length === 0 && (
-                  <div className="col-span-full">
-                    <p className="text-sm text-muted-foreground text-center py-8 border rounded-md border-dashed">No image groups added.</p>
                   </div>
-                )}
-              </div>
+                );
+              })}
             </div>
-            
+
+            {outputFields.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6 border rounded-xl border-dashed">
+                No final outputs added. Click "Add Output Card" above.
+              </p>
+            )}
           </div>
 
           <div className="flex justify-end gap-4 pb-12">
             <Button type="button" variant="outline" asChild>
               <Link to="/admin/works">Cancel</Link>
             </Button>
-            <Button type="submit" size="lg" disabled={form.formState.isSubmitting || uploading || Object.keys(screenUploadProgress).length > 0}>
+            <Button type="submit" size="lg" disabled={form.formState.isSubmitting || uploading}>
               {form.formState.isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}

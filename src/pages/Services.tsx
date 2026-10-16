@@ -1,137 +1,241 @@
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Palette, Layout, Layers, Globe, Lightbulb, Compass } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Section from "@/components/Section";
+import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-
-const services = [
-  {
-    icon: Palette, title: "Brand Identity Design",
-    problem: "Brands often struggle with inconsistent visuals, weak positioning, and lack of recognition across digital platforms.",
-    approach: "Creating strategic visual identities through research, positioning, and cohesive brand system development.",
-    deliverables: ["Logo & Visual Identity System", "Brand Guidelines", "Typography & Color System", "Social Media Brand Assets", "Marketing & Brand Collateral"],
-    tools: ["Figma", "Illustrator", "Photoshop"],
-    timeline: "2-4 weeks",
-  },
-  {
-    icon: Layout, title: "UI/UX Design",
-    problem: "Complex interfaces and poor user experience reduce engagement, trust, and conversion rates.",
-    approach: "Designing intuitive and research-driven digital experiences focused on usability, accessibility, and seamless interaction.",
-    deliverables: ["UX Research & User Flows", "Information Architecture", "Wireframes & Prototypes", "High-Fidelity UI Designs"],
-    tools: ["Figma", "FigJam", "Maze"],
-    timeline: "2-4 weeks",
-  },
-  {
-    icon: Layers, title: "Design Systems",
-    problem: "Growing products without consistency creates design debt and slows development workflows.",
-    approach: "Building scalable component-based systems that improve collaboration, consistency, and product efficiency.",
-    deliverables: ["Component Library", "Design Tokens", "UI Guidelines & Documentation", "Responsive Design Standards", "System Governance Structure"],
-    tools: ["Figma", "Storybook", "Zeroheight"],
-    timeline: "3-6 weeks",
-  },
-  {
-    icon: Globe, title: "Website & Landing Pages",
-    problem: "Websites with unclear messaging and poor structure fail to convert visitors into customers.",
-    approach: "Designing modern, conversion-focused websites with strong visual hierarchy and optimized user journeys.",
-    deliverables: ["Website UI Design","Responsive Layouts","Landing Page Systems","Developer Handoff Files"],
-    tools: ["Figma", "Webflow", "VS Code"],
-    timeline: "2-4 weeks",
-  },
-  {
-    icon: Lightbulb, title: "Product Strategy Design",
-    problem: "Products built without clear direction often miss user needs and business goals.",
-    approach: "Combining business objectives, market insights, and user behavior to define strategic product direction.",
-    deliverables: ["Product Discovery Audit", "User Personas", "Customer Journey Mapping", "Feature Prioritization", "Product Roadmap Planning"],
-    tools: ["FigJam", "Miro", "Notion"],
-    timeline: "1-2 weeks",
-  },
-  {
-    icon: Compass, title: "Creative Direction",
-    problem: "Without a strong visual direction, brands lose consistency and emotional connection with audiences.",
-    approach: "Leading the overall creative vision to ensure consistency, clarity, and impactful storytelling across touchpoints.",
-    deliverables: ["Creative Strategy","Visual Direction","Art Direction","Campaign Oversight","Brand Experience Consistency"],
-    tools: ["Figma", "Adobe Illustrator", "Adobe Photoshop"],
-    timeline: "Ongoing",
-  },
-];
+import { SERVICES } from "@/data/portfolioData";
 
 const Services = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <SEO title="Services | Saleeldesigns" description="UI/UX and Graphic Design services." url="https://saleeldesigns.com/services" />
-      <Navbar />
+    <PageContainer>
+      <SEO
+        title="Services | Saleel Designs"
+        description="End-to-end design services built on structure, strategy, and systems thinking. Brand identity, UI/UX, and design systems."
+        url="https://saleeldesigns.com/services"
+      />
 
-      <section className="pt-32 pb-16">
-        <div className="container">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-3 block">Services</span>
-            <h1 className="font-heading text-4xl md:text-6xl font-bold text-foreground leading-tight max-w-3xl">
-              Strategic Design <span className="gradient-text">Solutions</span>
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground max-w-xl">End-to-end design services built on structure, strategy, and systems thinking.</p>
-          </motion.div>
+      <main style={{ padding: "40px clamp(20px,5vw,64px) 96px" }} className="max-w-7xl mx-auto w-full">
+        <div
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: "12px",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "var(--accent)",
+          }}
+        >
+          Services
         </div>
-      </section>
 
-      <Section>
-        <div className="space-y-8">
-          {services.map((service, i) => (
-            <motion.div
-              key={service.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05, duration: 0.5 }}
-              className="glass-card glass-card-hover rounded-2xl p-8 md:p-10 transition-all"
+        <h1
+          style={{
+            margin: "14px 0 0",
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 600,
+            fontSize: "clamp(44px,6.4vw,90px)",
+            lineHeight: 1,
+            letterSpacing: "-0.04em",
+          }}
+        >
+          Strategic design{" "}
+          <span className="font-serif-italic brand-gradient-text">
+            solutions.
+          </span>
+        </h1>
+
+        <p
+          style={{
+            margin: "22px 0 0",
+            maxWidth: "520px",
+            fontSize: "17px",
+            lineHeight: 1.55,
+            color: "var(--muted)",
+          }}
+        >
+          End-to-end design services built on structure, strategy, and systems thinking.
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "56px" }}>
+          {SERVICES.map((s) => (
+            <div
+              key={s.n}
+              style={{
+                background: "var(--card)",
+                borderRadius: "26px",
+                padding: "clamp(24px,3vw,40px)",
+                boxShadow: "0 16px 34px -28px rgba(0,0,0,0.25)",
+              }}
             >
-              <div className="flex items-start gap-5 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <service.icon size={22} className="text-primary" />
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  alignItems: "baseline",
+                }}
+              >
+                <div style={{ display: "flex", gap: "18px", alignItems: "baseline" }}>
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      letterSpacing: "-0.02em",
+                      fontSize: "30px",
+                      color: "var(--accent)",
+                    }}
+                  >
+                    {s.n}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "clamp(22px,2.4vw,30px)",
+                      fontWeight: 500,
+                      letterSpacing: "-0.015em",
+                    }}
+                  >
+                    {s.title}
+                  </span>
                 </div>
-                <div>
-                  <h3 className="font-heading text-2xl font-bold text-foreground">{service.title}</h3>
-                  <span className="text-sm text-muted-foreground">Timeline: {service.timeline}</span>
+                <div
+                  style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontSize: "12px",
+                    color: "var(--muted2)",
+                  }}
+                >
+                  Timeline · {s.time}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))",
+                  gap: "28px",
+                  marginTop: "28px",
+                }}
+              >
                 <div>
-                  <h4 className="text-xs text-primary font-semibold tracking-widest uppercase mb-2">Problem</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{service.problem}</p>
+                  <div
+                    style={{
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "11px",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "var(--muted2)",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Problem
+                  </div>
+                  <div style={{ fontSize: "15px", lineHeight: 1.6, color: "var(--body)" }}>
+                    {s.problem}
+                  </div>
                 </div>
+
                 <div>
-                  <h4 className="text-xs text-primary font-semibold tracking-widest uppercase mb-2">Approach</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{service.approach}</p>
+                  <div
+                    style={{
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "11px",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "var(--muted2)",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Approach
+                  </div>
+                  <div style={{ fontSize: "15px", lineHeight: 1.6, color: "var(--body)" }}>
+                    {s.approach}
+                  </div>
                 </div>
+
                 <div>
-                  <h4 className="text-xs text-primary font-semibold tracking-widest uppercase mb-2">Deliverables</h4>
-                  <ul className="space-y-1">
-                    {service.deliverables.map((d) => (
-                      <li key={d} className="text-sm text-muted-foreground">• {d}</li>
+                  <div
+                    style={{
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "11px",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "var(--muted2)",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Deliverables
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    {s.deliv.map((d, di) => (
+                      <div
+                        key={di}
+                        style={{
+                          fontSize: "15px",
+                          color: "var(--body)",
+                          display: "flex",
+                          gap: "10px",
+                          alignItems: "baseline",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: "5px",
+                            height: "5px",
+                            background: "var(--accent)",
+                            transform: "rotate(45deg)",
+                            flex: "none",
+                            position: "relative",
+                            top: "-2px",
+                          }}
+                        />
+                        {d}
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap gap-2">
-                  {service.tools.map((tool) => (
-                    <span key={tool} className="text-xs px-3 py-1 rounded-full glass-card text-muted-foreground">{tool}</span>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "12px",
+                  marginTop: "28px",
+                  paddingTop: "20px",
+                  borderTop: "1px solid var(--line)",
+                }}
+              >
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {s.tools.map((t, ti) => (
+                    <span
+                      key={ti}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "999px",
+                        background: "var(--soft)",
+                        fontSize: "13px",
+                        color: "var(--body)",
+                      }}
+                    >
+                      {t}
+                    </span>
                   ))}
                 </div>
-                <Link to="/contact" className="text-sm text-primary font-medium inline-flex items-center gap-1 hover:gap-2 transition-all">
-                  Book Consultation <ArrowRight size={14} />
-                </Link>
+
+                <a
+                  href="https://cal.com/muhammed-saleel-yjtcye/30min"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--line)] bg-[var(--card)] text-sm font-medium text-[var(--ink)] shadow-sm hover:border-[#5cb847] hover:text-[#5cb847] hover:bg-[#5cb847]/10 hover:shadow-[0_0_16px_rgba(92,184,71,0.25)] hover:scale-[1.02] transition-all duration-200 no-underline"
+                >
+                  <span>Book consultation</span>
+                  <span className="text-base leading-none">↗</span>
+                </a>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </Section>
-
-      <Footer />
-    </div>
+      </main>
+    </PageContainer>
   );
 };
 

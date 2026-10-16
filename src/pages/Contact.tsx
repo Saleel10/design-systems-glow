@@ -1,169 +1,570 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Send, Mail, MapPin, Phone, MessageSquare } from "lucide-react";
+import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Section from "@/components/Section";
 import { useToast } from "@/hooks/use-toast";
+import { Calendar } from "lucide-react";
+
+const INTERESTS = ["Branding", "UI/UX", "Design system", "Website", "Other"];
 
 const Contact = () => {
   const { toast } = useToast();
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
-  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [selectedInterest, setSelectedInterest] = useState("Branding");
+  const [message, setMessage] = useState("");
+  const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        toast({
-          title: "Message sent!",
-          description: "I'll get back to you within 24 hours.",
-        });
-        setForm({ name: "", email: "", subject: "", message: "" });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Failed to send message",
-          description: data.error || "Please try again later.",
-        });
-      }
-    } catch (error) {
+    if (!name.trim() || !email.trim()) {
       toast({
         variant: "destructive",
-        title: "An error occurred",
-        description: "Please check your network and try again.",
+        title: "Please complete the form",
+        description: "Name and email are required.",
       });
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    setSubmitting(true);
+    try {
+      await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          subject: `Portfolio Inquiry: ${selectedInterest}`,
+          message: `Interest: ${selectedInterest}\n\n${message}`,
+        }),
+      });
+    } catch {
+      // Allow optimistic completion even if backend mailer is unconfigured
+    }
+
+    setSent(true);
+    setSubmitting(false);
+  };
+
+  const handleReset = () => {
+    setName("");
+    setEmail("");
+    setMessage("");
+    setSelectedInterest("Branding");
+    setSent(false);
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <SEO title="Contact | Saleeldesigns" description="Get in touch to discuss your next project." url="https://saleeldesigns.com/contact" />
-      <Navbar />
+    <PageContainer showCta={false}>
+      <SEO
+        title="Contact | Saleel Designs"
+        description="Let's work together. Reach out for brand identity, UI/UX, and design system projects."
+        url="https://saleeldesigns.com/contact"
+      />
 
-      <section className="pt-32 pb-16">
-        <div className="container">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-3 block">Contact</span>
-            <h1 className="font-heading text-4xl md:text-6xl font-bold text-foreground leading-tight max-w-3xl">
-              Let's Work <span className="gradient-text">Together</span>
-            </h1>
-          </motion.div>
+      <main style={{ padding: "40px clamp(20px,5vw,64px) 96px" }} className="max-w-7xl mx-auto w-full">
+        <div
+          style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: "12px",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "var(--accent)",
+          }}
+        >
+          Contact
         </div>
-      </section>
 
-      <Section>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Form */}
-          <div>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm text-muted-foreground mb-2 block">Name</label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={100}
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full glass-card rounded-xl px-4 py-3 text-sm text-foreground bg-transparent focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-                    placeholder="Your name"
-                  />
+        <h1
+          style={{
+            margin: "14px 0 0",
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontWeight: 600,
+            fontSize: "clamp(44px,6.4vw,90px)",
+            lineHeight: 1,
+            letterSpacing: "-0.04em",
+          }}
+        >
+          Let's work{" "}
+          <span className="font-serif-italic brand-gradient-text">
+            together.
+          </span>
+        </h1>
+
+        <p
+          style={{
+            margin: "18px 0 0",
+            maxWidth: "560px",
+            fontSize: "17px",
+            lineHeight: 1.55,
+            color: "var(--muted)",
+          }}
+        >
+          Have a project in mind or need strategic design consultation? Reach out below or book a direct 30-minute 1:1 call.
+        </p>
+
+        <div style={{ marginTop: "22px" }}>
+          <a
+            href="https://cal.com/muhammed-saleel-yjtcye/30min"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full brand-gradient text-white font-medium text-sm sm:text-base shadow-[0_4px_20px_rgba(92,184,71,0.35)] hover:shadow-[0_6px_25px_rgba(92,184,71,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all no-underline"
+          >
+            <Calendar size={18} />
+            <span>Book 1:1 Call</span>
+            <span className="text-sm">↗</span>
+          </a>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
+            gap: "clamp(24px, 4vw, 56px)",
+            marginTop: "56px",
+            alignItems: "start",
+          }}
+        >
+          {/* Contact Form Card */}
+          <div
+            style={{
+              background: "var(--card)",
+              borderRadius: "26px",
+              padding: "clamp(22px, 3vw, 36px)",
+              boxShadow: "0 16px 34px -28px rgba(0,0,0,0.25)",
+              border: "1px solid var(--line)",
+            }}
+          >
+            {sent ? (
+              <div style={{ padding: "40px 0", textAlign: "center" }}>
+                <div
+                  style={{
+                    fontWeight: 600,
+                    letterSpacing: "-0.02em",
+                    fontSize: "44px",
+                    color: "var(--ink)",
+                  }}
+                >
+                  Thank you
+                  <span className="brand-gradient-text">.</span>
                 </div>
-                <div>
-                  <label className="text-sm text-muted-foreground mb-2 block">Email</label>
-                  <input
-                    type="email"
-                    required
-                    maxLength={255}
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full glass-card rounded-xl px-4 py-3 text-sm text-foreground bg-transparent focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-                    placeholder="your@email.com"
-                  />
+                <div style={{ color: "var(--muted)", marginTop: "10px" }}>
+                  Your message is on its way. Expect a reply within 24 hours.
                 </div>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  style={{
+                    display: "inline-block",
+                    marginTop: "22px",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    color: "var(--accent)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  Send another →
+                </button>
               </div>
-              <div>
-                <label className="text-sm text-muted-foreground mb-2 block">Subject</label>
-                <input
-                  type="text"
-                  required
-                  maxLength={200}
-                  value={form.subject}
-                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                  className="w-full glass-card rounded-xl px-4 py-3 text-sm text-foreground bg-transparent focus:outline-none focus:ring-1 focus:ring-primary transition-all"
-                  placeholder="Project inquiry"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-muted-foreground mb-2 block">Message</label>
-                <textarea
-                  required
-                  maxLength={2000}
-                  rows={6}
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  className="w-full glass-card rounded-xl px-4 py-3 text-sm text-foreground bg-transparent focus:outline-none focus:ring-1 focus:ring-primary transition-all resize-none"
-                  placeholder="Tell me about your project..."
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="glow-button px-8 py-3.5 rounded-xl text-sm font-semibold text-primary-foreground inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Sending..." : "Send Message"} <Send size={16} />
-              </button>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fit, minmax(min(100%, 180px), 1fr))",
+                    gap: "14px",
+                  }}
+                >
+                  <label
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      fontSize: "13px",
+                      color: "var(--muted)",
+                    }}
+                  >
+                    Name
+                    <input
+                      type="text"
+                      required
+                      placeholder="Your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      style={{
+                        padding: "14px 16px",
+                        borderRadius: "14px",
+                        border: "1px solid var(--line)",
+                        background: "var(--soft)",
+                        fontSize: "15px",
+                        outline: "none",
+                        color: "var(--ink)",
+                      }}
+                    />
+                  </label>
+
+                  <label
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      fontSize: "13px",
+                      color: "var(--muted)",
+                    }}
+                  >
+                    Email
+                    <input
+                      type="email"
+                      required
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      style={{
+                        padding: "14px 16px",
+                        borderRadius: "14px",
+                        border: "1px solid var(--line)",
+                        background: "var(--soft)",
+                        fontSize: "15px",
+                        outline: "none",
+                        color: "var(--ink)",
+                      }}
+                    />
+                  </label>
+                </div>
+
+                <div style={{ marginTop: "18px", fontSize: "13px", color: "var(--muted)" }}>
+                  I'm interested in
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "6px",
+                    marginTop: "8px",
+                  }}
+                >
+                  {INTERESTS.map((item) => {
+                    const isSelected = selectedInterest === item;
+                    return (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => setSelectedInterest(item)}
+                        style={{
+                          padding: "8px 14px",
+                          borderRadius: "999px",
+                          fontSize: "13.5px",
+                          border: "1px solid var(--line)",
+                          background: isSelected ? "var(--ink)" : "var(--soft)",
+                          color: isSelected ? "var(--bg)" : "var(--body)",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <label
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    fontSize: "13px",
+                    color: "var(--muted)",
+                    marginTop: "18px",
+                  }}
+                >
+                  Message
+                  <textarea
+                    rows={5}
+                    placeholder="Tell me about your project…"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    style={{
+                      padding: "14px 16px",
+                      borderRadius: "14px",
+                      border: "1px solid var(--line)",
+                      background: "var(--soft)",
+                      fontSize: "15px",
+                      outline: "none",
+                      resize: "vertical",
+                      color: "var(--ink)",
+                    }}
+                  />
+                </label>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    marginTop: "20px",
+                    background: "var(--grad)",
+                    color: "#ffffff",
+                    padding: "14px 24px",
+                    borderRadius: "999px",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                  className="hover:opacity-90 transition-opacity"
+                >
+                  {submitting ? "Sending..." : "Send message"} <span>↗</span>
+                </button>
+              </form>
+            )}
           </div>
 
-          {/* Info */}
-          <div className="space-y-6">
-            {[
-              { icon: Mail, label: "Email", value: "workwithsaleel@gmail.com", href: "mailto:workwithsaleel@gmail.com" },
-              { icon: MapPin, label: "Location", value: "Malappuram,Kerala, India", href: "#" },
-              { icon: MessageSquare, label: "WhatsApp", value: "Quick Connect", href: "https://wa.me/7034916695" },
-            ].map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="glass-card glass-card-hover rounded-xl p-6 flex items-center gap-5 transition-all block"
-              >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <item.icon size={20} className="text-primary" />
+          {/* Contact Direct Cards */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {/* Featured Book 1:1 Call Card */}
+            <a
+              href="https://cal.com/muhammed-saleel-yjtcye/30min"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "24px",
+                borderRadius: "20px",
+                background: "var(--grad)",
+                color: "#ffffff",
+                border: "1px solid rgba(255,255,255,0.2)",
+                textDecoration: "none",
+                boxShadow: "0 12px 30px -10px rgba(92,184,71,0.45)",
+              }}
+              className="group hover:scale-[1.01] active:scale-[0.99] transition-all"
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <div
+                  style={{
+                    width: "44px",
+                    height: "44px",
+                    borderRadius: "14px",
+                    background: "rgba(255,255,255,0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backdropFilter: "blur(6px)",
+                  }}
+                >
+                  <Calendar size={22} color="#ffffff" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <p className="text-foreground font-medium">{item.value}</p>
+                  <div
+                    style={{
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "11px",
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      opacity: 0.85,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Schedule Direct
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      marginTop: "2px",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    Book 1:1 Call
+                  </div>
+                  <div style={{ fontSize: "12.5px", opacity: 0.9, marginTop: "2px" }}>
+                    30 min video consultation via Cal.com
+                  </div>
                 </div>
-              </a>
-            ))}
+              </div>
+              <span
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "16px",
+                }}
+                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+              >
+                ↗
+              </span>
+            </a>
 
-            <div className="glass-card rounded-xl p-6 mt-8">
-              <h4 className="font-heading font-semibold text-foreground mb-2">Availability</h4>
-              <p className="text-sm text-muted-foreground">Currently accepting new projects. Typical response time: within 24 hours.</p>
+            <a
+              href="mailto:workwithsaleel@gmail.com"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "22px 24px",
+                borderRadius: "20px",
+                background: "var(--card)",
+                border: "1px solid var(--line)",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+              className="hover:border-primary/40 transition-colors"
+            >
+              <div>
+                <div
+                  style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontSize: "11px",
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "var(--muted2)",
+                  }}
+                >
+                  Email
+                </div>
+                <div
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: 500,
+                    marginTop: "6px",
+                    color: "var(--ink)",
+                  }}
+                >
+                  workwithsaleel@gmail.com
+                </div>
+              </div>
+              <span style={{ fontSize: "16px", color: "var(--muted)" }}>↗</span>
+            </a>
+
+            <div
+              style={{
+                padding: "22px 24px",
+                borderRadius: "20px",
+                background: "var(--card)",
+                border: "1px solid var(--line)",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontSize: "11px",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "var(--muted2)",
+                }}
+              >
+                Location
+              </div>
+              <div
+                style={{
+                  fontSize: "18px",
+                  fontWeight: 500,
+                  marginTop: "6px",
+                  color: "var(--ink)",
+                }}
+              >
+                Malappuram, Kerala, India
+              </div>
+            </div>
+
+            <a
+              href="https://wa.me/919946447814"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "22px 24px",
+                borderRadius: "20px",
+                background: "var(--card)",
+                border: "1px solid var(--line)",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+              className="hover:border-primary/40 transition-colors"
+            >
+              <div>
+                <div
+                  style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontSize: "11px",
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "var(--muted2)",
+                  }}
+                >
+                  WhatsApp
+                </div>
+                <div
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: 500,
+                    marginTop: "6px",
+                    color: "var(--ink)",
+                  }}
+                >
+                  Quick connect
+                </div>
+              </div>
+              <span style={{ fontSize: "16px", color: "var(--muted)" }}>↗</span>
+            </a>
+
+            <div
+              style={{
+                padding: "24px",
+                borderRadius: "20px",
+                background: "var(--panel)",
+                color: "#ffffff",
+                border: "1px solid var(--line)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  fontSize: "16px",
+                  fontWeight: 500,
+                }}
+              >
+                <span
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: "#5fd08f",
+                  }}
+                />
+                Availability
+              </div>
+              <div
+                style={{
+                  fontSize: "14.5px",
+                  lineHeight: 1.55,
+                  opacity: 0.75,
+                  marginTop: "8px",
+                }}
+              >
+                Currently accepting new projects. Typical response time: within 24 hours.
+              </div>
             </div>
           </div>
         </div>
-      </Section>
-
-      <Footer />
-    </div>
+      </main>
+    </PageContainer>
   );
 };
 

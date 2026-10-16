@@ -1,111 +1,148 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useTheme } from '@/hooks/use-theme';
 
-const navLinks = [
-  { label: "Home", path: "/" },
-  { label: "About", path: "/about" },
-  { label: "Services", path: "/services" },
-  { label: "Works", path: "/works" },
-  { label: "Experience", path: "/experience" },
-  { label: "Blog", path: "/blog" },
-  { label: "Pricing", path: "/pricing" },
-  { label: "Contact", path: "/contact" },
+const DESKTOP_NAV_ITEMS = [
+  { path: '/', label: 'Home' },
+  { path: '/about', label: 'About' },
+  { path: '/services', label: 'Services' },
+  { path: '/works', label: 'Works' },
+  { path: '/cases', label: 'Case Studies' },
+  { path: '/blog', label: 'Blog' },
+  { path: '/pricing', label: 'Pricing' },
+  { path: '/contact', label: 'Contact' },
 ];
 
-const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+const MOBILE_NAV_ITEMS = [
+  { path: '/', label: 'Home' },
+  { path: '/about', label: 'About' },
+  { path: '/services', label: 'Services' },
+  { path: '/works', label: 'Works' },
+  { path: '/cases', label: 'Case Studies' },
+  { path: '/experience', label: 'Experience' },
+  { path: '/blog', label: 'Blog' },
+  { path: '/pricing', label: 'Pricing' },
+  { path: '/contact', label: 'Contact' },
+];
+
+export default function Navbar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
-  useEffect(() => setMobileOpen(false), [location]);
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    if (path === '/cases') return location.pathname.startsWith('/cases');
+    if (path === '/works') return location.pathname.startsWith('/works');
+    if (path === '/blog') return location.pathname.startsWith('/blog');
+    return location.pathname === path;
+  };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "glass-card py-3" : "py-5"
-      }`}
-    >
-      <div className="container flex items-center justify-between">
-        <Link to="/" className="font-heading text-xl font-bold tracking-tight">
-          <span className="text-foreground">Saleel</span>
-          <span className="gradient-text">designs</span>
+    <div className="sticky top-0 z-50 w-full bg-[var(--hdr)] backdrop-blur-md border-b border-[var(--line)] transition-colors px-6 md:px-12">
+      <header className="max-w-7xl mx-auto flex items-center justify-between gap-6 py-5">
+        {/* Brand Logo */}
+        <Link
+          to="/"
+          className="font-bold text-2xl sm:text-[28px] tracking-tight flex items-baseline gap-1"
+        >
+          <span className="text-[var(--ink)]">Saleel</span>
+          <span className="brand-gradient-text font-bold">designs</span>
         </Link>
 
-        {/* Desktop */}
-        <div className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                location.pathname === link.path
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+        {/* Desktop Nav Pills */}
+        <nav className="hidden xl:flex items-center gap-1 p-1.5 border border-[var(--line)] rounded-full bg-[var(--glass)] shadow-md">
+          {DESKTOP_NAV_ITEMS.map((item) => {
+            const active = isActive(item.path);
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-4 py-2 rounded-full text-[14.5px] sm:text-[15px] whitespace-nowrap transition-all ${
+                  active
+                    ? 'bg-[var(--card)] text-[var(--ink)] shadow-[0_2px_6px_rgba(0,0,0,0.15)] font-semibold'
+                    : 'text-[var(--muted)] hover:text-[var(--ink)] hover:bg-[var(--card)]/50 font-medium'
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Right CTA & Controls */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            type="button"
+            title="Toggle theme"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[var(--line)] bg-[var(--card)] flex items-center justify-center text-lg sm:text-xl hover:scale-105 active:scale-95 transition-all text-[var(--ink)] shadow-sm"
+          >
+            {theme === 'dark' ? '☀' : '☾'}
+          </button>
+
+          {/* Work with me CTA */}
           <Link
             to="/contact"
-            className="glow-button px-5 py-2 rounded-lg text-sm font-semibold text-primary-foreground"
+            className="brand-gradient text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-[15px] font-semibold whitespace-nowrap hidden sm:flex items-center gap-2 shadow-[0_4px_20px_rgba(29,133,90,0.35)] hover:opacity-95 active:scale-95 transition-all"
           >
-            Work With Me
+            <span>Work with me</span>
+            <span className="text-sm">↗</span>
           </Link>
-        </div>
 
-        {/* Mobile toggle */}
-        <button
-          className="lg:hidden text-foreground"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden glass-card mt-2 mx-4 rounded-xl overflow-hidden"
+          {/* Mobile Menu Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label="Toggle navigation menu"
+            className="xl:hidden w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-[var(--line)] bg-[var(--card)] flex items-center justify-center text-xl sm:text-2xl active:scale-95 transition-all text-[var(--ink)] shadow-sm"
           >
-            <div className="flex flex-col p-6 gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`text-sm font-medium transition-colors ${
-                    location.pathname === link.path
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link
-                to="/contact"
-                className="glow-button px-5 py-2.5 rounded-lg text-sm font-semibold text-primary-foreground text-center mt-2"
-              >
-                Work With Me
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
-  );
-};
+            {mobileMenuOpen ? '×' : '≡'}
+          </button>
+        </div>
+      </header>
 
-export default Navbar;
+      {/* Mobile Menu Card Dropdown matching Reference Image 3 */}
+      {mobileMenuOpen && (
+        <div className="xl:hidden pb-6 pt-2 animate-in fade-in slide-in-from-top-3 duration-200">
+          <div className="w-full bg-[#181818] border border-white/10 rounded-[28px] sm:rounded-[32px] p-6 sm:p-7 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)]">
+            {/* Left-aligned vertical navigation list */}
+            <nav className="flex flex-col gap-4 text-left">
+              {MOBILE_NAV_ITEMS.map((item) => {
+                const active = isActive(item.path);
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`text-[17px] font-medium transition-colors ${
+                      active
+                        ? 'text-[#5cb847]'
+                        : 'text-zinc-300 hover:text-white'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Bottom Full-width Gradient Button */}
+            <Link
+              to="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="mt-7 w-full brand-gradient text-white py-4 px-6 rounded-full font-semibold text-center block text-base shadow-[0_10px_25px_-5px_rgba(92,184,71,0.4)] hover:opacity-95 active:scale-[0.99] transition-all"
+            >
+              Work With Me
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
