@@ -99,16 +99,16 @@ export default function HeroSection() {
           preserveAspectRatio="none"
           className="hidden lg:block absolute inset-0 w-full h-full pointer-events-none z-[1] opacity-75"
         >
-          {/* Left curved solid line: starts deep inside Card 1, sweeps behind portrait */}
+          {/* Left curved solid line: starts deep inside Card 1 (repositioned slightly right and middle) */}
           <path
-            d="M 140 210 C 170 330, 250 410, 560 470"
+            d="M 200 270 C 260 360, 320 420, 560 480"
             fill="none"
             stroke="var(--line2)"
             strokeWidth="1.2"
           />
-          {/* Right curved dashed line: starts deep inside Card 2, passes behind Card 3, sweeps deep behind portrait */}
+          {/* Right curved dashed line: passes through Card 2, through repositioned Card 3 (down and left), sweeps behind portrait */}
           <path
-            d="M 1150 220 C 1150 330, 1080 380, 1080 440 C 1080 490, 960 550, 580 550"
+            d="M 1150 200 C 1150 290, 1040 340, 1030 400 C 1020 460, 920 530, 580 550"
             fill="none"
             stroke="var(--line2)"
             strokeWidth="1.2"
@@ -116,7 +116,7 @@ export default function HeroSection() {
           />
         </svg>
 
-        {/* Floating Card 1: 800+ Projects (Responsive Left) - Slope -5deg with hover/touch tilt */}
+        {/* Floating Card 1: 800+ Projects (Second image of card) - Desktop: positioned slight right and middle */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, x: -20, rotate: -5 }}
           animate={{ opacity: 1, scale: 1, x: 0, rotate: -5 }}
@@ -127,7 +127,7 @@ export default function HeroSection() {
             transition: { type: 'spring', stiffness: 400, damping: 25 },
           }}
           whileTap={{ scale: 0.96, rotate: -2 }}
-          className="absolute left-2 sm:left-3 md:left-[3%] xl:left-[4%] 2xl:left-[6%] top-[185px] sm:top-[210px] md:top-[215px] lg:top-[155px] xl:top-[175px] w-[94px] sm:w-[124px] md:w-[150px] lg:w-[200px] xl:w-60 p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
+          className="absolute left-2 sm:left-3 md:left-[3%] lg:left-[6%] xl:left-[8%] 2xl:left-[10%] top-[185px] sm:top-[210px] md:top-[215px] lg:top-[205px] xl:top-[235px] w-[94px] sm:w-[124px] md:w-[150px] lg:w-[200px] xl:w-60 p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
         >
           <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-10 lg:h-10 rounded-md sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1 sm:mb-2 lg:mb-4 shadow-sm">
             <div className="w-2 h-2 sm:w-2 sm:h-2 lg:w-3.5 lg:h-3.5 bg-[var(--accent)] rotate-45" />
@@ -154,7 +154,7 @@ export default function HeroSection() {
             transition: { type: 'spring', stiffness: 400, damping: 25 },
           }}
           whileTap={{ scale: 0.96, rotate: 2 }}
-          className="absolute right-2 sm:right-3 md:right-[3%] xl:right-[4%] 2xl:right-[6%] top-[190px] sm:top-[215px] md:top-[220px] lg:top-[160px] xl:top-[180px] w-[94px] sm:w-[124px] md:w-[150px] lg:w-[200px] xl:w-60 p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
+          className="absolute right-2 sm:right-3 md:right-[3%] lg:right-[3%] xl:right-[4%] 2xl:right-[6%] top-[190px] sm:top-[215px] md:top-[220px] lg:top-[145px] xl:top-[165px] w-[94px] sm:w-[124px] md:w-[150px] lg:w-[200px] xl:w-60 p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
         >
           <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-10 lg:h-10 rounded-md sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1 sm:mb-2 lg:mb-4 shadow-sm">
             <div className="w-2 h-2 sm:w-2 sm:h-2 lg:w-3.5 lg:h-3.5 bg-[var(--accent)] rotate-45" />
@@ -170,7 +170,7 @@ export default function HeroSection() {
           </div>
         </motion.div>
 
-        {/* Floating Card 3: 50+ Clients (Responsive Right Bottom) - Raised with hover tilt */}
+        {/* Floating Card 3: 50+ Clients - Desktop: increased distance from Card 2, positioned slightly down and left */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20, rotate: -3.5 }}
           animate={{ opacity: 1, scale: 1, y: 0, rotate: -3.5 }}
@@ -181,7 +181,7 @@ export default function HeroSection() {
             transition: { type: 'spring', stiffness: 400, damping: 25 },
           }}
           whileTap={{ scale: 0.96, rotate: 0 }}
-          className="absolute right-2 sm:right-3 md:right-[4%] lg:right-[5%] xl:right-[8%] 2xl:right-[11%] top-[295px] sm:top-[330px] md:top-[350px] lg:top-[290px] xl:top-[320px] w-[98px] sm:w-[128px] md:w-[155px] lg:w-[200px] xl:w-60 p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.3)] z-20"
+          className="absolute right-2 sm:right-3 md:right-[4%] lg:right-[7%] xl:right-[10%] 2xl:right-[13%] top-[295px] sm:top-[330px] md:top-[350px] lg:top-[340px] xl:top-[380px] w-[98px] sm:w-[128px] md:w-[155px] lg:w-[200px] xl:w-60 p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.3)] z-20"
         >
           {/* 3 avatar circles with client photos + green plus badge */}
           <div className="flex items-center mb-1 sm:mb-2 lg:mb-4">
@@ -240,11 +240,11 @@ export default function HeroSection() {
         </div>
 
         {/* Hero Visual Stage with Profile Cutout */}
-        {/* On mobile: slightly increased size as requested; On desktop: positioned directly below the subtitle with gentle negative margin */}
-        <div className="relative flex justify-center items-end -mt-4 sm:-mt-6 md:-mt-8 lg:-mt-6 xl:-mt-8 z-10 w-full flex-1 min-h-0">
-          <div className="relative w-full max-w-[340px] sm:max-w-[430px] md:max-w-[500px] lg:max-w-[580px] xl:max-w-[660px] 2xl:max-w-[700px] h-[320px] sm:h-[380px] md:h-[430px] lg:h-[450px] xl:h-[500px] 2xl:h-[530px] flex items-end justify-center overflow-visible">
+        {/* Desktop: increased photo size and positioned slightly above under 'purpose' as requested */}
+        <div className="relative flex justify-center items-end -mt-4 sm:-mt-6 md:-mt-8 lg:-mt-10 xl:-mt-13 z-10 w-full flex-1 min-h-0">
+          <div className="relative w-full max-w-[340px] sm:max-w-[430px] md:max-w-[500px] lg:max-w-[640px] xl:max-w-[720px] 2xl:max-w-[760px] h-[320px] sm:h-[380px] md:h-[430px] lg:h-[490px] xl:h-[540px] 2xl:h-[570px] flex items-end justify-center overflow-visible">
             {/* Ambient Glow behind portrait */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[310px] sm:w-[410px] lg:w-[480px] h-[310px] sm:h-[410px] lg:h-[480px] rounded-full bg-[radial-gradient(circle,rgba(86,169,51,0.22),transparent_70%)] pointer-events-none blur-3xl" />
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[310px] sm:w-[410px] lg:w-[540px] xl:w-[600px] h-[310px] sm:h-[410px] lg:h-[540px] xl:h-[600px] rounded-full bg-[radial-gradient(circle,rgba(86,169,51,0.22),transparent_70%)] pointer-events-none blur-3xl" />
 
             {/* Profile cutout image with theme-reactive transition */}
             <AnimatePresence mode="wait">
@@ -261,7 +261,7 @@ export default function HeroSection() {
             </AnimatePresence>
 
             {/* Action Pills anchored at chest position - comfortably sitting on hoodie and 100% visible on desktop and mobile */}
-            <div className="absolute left-1/2 bottom-[12px] sm:bottom-[16px] md:bottom-[24px] lg:bottom-[72px] xl:bottom-[84px] 2xl:bottom-[92px] -translate-x-1/2 z-30 flex flex-nowrap sm:flex-wrap justify-center items-center gap-1.5 sm:gap-2.5 lg:gap-3.5 w-max max-w-[96vw]">
+            <div className="absolute left-1/2 bottom-[12px] sm:bottom-[16px] md:bottom-[24px] lg:bottom-[78px] xl:bottom-[90px] 2xl:bottom-[98px] -translate-x-1/2 z-30 flex flex-nowrap sm:flex-wrap justify-center items-center gap-1.5 sm:gap-2.5 lg:gap-3.5 w-max max-w-[96vw]">
               <Link
                 to="/contact"
                 className="brand-gradient text-white px-3 py-1.5 sm:px-4 sm:py-2 lg:px-6 lg:py-3 rounded-full text-[10.5px] sm:text-[12.5px] lg:text-[14.5px] font-semibold flex items-center gap-1 sm:gap-1.5 shadow-[0_8px_20px_-6px_rgba(20,110,70,0.65)] hover:opacity-95 active:scale-95 transition-all whitespace-nowrap"

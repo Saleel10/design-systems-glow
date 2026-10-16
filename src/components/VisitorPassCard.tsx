@@ -151,10 +151,10 @@ export default function VisitorPassCard() {
             </div>
 
             {/* Main Physical Visitor Pass Card */}
-            {/* Compact width (w-[78px] on mobile) so it never sits on top of any texts or floating cards */}
-            <div className="relative w-[78px] sm:w-[98px] md:w-[145px] xl:w-[250px] flex flex-col justify-between rounded-[8px] sm:rounded-[12px] xl:rounded-[24px] bg-[#0c0e0c]/85 sm:bg-[#0c0e0c]/90 xl:bg-[#0c0e0c]/95 border border-white/20 p-1 sm:p-1.5 md:p-2.5 xl:p-5 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.75),0_0_10px_rgba(92,184,71,0.12)] backdrop-blur-md overflow-hidden text-left">
+            {/* Decreased size on desktop (lg:w-[175px] xl:w-[205px]) as requested, keeping mobile untouched */}
+            <div className="relative w-[78px] sm:w-[98px] md:w-[130px] lg:w-[175px] xl:w-[205px] flex flex-col justify-between rounded-[8px] sm:rounded-[12px] lg:rounded-[16px] xl:rounded-[18px] bg-[#0c0e0c]/85 sm:bg-[#0c0e0c]/90 xl:bg-[#0c0e0c]/95 border border-white/20 p-1 sm:p-1.5 md:p-2 lg:p-3 xl:p-3.5 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.75),0_0_10px_rgba(92,184,71,0.12)] backdrop-blur-md overflow-hidden text-left">
               {/* Card Top Punch Hole Notch for Lanyard */}
-              <div className="w-2.5 sm:w-4 md:w-6 xl:w-9 h-0.5 xl:h-1.5 bg-black/60 rounded-full mx-auto -mt-0.5 mb-0.5 sm:mb-1 xl:mb-2.5 border border-white/10" />
+              <div className="w-2.5 sm:w-4 md:w-5 lg:w-6 xl:w-7 h-0.5 xl:h-1 bg-black/60 rounded-full mx-auto -mt-0.5 mb-0.5 sm:mb-1 lg:mb-1.5 xl:mb-2 border border-white/10" />
 
               {/* Dynamic Glass Specular Sheen (Reacts to Cursor) */}
               <motion.div
@@ -170,40 +170,40 @@ export default function VisitorPassCard() {
               <div>
                 {/* Header: VISITOR PASS & Status Indicator + Close */}
                 <div className="flex items-center justify-between relative z-10">
-                  <span className="text-[5px] sm:text-[6.5px] md:text-[8px] xl:text-[11px] font-heading font-bold tracking-[0.08em] xl:tracking-[0.18em] text-neutral-400 uppercase">
+                  <span className="text-[5px] sm:text-[6.5px] md:text-[7.5px] lg:text-[8.5px] xl:text-[9.5px] font-heading font-bold tracking-[0.08em] lg:tracking-[0.14em] text-neutral-400 uppercase">
                     VISITOR PASS
                   </span>
 
-                  <div className="flex items-center gap-0.5 xl:gap-2">
-                    <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#22c55e] shadow-[0_0_5px_#22c55e] animate-pulse" />
+                  <div className="flex items-center gap-0.5 lg:gap-1.5">
+                    <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 lg:w-1.5 lg:h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#22c55e] shadow-[0_0_5px_#22c55e] animate-pulse" />
                     <button
                       type="button"
                       onClick={() => setIsCardOpen(false)}
                       aria-label="Close pass"
                       className="p-0.5 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                     >
-                      <X size={7} className="sm:w-2.5 sm:h-2.5 xl:w-3.5 xl:h-3.5" />
+                      <X size={7} className="sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3" />
                     </button>
                   </div>
                 </div>
 
                 {/* Avatar Box with Initial */}
-                <div className="relative z-10 w-3 h-3 sm:w-4.5 sm:h-4.5 md:w-6 md:h-6 xl:w-11 xl:h-11 rounded-[3px] sm:rounded-md xl:rounded-xl bg-gradient-to-br from-[#13806f] to-[#56a933] flex items-center justify-center text-white text-[7px] sm:text-[9px] md:text-xs xl:text-xl font-bold shadow-md my-0.5 sm:my-1 xl:my-3">
+                <div className="relative z-10 w-3 h-3 sm:w-4.5 sm:h-4.5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8.5 xl:h-8.5 rounded-[3px] sm:rounded-md lg:rounded-lg bg-gradient-to-br from-[#13806f] to-[#56a933] flex items-center justify-center text-white text-[7px] sm:text-[9px] md:text-xs lg:text-sm xl:text-base font-bold shadow-md my-0.5 sm:my-1 lg:my-1.5 xl:my-2">
                   {firstLetter}
                 </div>
 
                 {/* Greeting & Name */}
                 <div className="relative z-10">
-                  <div className="text-neutral-400 text-[5px] sm:text-[6.5px] md:text-[8px] xl:text-xs font-normal leading-none">
+                  <div className="text-neutral-400 text-[5px] sm:text-[6.5px] md:text-[7.5px] lg:text-[8px] xl:text-[9.5px] font-normal leading-none">
                     {greeting}
                   </div>
-                  <div className="text-[7.5px] sm:text-[9.5px] md:text-xs xl:text-[20px] font-heading font-bold text-white tracking-tight mt-0.5 break-words leading-tight">
+                  <div className="text-[7.5px] sm:text-[9.5px] md:text-xs lg:text-[13.5px] xl:text-[15.5px] font-heading font-bold text-white tracking-tight mt-0.5 break-words leading-tight">
                     {visitorName}
                   </div>
                 </div>
 
                 {/* Welcome text - hidden on compact mobile */}
-                <p className="hidden md:block relative z-10 text-[8px] xl:text-[11.5px] text-neutral-300/85 leading-tight xl:leading-[1.4] mt-0.5 xl:mt-2 line-clamp-2 xl:line-clamp-none">
+                <p className="hidden md:block relative z-10 text-[7.5px] lg:text-[8.5px] xl:text-[10px] text-neutral-300/85 leading-tight lg:leading-[1.35] mt-0.5 lg:mt-1 xl:mt-1.5 line-clamp-2">
                   Welcome to Saleel Designs — explore the work and say hi anytime.
                 </p>
               </div>
@@ -211,10 +211,10 @@ export default function VisitorPassCard() {
               {/* Bottom Meta Section */}
               <div className="relative z-10">
                 {/* Dashed divider */}
-                <div className="border-b border-dashed border-neutral-700/60 my-0.5 sm:my-1 xl:my-3" />
+                <div className="border-b border-dashed border-neutral-700/60 my-0.5 sm:my-1 lg:my-1.5 xl:my-2" />
 
                 {/* Meta details table */}
-                <div className="flex flex-col gap-0.5 xl:gap-1 text-[4.5px] sm:text-[5.5px] md:text-[7px] xl:text-[11px]">
+                <div className="flex flex-col gap-0.5 text-[4.5px] sm:text-[5.5px] md:text-[6.5px] lg:text-[7.5px] xl:text-[9px]">
                   <div className="flex justify-between items-center">
                     <span className="text-neutral-400">Date</span>
                     <span className="font-semibold text-white tracking-tight font-mono">{currentDate}</span>
