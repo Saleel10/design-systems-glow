@@ -6,6 +6,7 @@ interface SEOProps {
   image?: string;
   url?: string;
   keywords?: string;
+  schema?: Record<string, any>;
 }
 
 const SEO = ({ 
@@ -13,7 +14,8 @@ const SEO = ({
   description = "Creative Designer & UI/UX Designer with 5+ years experience building structured digital experiences.", 
   image = "https://saleeldesigns.com/hero-portrait.webp", 
   url = "https://saleeldesigns.com",
-  keywords = "Freelance UI/UX Designer India, Creative Designer, Digital Product Designer, Branding Expert, Web Designer, App Designer, SaaS UI Designer, Design Systems, Visual Designer, User Experience Design, User Interface Design, Figma Expert, Website Redesign, Packaging Design, Saleel"
+  keywords = "Freelance UI/UX Designer India, Creative Designer, Digital Product Designer, Branding Expert, Web Designer, App Designer, SaaS UI Designer, Design Systems, Visual Designer, User Experience Design, User Interface Design, Figma Expert, Website Redesign, Packaging Design, Saleel",
+  schema
 }: SEOProps) => {
   return (
     <Helmet>
@@ -34,6 +36,12 @@ const SEO = ({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+
+      {schema && (
+        <script type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      )}
     </Helmet>
   );
 };

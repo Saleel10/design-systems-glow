@@ -8,9 +8,35 @@ export default function About() {
   return (
     <PageContainer showCta={true}>
       <SEO
-        title="About | Saleel Designs — Systems over decoration"
-        description="From pixels to systems. Creative Designer & UI/UX Designer with 5+ years experience building structured digital experiences."
+        title="Creative Designer in India | Branding & UI/UX Designer"
+        description="Creative designer in India specializing in brand identity, graphic design, UI/UX design, website experiences, and strategic design systems for ambitious businesses."
+        keywords="Creative Designer in India, Graphic Designer in India, Brand Identity Designer, UI/UX Designer in India, Website Designer, Digital Product Designer, Freelance Brand Designer"
         url="https://saleeldesigns.com/about"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Muhammed Saleel CP",
+          "jobTitle": "Creative Designer and UI/UX Designer",
+          "nationality": "Indian",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "India"
+          },
+          "url": "https://saleeldesigns.com/about",
+          "sameAs": [
+            "https://www.linkedin.com/in/muhammed-saleel-cp/",
+            "https://dribbble.com/muhammed-saleel"
+          ],
+          "knowsAbout": [
+            "Brand Identity Design",
+            "UI/UX Design",
+            "Graphic Design",
+            "Design Systems",
+            "Digital Product Design",
+            "Website Design"
+          ],
+          "description": "Creative designer in India specializing in brand identity, graphic design, UI/UX design, website experiences, and strategic design systems for ambitious businesses."
+        }}
       />
 
       <div className="max-w-7xl mx-auto w-full py-10 sm:py-16 px-6 md:px-12 bg-[var(--bg)] transition-colors">
@@ -50,16 +76,19 @@ export default function About() {
 
               <div className="flex flex-col gap-4 mt-5 text-[15px] sm:text-base leading-relaxed text-[var(--body)]">
                 <p>
-                  My journey into design started with graphic design — creating posters, social media creatives, brand identities, and visual campaigns that helped brands communicate their story with clarity and emotion. What began as a passion for visuals gradually evolved into a deeper understanding of how design influences perception, experience, and human interaction.
+                  I'm a <strong className="text-[var(--ink)] font-semibold">Creative Designer and UI/UX Designer from India</strong>, specializing in brand identity, visual communication, digital experiences, and strategic design systems. My journey began with graphic design, creating posters, social media creatives, brand identities, and visual campaigns that help businesses communicate their stories with clarity and purpose.
                 </p>
                 <p>
-                  As I worked across different creative projects, I realized that impactful design is not just about making things look good. The strongest digital experiences are built on thoughtful structure, clear strategy, usability, and purposeful systems that solve real problems.
+                  Over time, my passion for visual design evolved into a deeper understanding of user experience, brand strategy, and digital product design. I began exploring how thoughtful design can influence perception, improve usability, and build meaningful connections between brands and people.
                 </p>
                 <p>
-                  Over the past 5+ years, I've worked across brand identity design, UI/UX design, website experiences, and scalable product systems — collaborating with startups, businesses, communities, and creative teams.
+                  With <strong className="text-[var(--ink)] font-semibold">5+ years of experience in graphic design, branding, UI/UX design, and digital experiences</strong>, I've collaborated with startups, businesses, communities, and creative teams to transform ideas into distinctive visual identities and functional digital products.
+                </p>
+                <p>
+                  My approach combines creative thinking, visual storytelling, user-centered design, and structured problem-solving. From developing memorable brand identities to designing intuitive website interfaces and scalable design systems, I focus on creating work that looks purposeful, feels intuitive, and delivers real value.
                 </p>
                 <p className="font-semibold tracking-tight text-xl sm:text-2xl text-[var(--ink)] leading-snug pt-2">
-                  Today, I see design as more than visuals — it's a way to create clarity, build trust, and shape experiences people genuinely connect with.
+                  Today, I see design as more than visuals — it's a way to build brands, simplify experiences, and create digital products people genuinely connect with.
                 </p>
               </div>
             </div>
