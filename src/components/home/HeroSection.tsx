@@ -127,18 +127,18 @@ export default function HeroSection() {
             transition: { type: 'spring', stiffness: 400, damping: 25 },
           }}
           whileTap={{ scale: 0.96, rotate: -2 }}
-          className="absolute left-2 sm:left-3 md:left-[3%] lg:left-[6%] xl:left-[8%] 2xl:left-[10%] top-[180px] sm:top-[205px] md:top-[215px] lg:top-[220px] xl:top-[255px] w-[120px] sm:w-[136px] md:w-[150px] lg:w-[200px] xl:w-60 p-2.5 sm:p-3.5 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[16px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
+          className="absolute left-2 sm:left-3 md:left-[3%] lg:left-[6%] xl:left-[8%] 2xl:left-[10%] top-[180px] sm:top-[205px] md:top-[215px] lg:top-[220px] xl:top-[255px] w-[104px] sm:w-[136px] md:w-[150px] lg:w-[200px] xl:w-60 p-2 sm:p-3.5 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
         >
-          <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-4 shadow-sm border border-[#5cb847]/20 shrink-0">
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-3.5 lg:h-3.5 bg-[var(--accent)] rotate-45" />
+          <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-md sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1 sm:mb-2 lg:mb-4 shadow-sm border border-[#5cb847]/20 shrink-0">
+            <div className="w-2 h-2 sm:w-3 sm:h-3 lg:w-3.5 lg:h-3.5 bg-[var(--accent)] rotate-45" />
           </div>
-          <div className="text-[17px] sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-bold tracking-tight leading-none text-[var(--ink)]">
+          <div className="text-[15px] sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-bold tracking-tight leading-none text-[var(--ink)]">
             800+
           </div>
-          <div className="text-[10px] sm:text-xs md:text-xs lg:text-base font-semibold text-[var(--ink)] mt-1 leading-tight">
+          <div className="text-[9.5px] sm:text-xs md:text-xs lg:text-base font-semibold text-[var(--ink)] mt-1 leading-tight">
             Projects shipped.
           </div>
-          <div className="text-[8px] sm:text-xs lg:text-[13px] text-[var(--muted2)] mt-1 leading-tight block">
+          <div className="text-[7.5px] sm:text-xs lg:text-[13px] text-[var(--muted2)] mt-0.5 sm:mt-1 leading-tight block">
             Brand, web &amp; product work.
           </div>
         </motion.div>
@@ -154,18 +154,18 @@ export default function HeroSection() {
             transition: { type: 'spring', stiffness: 400, damping: 25 },
           }}
           whileTap={{ scale: 0.96, rotate: 2 }}
-          className="absolute right-2 sm:right-3 md:right-[3%] lg:right-[6.5%] xl:right-[8%] 2xl:right-[10%] top-[185px] sm:top-[210px] md:top-[220px] lg:top-[160px] xl:top-[185px] w-[120px] sm:w-[136px] md:w-[150px] lg:w-[200px] xl:w-60 p-2.5 sm:p-3.5 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[16px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
+          className="absolute right-2 sm:right-3 md:right-[3%] lg:right-[6.5%] xl:right-[8%] 2xl:right-[10%] top-[185px] sm:top-[210px] md:top-[220px] lg:top-[160px] xl:top-[185px] w-[104px] sm:w-[136px] md:w-[150px] lg:w-[200px] xl:w-60 p-2 sm:p-3.5 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
         >
-          <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-4 shadow-sm border border-[#5cb847]/20 shrink-0">
-            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-3.5 lg:h-3.5 bg-[var(--accent)] rotate-45" />
+          <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-md sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1 sm:mb-2 lg:mb-4 shadow-sm border border-[#5cb847]/20 shrink-0">
+            <div className="w-2 h-2 sm:w-3 sm:h-3 lg:w-3.5 lg:h-3.5 bg-[var(--accent)] rotate-45" />
           </div>
-          <div className="text-[17px] sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-bold tracking-tight leading-none text-[var(--ink)]">
+          <div className="text-[15px] sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-bold tracking-tight leading-none text-[var(--ink)]">
             5+
           </div>
-          <div className="text-[10px] sm:text-xs md:text-xs lg:text-base font-semibold text-[var(--ink)] mt-1 leading-tight">
+          <div className="text-[9.5px] sm:text-xs md:text-xs lg:text-base font-semibold text-[var(--ink)] mt-1 leading-tight">
             Years experience.
           </div>
-          <div className="text-[8px] sm:text-xs lg:text-[13px] text-[var(--muted2)] mt-1 leading-tight block">
+          <div className="text-[7.5px] sm:text-xs lg:text-[13px] text-[var(--muted2)] mt-0.5 sm:mt-1 leading-tight block">
             Brand, UI/UX &amp; systems.
           </div>
         </motion.div>
@@ -181,26 +181,26 @@ export default function HeroSection() {
             transition: { type: 'spring', stiffness: 400, damping: 25 },
           }}
           whileTap={{ scale: 0.96, rotate: 0 }}
-          className="absolute right-2 sm:right-3 md:right-[4%] lg:right-[8.5%] xl:right-[11%] 2xl:right-[14%] top-[310px] sm:top-[340px] md:top-[350px] lg:top-[360px] xl:top-[405px] w-[122px] sm:w-[138px] md:w-[155px] lg:w-[200px] xl:w-60 p-2.5 sm:p-3.5 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[16px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.3)] z-20"
+          className="absolute right-2 sm:right-3 md:right-[4%] lg:right-[8.5%] xl:right-[11%] 2xl:right-[14%] top-[305px] sm:top-[340px] md:top-[350px] lg:top-[360px] xl:top-[405px] w-[106px] sm:w-[138px] md:w-[155px] lg:w-[200px] xl:w-60 p-2 sm:p-3.5 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[14px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.3)] z-20"
         >
           {/* 3 avatar circles with client photos + green plus badge */}
-          <div className="flex items-center mb-1.5 sm:mb-2 lg:mb-4">
+          <div className="flex items-center mb-1 sm:mb-2 lg:mb-4">
             <div className="flex items-center -space-x-1 sm:-space-x-1.5">
-              <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full border-2 border-[var(--card)] overflow-hidden bg-black shadow-sm">
+              <div className="w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full border border-2 sm:border-2 border-[var(--card)] overflow-hidden bg-black shadow-sm">
                 <img
                   src={clientAvatar1}
                   alt="Client 1"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full border-2 border-[var(--card)] overflow-hidden bg-black shadow-sm">
+              <div className="w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full border border-2 sm:border-2 border-[var(--card)] overflow-hidden bg-black shadow-sm">
                 <img
                   src={clientAvatar2}
                   alt="Client 2"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full border-2 border-[var(--card)] overflow-hidden bg-white shadow-sm">
+              <div className="w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 rounded-full border border-2 sm:border-2 border-[var(--card)] overflow-hidden bg-white shadow-sm">
                 <img
                   src={clientAvatar3}
                   alt="Client 3"
@@ -208,18 +208,18 @@ export default function HeroSection() {
                 />
               </div>
             </div>
-            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#1b3826] text-[#5cb847] flex items-center justify-center text-[8.5px] sm:text-[10px] font-bold ml-1 sm:ml-1.5 shadow-sm border border-[#5cb847]/30">
+            <div className="w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-[#1b3826] text-[#5cb847] flex items-center justify-center text-[7.5px] sm:text-[10px] font-bold ml-1 sm:ml-1.5 shadow-sm border border-[#5cb847]/30">
               +
             </div>
           </div>
 
-          <div className="text-[17px] sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-bold tracking-tight leading-none text-[var(--ink)]">
+          <div className="text-[15px] sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-bold tracking-tight leading-none text-[var(--ink)]">
             50+
           </div>
-          <div className="text-[10px] sm:text-xs md:text-xs lg:text-base font-semibold text-[var(--ink)] mt-1 leading-tight">
+          <div className="text-[9.5px] sm:text-xs md:text-xs lg:text-base font-semibold text-[var(--ink)] mt-1 leading-tight">
             Happy clients.
           </div>
-          <div className="text-[8px] sm:text-xs lg:text-[13px] text-[var(--muted2)] mt-1 leading-tight block">
+          <div className="text-[7.5px] sm:text-xs lg:text-[13px] text-[var(--muted2)] mt-0.5 sm:mt-1 leading-tight block">
             Global startups &amp; brands.
           </div>
         </motion.div>
