@@ -100,21 +100,8 @@ const Contact = () => {
             color: "var(--muted)",
           }}
         >
-          Have a project in mind or need strategic design consultation? Reach out below or book a direct 30-minute 1:1 call.
+          Have a project in mind or need strategic design consultation? Reach out below or explore direct contact options.
         </p>
-
-        <div style={{ marginTop: "22px" }}>
-          <a
-            href="https://cal.com/muhammed-saleel-yjtcye/30min"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full brand-gradient text-white font-medium text-sm sm:text-base shadow-[0_4px_20px_rgba(92,184,71,0.35)] hover:shadow-[0_6px_25px_rgba(92,184,71,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all no-underline"
-          >
-            <Calendar size={18} />
-            <span>Book 1:1 Call</span>
-            <span className="text-sm">↗</span>
-          </a>
-        </div>
 
         <div
           style={{
