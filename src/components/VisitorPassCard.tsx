@@ -119,7 +119,7 @@ export default function VisitorPassCard() {
           className={`${isDesktop ? 'fixed' : 'absolute'} ${
             isDesktop
               ? 'top-0 right-4 xl:right-10'
-              : 'top-[48px] sm:top-[56px] right-2 sm:right-3'
+              : 'top-[64px] sm:top-[70px] right-2.5 sm:right-3.5'
           } z-40 flex flex-col items-center select-none pointer-events-auto`}
         >
           {/* Hanging Pendulum Sway Animation Wrapper */}
@@ -151,8 +151,8 @@ export default function VisitorPassCard() {
             </div>
 
             {/* Main Physical Visitor Pass Card */}
-            {/* Decreased size on desktop (lg:w-[175px] xl:w-[205px]) as requested, keeping mobile untouched */}
-            <div className="relative w-[78px] sm:w-[98px] md:w-[130px] lg:w-[175px] xl:w-[205px] flex flex-col justify-between rounded-[8px] sm:rounded-[12px] lg:rounded-[16px] xl:rounded-[18px] bg-[#0c0e0c]/85 sm:bg-[#0c0e0c]/90 xl:bg-[#0c0e0c]/95 border border-white/20 p-1 sm:p-1.5 md:p-2 lg:p-3 xl:p-3.5 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.75),0_0_10px_rgba(92,184,71,0.12)] backdrop-blur-md overflow-hidden text-left">
+            {/* Slightly increased mobile size (w-[90px]) and decreased desktop size (lg:w-[175px]) */}
+            <div className="relative w-[90px] sm:w-[104px] md:w-[130px] lg:w-[175px] xl:w-[205px] flex flex-col justify-between rounded-[9px] sm:rounded-[12px] lg:rounded-[16px] xl:rounded-[18px] bg-[#0c0e0c]/85 sm:bg-[#0c0e0c]/90 xl:bg-[#0c0e0c]/95 border border-white/20 p-1.5 sm:p-2 md:p-2 lg:p-3 xl:p-3.5 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.75),0_0_10px_rgba(92,184,71,0.12)] backdrop-blur-md overflow-hidden text-left">
               {/* Card Top Punch Hole Notch for Lanyard */}
               <div className="w-2.5 sm:w-4 md:w-5 lg:w-6 xl:w-7 h-0.5 xl:h-1 bg-black/60 rounded-full mx-auto -mt-0.5 mb-0.5 sm:mb-1 lg:mb-1.5 xl:mb-2 border border-white/10" />
 
@@ -170,7 +170,7 @@ export default function VisitorPassCard() {
               <div>
                 {/* Header: VISITOR PASS & Status Indicator + Close */}
                 <div className="flex items-center justify-between relative z-10">
-                  <span className="text-[5px] sm:text-[6.5px] md:text-[7.5px] lg:text-[8.5px] xl:text-[9.5px] font-heading font-bold tracking-[0.08em] lg:tracking-[0.14em] text-neutral-400 uppercase">
+                  <span className="text-[5.5px] sm:text-[7px] md:text-[7.5px] lg:text-[8.5px] xl:text-[9.5px] font-heading font-bold tracking-[0.08em] lg:tracking-[0.14em] text-neutral-400 uppercase">
                     VISITOR PASS
                   </span>
 
@@ -188,16 +188,16 @@ export default function VisitorPassCard() {
                 </div>
 
                 {/* Avatar Box with Initial */}
-                <div className="relative z-10 w-3 h-3 sm:w-4.5 sm:h-4.5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8.5 xl:h-8.5 rounded-[3px] sm:rounded-md lg:rounded-lg bg-gradient-to-br from-[#13806f] to-[#56a933] flex items-center justify-center text-white text-[7px] sm:text-[9px] md:text-xs lg:text-sm xl:text-base font-bold shadow-md my-0.5 sm:my-1 lg:my-1.5 xl:my-2">
+                <div className="relative z-10 w-3.5 h-3.5 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8.5 xl:h-8.5 rounded-[3px] sm:rounded-md lg:rounded-lg bg-gradient-to-br from-[#13806f] to-[#56a933] flex items-center justify-center text-white text-[7.5px] sm:text-[9.5px] md:text-xs lg:text-sm xl:text-base font-bold shadow-md my-0.5 sm:my-1 lg:my-1.5 xl:my-2">
                   {firstLetter}
                 </div>
 
                 {/* Greeting & Name */}
                 <div className="relative z-10">
-                  <div className="text-neutral-400 text-[5px] sm:text-[6.5px] md:text-[7.5px] lg:text-[8px] xl:text-[9.5px] font-normal leading-none">
+                  <div className="text-neutral-400 text-[5.5px] sm:text-[7px] md:text-[7.5px] lg:text-[8px] xl:text-[9.5px] font-normal leading-none">
                     {greeting}
                   </div>
-                  <div className="text-[7.5px] sm:text-[9.5px] md:text-xs lg:text-[13.5px] xl:text-[15.5px] font-heading font-bold text-white tracking-tight mt-0.5 break-words leading-tight">
+                  <div className="text-[8.5px] sm:text-[10.5px] md:text-xs lg:text-[13.5px] xl:text-[15.5px] font-heading font-bold text-white tracking-tight mt-0.5 break-words leading-tight">
                     {visitorName}
                   </div>
                 </div>
@@ -214,7 +214,7 @@ export default function VisitorPassCard() {
                 <div className="border-b border-dashed border-neutral-700/60 my-0.5 sm:my-1 lg:my-1.5 xl:my-2" />
 
                 {/* Meta details table */}
-                <div className="flex flex-col gap-0.5 text-[4.5px] sm:text-[5.5px] md:text-[6.5px] lg:text-[7.5px] xl:text-[9px]">
+                <div className="flex flex-col gap-0.5 text-[5px] sm:text-[6px] md:text-[6.5px] lg:text-[7.5px] xl:text-[9px]">
                   <div className="flex justify-between items-center">
                     <span className="text-neutral-400">Date</span>
                     <span className="font-semibold text-white tracking-tight font-mono">{currentDate}</span>
