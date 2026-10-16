@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-import { WORKS } from "@/data/portfolioData";
+import { getSyncedWorks, SyncedWork, DEFAULT_WORKS } from "@/lib/portfolioDataSync";
 import { ArrowUpRight } from "lucide-react";
 
 const FILTERS = ["All", "Branding", "UI/UX", "Web", "Social"];
@@ -49,10 +49,30 @@ const WORK_PREVIEWS: Record<
 };
 
 const Works = () => {
+  const [works, setWorks] = useState<SyncedWork[]>(DEFAULT_WORKS);
   const [filter, setFilter] = useState("All");
 
+  useEffect(() => {
+    const loadWorks = async () => {
+      const data = await getSyncedWorks();
+      if (Array.isArray(data) && data.length > 0) {
+        setWorks(data);
+      }
+    };
+    loadWorks();
+
+    window.addEventListener("portfolio_data_updated", loadWorks);
+    return () => window.removeEventListener("portfolio_data_updated", loadWorks);
+  }, []);
+
   const filteredWorks =
-    filter === "All" ? WORKS : WORKS.filter((w) => w.cat === filter);
+    filter === "All"
+      ? works
+      : works.filter(
+          (w) =>
+            w.cat?.toLowerCase() === filter.toLowerCase() ||
+            w.categories?.name?.toLowerCase() === filter.toLowerCase()
+        );
 
   return (
     <PageContainer>
@@ -150,103 +170,115 @@ const Works = () => {
                   </div>
 
                   {/* Center abstract artwork / UI mockup preview */}
-                  <div className="relative z-10 flex flex-col items-center justify-center my-auto py-2 w-full">
-                    {preview.type === "brand" && (
-                      <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#5cb847]/40 transition-colors">
-                        <div
-                          className="h-2 w-16 rounded-full mb-3"
-                          style={{ backgroundColor: preview.accent }}
+                  <div className="relative z-10 flex flex-col items-center justify-center my-auto py-2 w-full h-full">
+                    {w.image_url ? (
+                      <div className="w-full h-full max-h-[175px] flex items-center justify-center overflow-hidden rounded-xl bg-black/20 p-2">
+                        <img
+                          src={w.image_url}
+                          alt={w.title}
+                          className="max-h-full max-w-full object-contain rounded-lg shadow-md"
                         />
-                        <div className="space-y-1.5">
-                          <div className="h-1.5 w-full bg-white/20 rounded" />
-                          <div className="h-1.5 w-4/5 bg-white/15 rounded" />
-                          <div className="h-1.5 w-3/5 bg-white/10 rounded" />
-                        </div>
-                        <div className="mt-4 flex items-center justify-between">
-                          <div className="flex gap-1.5">
-                            <span className="w-3.5 h-3.5 rounded-full bg-[#13806f]" />
-                            <span
-                              className="w-3.5 h-3.5 rounded-full"
+                      </div>
+                    ) : (
+                      <>
+                        {preview.type === "brand" && (
+                          <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#5cb847]/40 transition-colors">
+                            <div
+                              className="h-2 w-16 rounded-full mb-3"
                               style={{ backgroundColor: preview.accent }}
                             />
-                            <span className="w-3.5 h-3.5 rounded-full bg-white/80" />
+                            <div className="space-y-1.5">
+                              <div className="h-1.5 w-full bg-white/20 rounded" />
+                              <div className="h-1.5 w-4/5 bg-white/15 rounded" />
+                              <div className="h-1.5 w-3/5 bg-white/10 rounded" />
+                            </div>
+                            <div className="mt-4 flex items-center justify-between">
+                              <div className="flex gap-1.5">
+                                <span className="w-3.5 h-3.5 rounded-full bg-[#13806f]" />
+                                <span
+                                  className="w-3.5 h-3.5 rounded-full"
+                                  style={{ backgroundColor: preview.accent }}
+                                />
+                                <span className="w-3.5 h-3.5 rounded-full bg-white/80" />
+                              </div>
+                              <span className="text-[9px] font-mono text-white/40 tracking-wider">
+                                IDENTITY
+                              </span>
+                            </div>
                           </div>
-                          <span className="text-[9px] font-mono text-white/40 tracking-wider">
-                            IDENTITY
-                          </span>
-                        </div>
-                      </div>
-                    )}
+                        )}
 
-                    {preview.type === "ui" && (
-                      <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#38bdf8]/40 transition-colors">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="w-6 h-6 rounded-lg bg-[#38bdf8]/25 flex items-center justify-center text-[10px] text-[#38bdf8] font-bold">
-                            UI
+                        {preview.type === "ui" && (
+                          <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#38bdf8]/40 transition-colors">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="w-6 h-6 rounded-lg bg-[#38bdf8]/25 flex items-center justify-center text-[10px] text-[#38bdf8] font-bold">
+                                UI
+                              </div>
+                              <div className="h-1.5 w-14 bg-white/20 rounded-full" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 my-2">
+                              <div className="p-1.5 rounded bg-white/5 border border-white/5">
+                                <div className="text-[9px] text-white/40">Efficiency</div>
+                                <div className="text-xs font-bold text-white mt-0.5">3.4x</div>
+                              </div>
+                              <div className="p-1.5 rounded bg-white/5 border border-white/5">
+                                <div className="text-[9px] text-white/40">Flow</div>
+                                <div className="text-xs font-bold text-[#38bdf8] mt-0.5">+48%</div>
+                              </div>
+                            </div>
+                            <div className="h-1.5 w-full bg-white/20 rounded mt-1.5" />
                           </div>
-                          <div className="h-1.5 w-14 bg-white/20 rounded-full" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 my-2">
-                          <div className="p-1.5 rounded bg-white/5 border border-white/5">
-                            <div className="text-[9px] text-white/40">Efficiency</div>
-                            <div className="text-xs font-bold text-white mt-0.5">3.4x</div>
-                          </div>
-                          <div className="p-1.5 rounded bg-white/5 border border-white/5">
-                            <div className="text-[9px] text-white/40">Flow</div>
-                            <div className="text-xs font-bold text-[#38bdf8] mt-0.5">+48%</div>
-                          </div>
-                        </div>
-                        <div className="h-1.5 w-full bg-white/20 rounded mt-1.5" />
-                      </div>
-                    )}
+                        )}
 
-                    {preview.type === "system" && (
-                      <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#f59e0b]/40 transition-colors">
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <span className="text-sm font-serif italic text-[#f59e0b]">Aa</span>
-                          <div className="h-1.5 w-16 bg-white/20 rounded" />
-                        </div>
-                        <div className="h-px w-full bg-white/10 my-2" />
-                        <div className="flex justify-between items-center text-[11px] text-white/70">
-                          <span className="font-mono text-[10px] text-white/60">EN · AR</span>
-                          <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-white/90">2024</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {preview.type === "web" && (
-                      <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#a855f7]/40 transition-colors">
-                        <div className="flex items-center gap-1.5 mb-2.5">
-                          <div className="w-2 h-2 rounded-full bg-white/30" />
-                          <div className="h-1.5 w-20 bg-white/20 rounded" />
-                        </div>
-                        <div className="h-10 rounded-lg bg-white/10 flex items-center justify-center mb-2">
-                          <span className="text-[10px] text-white/60 font-mono">WEB ARCHITECTURE</span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-1">
-                          <div className="h-1.5 bg-white/15 rounded" />
-                          <div className="h-1.5 bg-white/15 rounded" />
-                          <div className="h-1.5 bg-white/15 rounded" />
-                        </div>
-                      </div>
-                    )}
-
-                    {preview.type === "social" && (
-                      <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#10b981]/40 transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] font-mono text-white/60">CAMPAIGN</span>
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-emerald-300 font-mono">SOCIAL</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 my-1">
-                          <div className="h-10 rounded bg-white/10 flex items-center justify-center">
-                            <span className="text-[8px] text-white/40">1:1</span>
+                        {preview.type === "system" && (
+                          <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#f59e0b]/40 transition-colors">
+                            <div className="flex items-center gap-2 mb-2.5">
+                              <span className="text-sm font-serif italic text-[#f59e0b]">Aa</span>
+                              <div className="h-1.5 w-16 bg-white/20 rounded" />
+                            </div>
+                            <div className="h-px w-full bg-white/10 my-2" />
+                            <div className="flex justify-between items-center text-[11px] text-white/70">
+                              <span className="font-mono text-[10px] text-white/60">EN · AR</span>
+                              <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-white/90">2024</span>
+                            </div>
                           </div>
-                          <div className="h-10 rounded bg-white/10 flex items-center justify-center">
-                            <span className="text-[8px] text-white/40">9:16</span>
+                        )}
+
+                        {preview.type === "web" && (
+                          <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#a855f7]/40 transition-colors">
+                            <div className="flex items-center gap-1.5 mb-2.5">
+                              <div className="w-2 h-2 rounded-full bg-white/30" />
+                              <div className="h-1.5 w-20 bg-white/20 rounded" />
+                            </div>
+                            <div className="h-10 rounded-lg bg-white/10 flex items-center justify-center mb-2">
+                              <span className="text-[10px] text-white/60 font-mono">WEB ARCHITECTURE</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-1">
+                              <div className="h-1.5 bg-white/15 rounded" />
+                              <div className="h-1.5 bg-white/15 rounded" />
+                              <div className="h-1.5 bg-white/15 rounded" />
+                            </div>
                           </div>
-                        </div>
-                        <div className="h-1.5 w-3/4 bg-white/20 rounded mt-1.5" />
-                      </div>
+                        )}
+
+                        {preview.type === "social" && (
+                          <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#10b981]/40 transition-colors">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[10px] font-mono text-white/60">CAMPAIGN</span>
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-emerald-300 font-mono">SOCIAL</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 my-1">
+                              <div className="h-10 rounded bg-white/10 flex items-center justify-center">
+                                <span className="text-[8px] text-white/40">1:1</span>
+                              </div>
+                              <div className="h-10 rounded bg-white/10 flex items-center justify-center">
+                                <span className="text-[8px] text-white/40">9:16</span>
+                              </div>
+                            </div>
+                            <div className="h-1.5 w-3/4 bg-white/20 rounded mt-1.5" />
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
 

@@ -18,6 +18,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import { getSyncedCases, notifyPortfolioDataUpdated } from "@/lib/portfolioDataSync";
+
 export default function CasesList() {
   const [cases, setCases] = useState<CaseStudy[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,37 +27,15 @@ export default function CasesList() {
 
   useEffect(() => {
     fetchCases();
+    const handleUpdate = () => fetchCases();
+    window.addEventListener("portfolio_data_updated", handleUpdate);
+    return () => window.removeEventListener("portfolio_data_updated", handleUpdate);
   }, []);
 
   const fetchCases = async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("case_studies")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (!error && data && data.length > 0) {
-        setCases(data);
-      } else {
-        // Fall back to localStorage or static CASES
-        const stored = localStorage.getItem("admin_cases");
-        if (stored) {
-          setCases(JSON.parse(stored));
-        } else {
-          setCases(CASES);
-          localStorage.setItem("admin_cases", JSON.stringify(CASES));
-        }
-      }
-    } catch {
-      const stored = localStorage.getItem("admin_cases");
-      if (stored) {
-        setCases(JSON.parse(stored));
-      } else {
-        setCases(CASES);
-        localStorage.setItem("admin_cases", JSON.stringify(CASES));
-      }
-    }
+    const data = await getSyncedCases();
+    setCases(data);
     setLoading(false);
   };
 
@@ -69,6 +49,7 @@ export default function CasesList() {
     const updated = cases.filter((c) => c.id !== id);
     setCases(updated);
     localStorage.setItem("admin_cases", JSON.stringify(updated));
+    notifyPortfolioDataUpdated();
 
     toast({
       title: "Case study deleted",

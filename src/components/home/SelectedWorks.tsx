@@ -1,31 +1,67 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
-import { WORKS } from '@/data/portfolioData';
+import { getSyncedWorks, SyncedWork, DEFAULT_WORKS } from '@/lib/portfolioDataSync';
 
-// Visual preview configurations for selected works without client company logos
-const TOP_WORKS = [
+// Visual preview configurations for works without custom images
+const WORK_PREVIEWS: Record<
+  string,
   {
-    ...WORKS[0], // Taxverse - Branding
+    gradient: string;
+    accentColor: string;
+    previewType: 'brand' | 'ui' | 'system' | 'web' | 'social';
+  }
+> = {
+  taxverse: {
     gradient: 'from-[#0b241b] via-[#103024] to-[#071610]',
     accentColor: '#5cb847',
-    previewType: 'brand' as const,
+    previewType: 'brand',
   },
-  {
-    ...WORKS[1], // Trevio - UI/UX
+  trevio: {
     gradient: 'from-[#0c242e] via-[#0d2f3c] to-[#07171d]',
     accentColor: '#38bdf8',
-    previewType: 'ui' as const,
+    previewType: 'ui',
   },
-  {
-    ...WORKS[2], // Shad Creative Education - Branding
+  shad: {
     gradient: 'from-[#2a2010] via-[#352814] to-[#1a140a]',
     accentColor: '#f59e0b',
-    previewType: 'system' as const,
+    previewType: 'system',
   },
-];
+  buraq: {
+    gradient: 'from-[#17142b] via-[#1f1b3a] to-[#0f0d1c]',
+    accentColor: '#a855f7',
+    previewType: 'web',
+  },
+  '2nd-street': {
+    gradient: 'from-[#24131b] via-[#331b26] to-[#170c12]',
+    accentColor: '#f43f5e',
+    previewType: 'brand',
+  },
+  raidhan: {
+    gradient: 'from-[#10241e] via-[#18362d] to-[#0b1814]',
+    accentColor: '#10b981',
+    previewType: 'social',
+  },
+};
 
 export default function SelectedWorks() {
+  const [works, setWorks] = useState<SyncedWork[]>(DEFAULT_WORKS);
+
+  useEffect(() => {
+    const loadWorks = async () => {
+      const data = await getSyncedWorks();
+      if (Array.isArray(data) && data.length > 0) {
+        setWorks(data);
+      }
+    };
+    loadWorks();
+
+    window.addEventListener('portfolio_data_updated', loadWorks);
+    return () => window.removeEventListener('portfolio_data_updated', loadWorks);
+  }, []);
+
+  const topWorks = works.slice(0, 3);
   return (
     <section className="w-full py-20 sm:py-24 px-6 md:px-12 bg-[var(--bg)] transition-colors">
       <div className="max-w-7xl mx-auto">
@@ -66,117 +102,172 @@ export default function SelectedWorks() {
 
         {/* 3-Column Works Grid with Entrance Animation */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TOP_WORKS.map((work, i) => (
-            <motion.div
-              key={work.id}
-              initial={{ opacity: 0, y: 40, scale: 0.96 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ delay: 0.1 + i * 0.12, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Link
-                to={`/work/${work.slug}`}
-                className="flex flex-col gap-3.5 group cursor-pointer block"
+          {topWorks.map((work, i) => {
+            const preview = WORK_PREVIEWS[work.id] || {
+              gradient: 'from-[#111a16] via-[#16241e] to-[#0a120e]',
+              accentColor: '#5cb847',
+              previewType: 'brand' as const,
+            };
+
+            return (
+              <motion.div
+                key={work.id}
+                initial={{ opacity: 0, y: 40, scale: 0.96 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ delay: 0.1 + i * 0.12, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
               >
-                {/* Showcase Card Media (clean visual preview, no client logos) */}
-                <div
-                  className={`relative aspect-[4/3.2] rounded-[22px] overflow-hidden border border-[var(--line)] bg-gradient-to-br ${work.gradient} flex flex-col justify-between p-6 group-hover:scale-[1.02] group-hover:shadow-[0_20px_40px_-16px_rgba(0,0,0,0.4)] transition-all duration-300`}
+                <Link
+                  to={`/work/${work.slug || work.id}`}
+                  className="flex flex-col gap-3.5 group cursor-pointer block"
                 >
-                  {/* Radial ambient highlight */}
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.08),transparent_70%)] pointer-events-none" />
+                  {/* Showcase Card Media */}
+                  <div
+                    className={`relative aspect-[4/3.2] rounded-[22px] overflow-hidden border border-[var(--line)] bg-gradient-to-br ${preview.gradient} flex flex-col justify-between p-6 group-hover:scale-[1.02] group-hover:shadow-[0_20px_40px_-16px_rgba(0,0,0,0.4)] transition-all duration-300`}
+                  >
+                    {/* Radial ambient highlight */}
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(255,255,255,0.08),transparent_70%)] pointer-events-none" />
 
-                  {/* Top preview bar */}
-                  <div className="relative z-10 flex items-center justify-between w-full">
-                    <div className="flex items-center gap-1.5 opacity-60">
-                      <span className="w-2.5 h-2.5 rounded-full bg-white/30" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                    </div>
-                  </div>
-
-                  {/* Center abstract artwork / UI mockup preview */}
-                  <div className="relative z-10 flex flex-col items-center justify-center my-auto py-2 w-full">
-                    {work.previewType === 'brand' && (
-                      <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#5cb847]/40 transition-colors">
-                        <div className="h-2 w-16 bg-[#5cb847] rounded-full mb-3" />
-                        <div className="space-y-1.5">
-                          <div className="h-1.5 w-full bg-white/20 rounded" />
-                          <div className="h-1.5 w-4/5 bg-white/15 rounded" />
-                          <div className="h-1.5 w-3/5 bg-white/10 rounded" />
-                        </div>
-                        <div className="mt-4 flex items-center justify-between">
-                          <div className="flex gap-1.5">
-                            <span className="w-3.5 h-3.5 rounded-full bg-[#13806f]" />
-                            <span className="w-3.5 h-3.5 rounded-full bg-[#5cb847]" />
-                            <span className="w-3.5 h-3.5 rounded-full bg-white/80" />
-                          </div>
-                          <span className="text-[9px] font-mono text-white/40 tracking-wider">SYSTEM</span>
-                        </div>
+                    {/* Top preview bar */}
+                    <div className="relative z-10 flex items-center justify-between w-full">
+                      <div className="flex items-center gap-1.5 opacity-60">
+                        <span className="w-2.5 h-2.5 rounded-full bg-white/30" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
                       </div>
-                    )}
+                    </div>
 
-                    {work.previewType === 'ui' && (
-                      <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#38bdf8]/40 transition-colors">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="w-6 h-6 rounded-lg bg-[#38bdf8]/25 flex items-center justify-center text-[10px] text-[#38bdf8] font-bold">
-                            UI
-                          </div>
-                          <div className="h-1.5 w-14 bg-white/20 rounded-full" />
+                    {/* Center abstract artwork / UI mockup preview */}
+                    <div className="relative z-10 flex flex-col items-center justify-center my-auto py-2 w-full h-full">
+                      {work.image_url ? (
+                        <div className="w-full h-full max-h-[160px] flex items-center justify-center overflow-hidden rounded-xl bg-black/20 p-2">
+                          <img
+                            src={work.image_url}
+                            alt={work.title}
+                            className="max-h-full max-w-full object-contain rounded-lg shadow-md"
+                          />
                         </div>
-                        <div className="grid grid-cols-2 gap-2 my-2">
-                          <div className="p-1.5 rounded bg-white/5 border border-white/5">
-                            <div className="text-[9px] text-white/40">Efficiency</div>
-                            <div className="text-xs font-bold text-white mt-0.5">3.4x</div>
-                          </div>
-                          <div className="p-1.5 rounded bg-white/5 border border-white/5">
-                            <div className="text-[9px] text-white/40">Flow</div>
-                            <div className="text-xs font-bold text-[#38bdf8] mt-0.5">+48%</div>
-                          </div>
-                        </div>
-                        <div className="h-1.5 w-full bg-white/20 rounded mt-1.5" />
+                      ) : (
+                        <>
+                          {preview.previewType === 'brand' && (
+                            <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#5cb847]/40 transition-colors">
+                              <div className="h-2 w-16 bg-[#5cb847] rounded-full mb-3" />
+                              <div className="space-y-1.5">
+                                <div className="h-1.5 w-full bg-white/20 rounded" />
+                                <div className="h-1.5 w-4/5 bg-white/15 rounded" />
+                                <div className="h-1.5 w-3/5 bg-white/10 rounded" />
+                              </div>
+                              <div className="mt-4 flex items-center justify-between">
+                                <div className="flex gap-1.5">
+                                  <span className="w-3.5 h-3.5 rounded-full bg-[#13806f]" />
+                                  <span className="w-3.5 h-3.5 rounded-full bg-[#5cb847]" />
+                                  <span className="w-3.5 h-3.5 rounded-full bg-white/80" />
+                                </div>
+                                <span className="text-[9px] font-mono text-white/40 tracking-wider">SYSTEM</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {preview.previewType === 'ui' && (
+                            <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#38bdf8]/40 transition-colors">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="w-6 h-6 rounded-lg bg-[#38bdf8]/25 flex items-center justify-center text-[10px] text-[#38bdf8] font-bold">
+                                  UI
+                                </div>
+                                <div className="h-1.5 w-14 bg-white/20 rounded-full" />
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 my-2">
+                                <div className="p-1.5 rounded bg-white/5 border border-white/5">
+                                  <div className="text-[9px] text-white/40">Efficiency</div>
+                                  <div className="text-xs font-bold text-white mt-0.5">3.4x</div>
+                                </div>
+                                <div className="p-1.5 rounded bg-white/5 border border-white/5">
+                                  <div className="text-[9px] text-white/40">Flow</div>
+                                  <div className="text-xs font-bold text-[#38bdf8] mt-0.5">+48%</div>
+                                </div>
+                              </div>
+                              <div className="h-1.5 w-full bg-white/20 rounded mt-1.5" />
+                            </div>
+                          )}
+
+                          {preview.previewType === 'system' && (
+                            <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#f59e0b]/40 transition-colors">
+                              <div className="flex items-center gap-2 mb-2.5">
+                                <span className="text-sm font-serif italic text-[#f59e0b]">Aa</span>
+                                <div className="h-1.5 w-16 bg-white/20 rounded" />
+                              </div>
+                              <div className="h-px w-full bg-white/10 my-2" />
+                              <div className="flex justify-between items-center text-[11px] text-white/70">
+                                <span className="font-mono text-[10px] text-white/60">EN · AR</span>
+                                <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-white/90">2024</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {preview.previewType === 'web' && (
+                            <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#a855f7]/40 transition-colors">
+                              <div className="flex items-center gap-1.5 mb-2.5">
+                                <div className="w-2 h-2 rounded-full bg-white/30" />
+                                <div className="h-1.5 w-20 bg-white/20 rounded" />
+                              </div>
+                              <div className="h-10 rounded-lg bg-white/10 flex items-center justify-center mb-2">
+                                <span className="text-[10px] text-white/60 font-mono">WEB ARCHITECTURE</span>
+                              </div>
+                              <div className="grid grid-cols-3 gap-1">
+                                <div className="h-1.5 bg-white/15 rounded" />
+                                <div className="h-1.5 bg-white/15 rounded" />
+                                <div className="h-1.5 bg-white/15 rounded" />
+                              </div>
+                            </div>
+                          )}
+
+                          {preview.previewType === 'social' && (
+                            <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#10b981]/40 transition-colors">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-mono text-white/60">CAMPAIGN</span>
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-emerald-300 font-mono">SOCIAL</span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2 my-1">
+                                <div className="h-10 rounded bg-white/10 flex items-center justify-center">
+                                  <span className="text-[8px] text-white/40">1:1</span>
+                                </div>
+                                <div className="h-10 rounded bg-white/10 flex items-center justify-center">
+                                  <span className="text-[8px] text-white/40">9:16</span>
+                                </div>
+                              </div>
+                              <div className="h-1.5 w-3/4 bg-white/20 rounded mt-1.5" />
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    {/* Bottom View badge */}
+                    <div className="relative z-10 flex items-end justify-end w-full">
+                      <div className="w-8 h-8 rounded-full bg-[var(--card)]/90 backdrop-blur-sm border border-[var(--line)] flex items-center justify-center group-hover:bg-[#5cb847] group-hover:border-[#5cb847] transition-all shadow-sm">
+                        <ArrowUpRight className="w-4 h-4 text-[var(--ink)] group-hover:text-white transition-colors" />
                       </div>
-                    )}
+                    </div>
+                  </div>
 
-                    {work.previewType === 'system' && (
-                      <div className="w-full max-w-[210px] bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg group-hover:border-[#f59e0b]/40 transition-colors">
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <span className="text-sm font-serif italic text-[#f59e0b]">Aa</span>
-                          <div className="h-1.5 w-16 bg-white/20 rounded" />
-                        </div>
-                        <div className="h-px w-full bg-white/10 my-2" />
-                        <div className="flex justify-between items-center text-[11px] text-white/70">
-                          <span className="font-mono text-[10px] text-white/60">EN · AR</span>
-                          <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-white/10 text-white/90">2024</span>
-                        </div>
+                  {/* Work Meta Info */}
+                  <div className="flex justify-between items-baseline gap-3 px-1">
+                    <div>
+                      <div className="text-lg font-medium text-[var(--ink)] group-hover:text-[#5cb847] transition-colors">
+                        {work.title}
                       </div>
-                    )}
-                  </div>
-
-                  {/* Bottom View badge */}
-                  <div className="relative z-10 flex items-end justify-end w-full">
-                    <div className="w-8 h-8 rounded-full bg-[var(--card)]/90 backdrop-blur-sm border border-[var(--line)] flex items-center justify-center group-hover:bg-[#5cb847] group-hover:border-[#5cb847] transition-all shadow-sm">
-                      <ArrowUpRight className="w-4 h-4 text-[var(--ink)] group-hover:text-white transition-colors" />
+                      <div className="text-sm text-[var(--muted)] mt-0.5">
+                        <span className="text-[#5cb847] font-medium group-hover:text-[#76d65e] transition-colors">{work.cat}</span> · {work.cta || 'View project'}
+                      </div>
+                    </div>
+                    <div className="font-heading text-xs text-[var(--muted2)]">
+                      {work.year}
                     </div>
                   </div>
-                </div>
-
-                {/* Work Meta Info */}
-                <div className="flex justify-between items-baseline gap-3 px-1">
-                  <div>
-                    <div className="text-lg font-medium text-[var(--ink)] group-hover:text-[#5cb847] transition-colors">
-                      {work.title}
-                    </div>
-                    <div className="text-sm text-[var(--muted)] mt-0.5">
-                      <span className="text-[#5cb847] font-medium group-hover:text-[#76d65e] transition-colors">{work.cat}</span> · {work.cta}
-                    </div>
-                  </div>
-                  <div className="font-heading text-xs text-[var(--muted2)]">
-                    {work.year}
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

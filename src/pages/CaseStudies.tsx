@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-import { CASES } from "@/data/portfolioData";
+import { CaseStudy } from "@/data/portfolioData";
+import { getSyncedCases, DEFAULT_CASES } from "@/lib/portfolioDataSync";
 import { ArrowUpRight } from "lucide-react";
 
 // Visual preview configurations for case studies (rich editorial artwork, NO company logos)
@@ -52,6 +54,21 @@ const CASE_VISUALS: Record<
 };
 
 const CaseStudies = () => {
+  const [cases, setCases] = useState<CaseStudy[]>(DEFAULT_CASES);
+
+  useEffect(() => {
+    const loadCases = async () => {
+      const data = await getSyncedCases();
+      if (Array.isArray(data) && data.length > 0) {
+        setCases(data);
+      }
+    };
+    loadCases();
+
+    window.addEventListener("portfolio_data_updated", loadCases);
+    return () => window.removeEventListener("portfolio_data_updated", loadCases);
+  }, []);
+
   return (
     <PageContainer>
       <SEO
@@ -102,14 +119,17 @@ const CaseStudies = () => {
             marginTop: "56px",
           }}
         >
-          {CASES.map((c) => {
+          {cases.map((c, idx) => {
             const visual = CASE_VISUALS[c.id] || {
               gradient: "from-[#081f17] via-[#0d2a20] to-[#05140f]",
               accent: "#5cb847",
-              num: "01",
-              headline: "Case Study",
-              badge: "DESIGN",
-              stats: [{ label: "Role", val: c.role }],
+              num: String(idx + 1).padStart(2, "0"),
+              headline: c.title,
+              badge: c.tag?.toUpperCase() || "CASE STUDY",
+              stats: [
+                { label: "Role", val: c.role || "Designer" },
+                { label: "Duration", val: c.duration || "4 Weeks" },
+              ],
             };
 
             return (

@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
 import { getDefaultWorks } from "./WorksList";
+import { notifyPortfolioDataUpdated } from "@/lib/portfolioDataSync";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -371,6 +372,9 @@ export default function WorkForm() {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const catObj = categories.find((c) => c.id === values.category_id);
+    const catName = catObj?.name || values.category_id;
+
     try {
       if (isEditing) {
         const { error } = await supabase
@@ -385,32 +389,34 @@ export default function WorkForm() {
         toast({ title: "Work created successfully" });
       }
     } catch {
-      // Local storage fallback
-      const stored = localStorage.getItem("admin_works");
-      let list = stored ? JSON.parse(stored) : getDefaultWorks();
-      const catObj = categories.find((c) => c.id === values.category_id);
-
-      if (isEditing) {
-        list = list.map((w: any) =>
-          w.id === id || w.slug === id
-            ? { ...w, ...values, id: w.id || id, categories: { name: catObj?.name || values.category_id } }
-            : w
-        );
-      } else {
-        list.unshift({
-          ...values,
-          id: values.slug,
-          created_at: new Date().toISOString(),
-          categories: { name: catObj?.name || values.category_id },
-        });
-      }
-
-      localStorage.setItem("admin_works", JSON.stringify(list));
       toast({
         title: isEditing ? "Work updated (Local Storage)" : "Work created (Local Storage)",
         description: "Saved locally in your browser storage.",
       });
     }
+
+    // Always keep localStorage sync for seamless preview & offline fallback
+    const stored = localStorage.getItem("admin_works");
+    let list = stored ? JSON.parse(stored) : getDefaultWorks();
+
+    if (isEditing) {
+      list = list.map((w: any) =>
+        w.id === id || w.slug === id
+          ? { ...w, ...values, id: w.id || id, categories: { name: catName }, cat: catName }
+          : w
+      );
+    } else {
+      list.unshift({
+        ...values,
+        id: values.slug,
+        created_at: new Date().toISOString(),
+        categories: { name: catName },
+        cat: catName,
+      });
+    }
+
+    localStorage.setItem("admin_works", JSON.stringify(list));
+    notifyPortfolioDataUpdated();
 
     navigate("/admin/works");
   };

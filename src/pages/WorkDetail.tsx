@@ -5,6 +5,7 @@ import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
 import { supabase } from "@/lib/supabase";
 import { WORKS, CASES } from "@/data/portfolioData";
+import { getSyncedWork } from "@/lib/portfolioDataSync";
 
 interface WorkProjectData {
   title: string;
@@ -177,15 +178,11 @@ export default function WorkDetail() {
     const key = (slug || id || "").toLowerCase();
 
     const fetchWorkFromDb = async () => {
+      // 1. Try unified synced works (Supabase -> localStorage.admin_works -> DEFAULT_WORKS)
       try {
-        const { data: work } = await supabase
-          .from("works")
-          .select("*, categories(name)")
-          .or(`slug.eq.${key},id.eq.${key}`)
-          .maybeSingle();
-
-        if (work) {
-          const details = work.details || {};
+        const synced = await getSyncedWork(key);
+        if (synced) {
+          const details = synced.details || {};
           const toolsList = Array.isArray(details.tools)
             ? details.tools
             : typeof details.tools === "string"
@@ -212,18 +209,19 @@ export default function WorkDetail() {
               }))
             : DEFAULT_TAXVERSE.outputs;
 
+          const catName = synced.categories?.name || synced.cat || "Branding";
+          const ctaName = synced.cta || "BRAND IDENTITY";
+
           setProject({
-            title: work.title,
-            category: work.categories?.name
-              ? `${work.categories.name.toUpperCase()} • BRAND IDENTITY`
-              : "BRANDING • BRAND IDENTITY",
-            heroPlaceholder: `${work.title} showcase`,
-            heroImage: work.image_url || undefined,
-            overview: details.overview || work.description || DEFAULT_TAXVERSE.overview,
+            title: synced.title,
+            category: `${catName.toUpperCase()} • ${ctaName.toUpperCase()}`,
+            heroPlaceholder: `${synced.title} showcase`,
+            heroImage: synced.image_url || undefined,
+            overview: details.overview || synced.description || DEFAULT_TAXVERSE.overview,
             problem: details.problem || DEFAULT_TAXVERSE.problem,
             tools: toolsList.length > 0 ? toolsList : DEFAULT_TAXVERSE.tools,
-            client: details.client || work.title,
-            year: details.year || "2025",
+            client: details.client || synced.title,
+            year: details.year || synced.year || "2025",
             insights: insightsList.length > 0 ? insightsList : DEFAULT_TAXVERSE.insights,
             steps: stepsList.length > 0 ? stepsList : DEFAULT_TAXVERSE.steps,
             outputs: outputsList.length > 0 ? outputsList : DEFAULT_TAXVERSE.outputs,
@@ -234,13 +232,13 @@ export default function WorkDetail() {
         // Fallback below
       }
 
-      // Check project dictionary
+      // 2. Check project dictionary fallback
       if (PROJECT_DICTIONARY[key]) {
         setProject(PROJECT_DICTIONARY[key]);
         return;
       }
 
-      // Check WORKS or CASES
+      // 3. Check WORKS or CASES fallback
       const workItem = WORKS.find((w) => w.slug === slug || w.id === slug);
       const caseItem = CASES.find((c) => c.id === slug);
 
@@ -268,11 +266,13 @@ export default function WorkDetail() {
         return;
       }
 
-      // Default to Taxverse matching image 3
+      // Default to Taxverse
       setProject(DEFAULT_TAXVERSE);
     };
 
     fetchWorkFromDb();
+    window.addEventListener("portfolio_data_updated", fetchWorkFromDb);
+    return () => window.removeEventListener("portfolio_data_updated", fetchWorkFromDb);
   }, [slug, id]);
 
   return (

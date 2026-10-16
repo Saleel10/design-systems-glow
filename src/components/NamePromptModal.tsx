@@ -26,8 +26,12 @@ export default function NamePromptModal() {
     }
   }, [isNamePromptOpen]);
 
-  // Completely hide name prompt modal in admin routes
-  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+  // Completely hide name prompt modal in admin routes or test parameter
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.pathname.startsWith('/admin') ||
+      window.location.search.includes('nosplash=1'))
+  ) {
     return null;
   }
 

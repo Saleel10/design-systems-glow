@@ -129,7 +129,7 @@ export default function HeroSection() {
           whileTap={{ scale: 0.96, rotate: -2 }}
           className="absolute left-2 sm:left-3 md:left-[3%] lg:left-[6%] xl:left-[8%] 2xl:left-[10%] top-[180px] sm:top-[205px] md:top-[215px] lg:top-[220px] xl:top-[255px] w-[120px] sm:w-[136px] md:w-[150px] lg:w-[200px] xl:w-60 p-2.5 sm:p-3.5 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[16px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
         >
-          <div className="w-5.5 h-5.5 sm:w-6 sm:h-6 lg:w-10 lg:h-10 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-4 shadow-sm border border-[#5cb847]/20">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-4 shadow-sm border border-[#5cb847]/20 shrink-0">
             <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-3.5 lg:h-3.5 bg-[var(--accent)] rotate-45" />
           </div>
           <div className="text-[17px] sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-bold tracking-tight leading-none text-[var(--ink)]">
@@ -156,7 +156,7 @@ export default function HeroSection() {
           whileTap={{ scale: 0.96, rotate: 2 }}
           className="absolute right-2 sm:right-3 md:right-[3%] lg:right-[6.5%] xl:right-[8%] 2xl:right-[10%] top-[185px] sm:top-[210px] md:top-[220px] lg:top-[160px] xl:top-[185px] w-[120px] sm:w-[136px] md:w-[150px] lg:w-[200px] xl:w-60 p-2.5 sm:p-3.5 md:p-4 lg:p-5 xl:p-6 bg-[var(--card)]/90 backdrop-blur-md border border-[var(--line)] rounded-[16px] sm:rounded-[18px] lg:rounded-[24px] shadow-[0_10px_25px_-8px_rgba(0,0,0,0.2)] cursor-pointer select-none transition-shadow hover:shadow-[0_24px_50px_-14px_rgba(58,168,107,0.25)] z-20"
         >
-          <div className="w-5.5 h-5.5 sm:w-6 sm:h-6 lg:w-10 lg:h-10 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-4 shadow-sm border border-[#5cb847]/20">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[var(--tint)] flex items-center justify-center mb-1.5 sm:mb-2 lg:mb-4 shadow-sm border border-[#5cb847]/20 shrink-0">
             <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-3.5 lg:h-3.5 bg-[var(--accent)] rotate-45" />
           </div>
           <div className="text-[17px] sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] font-bold tracking-tight leading-none text-[var(--ink)]">
@@ -208,7 +208,7 @@ export default function HeroSection() {
                 />
               </div>
             </div>
-            <div className="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 rounded-full bg-[#1b3826] text-[#5cb847] flex items-center justify-center text-[8.5px] sm:text-[10px] font-bold ml-1 sm:ml-1.5 shadow-sm border border-[#5cb847]/30">
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#1b3826] text-[#5cb847] flex items-center justify-center text-[8.5px] sm:text-[10px] font-bold ml-1 sm:ml-1.5 shadow-sm border border-[#5cb847]/30">
               +
             </div>
           </div>
@@ -224,8 +224,8 @@ export default function HeroSection() {
           </div>
         </motion.div>
 
-        {/* Rotating Circular Badge (Responsive Left Bottom) - Positioned higher up on mobile */}
-        <div className="absolute left-2.5 sm:left-3.5 md:left-[3%] xl:left-[4%] bottom-13 sm:bottom-15 md:bottom-6 lg:bottom-14 xl:bottom-16 w-10 h-10 sm:w-13 sm:h-13 md:w-18 md:h-18 lg:w-20 lg:h-20 xl:w-24 xl:h-24 z-20 pointer-events-none sm:pointer-events-auto">
+        {/* Rotating Circular Badge - Arranged on the left side in between the "800+ Projects shipped" card and the "Work with me" button on mobile, bottom on desktop */}
+        <div className="absolute left-2.5 sm:left-3.5 md:left-[3%] xl:left-[4%] top-[330px] sm:top-[345px] md:top-auto md:bottom-6 lg:bottom-14 xl:bottom-16 w-11 h-11 sm:w-13 sm:h-13 md:w-18 md:h-18 lg:w-20 lg:h-20 xl:w-24 xl:h-24 z-20 pointer-events-none sm:pointer-events-auto">
           <div className="relative w-full h-full flex items-center justify-center">
             <svg viewBox="0 0 100 100" className="w-full h-full animate-sd-spin">
               <defs>
@@ -235,16 +235,16 @@ export default function HeroSection() {
                 <textPath href="#sdCirc">Systems • Strategy • Structure • </textPath>
               </text>
             </svg>
-            <div className="absolute w-1.5 h-1.5 sm:w-1.5 sm:h-1.5 lg:w-2.5 lg:h-2.5 bg-[var(--accent)] rotate-45 shadow-sm" />
+            <div className="absolute w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-2.5 lg:h-2.5 bg-[var(--accent)] rotate-45 shadow-sm" />
           </div>
         </div>
 
         {/* Hero Visual Stage with Profile Cutout */}
-        {/* Mobile: enlarged photo with head directly under purpose sentence; Desktop: untouched */}
-        <div className="relative flex justify-center items-end -mt-12 sm:-mt-14 md:-mt-16 lg:-mt-16 xl:-mt-20 2xl:-mt-22 z-10 w-full flex-1 min-h-0">
-          <div className="relative w-full max-w-[400px] sm:max-w-[460px] md:max-w-[500px] lg:max-w-[700px] xl:max-w-[780px] 2xl:max-w-[820px] h-[390px] sm:h-[420px] md:h-[450px] lg:h-[530px] xl:h-[580px] 2xl:h-[610px] flex items-end justify-center overflow-visible">
+        {/* Mobile: enlarged photo filling bottom gap and extending up under purpose sentence; Desktop: untouched */}
+        <div className="relative flex justify-center items-end -mt-11 sm:-mt-13 md:-mt-16 lg:-mt-16 xl:-mt-20 2xl:-mt-22 z-10 w-full flex-1 min-h-0">
+          <div className="relative w-full max-w-[430px] sm:max-w-[460px] md:max-w-[500px] lg:max-w-[700px] xl:max-w-[780px] 2xl:max-w-[820px] h-[450px] sm:h-[460px] md:h-[480px] lg:h-[530px] xl:h-[580px] 2xl:h-[610px] flex items-end justify-center overflow-visible">
             {/* Ambient Glow behind portrait */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[360px] sm:w-[440px] lg:w-[580px] xl:w-[640px] h-[360px] sm:h-[440px] lg:h-[580px] xl:h-[640px] rounded-full bg-[radial-gradient(circle,rgba(86,169,51,0.22),transparent_70%)] pointer-events-none blur-3xl" />
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[380px] sm:w-[440px] lg:w-[580px] xl:w-[640px] h-[380px] sm:h-[440px] lg:h-[580px] xl:h-[640px] rounded-full bg-[radial-gradient(circle,rgba(86,169,51,0.22),transparent_70%)] pointer-events-none blur-3xl" />
 
             {/* Profile cutout image with theme-reactive transition */}
             <AnimatePresence mode="wait">
@@ -256,12 +256,12 @@ export default function HeroSection() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.35, ease: 'easeInOut' }}
-                className="w-full h-full object-contain object-bottom relative z-10 dark:drop-shadow-[0_16px_30px_rgba(0,0,0,0.38)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.12)]"
+                className="w-[124%] sm:w-[110%] md:w-full h-full max-w-none md:max-w-full object-contain object-bottom relative z-10 dark:drop-shadow-[0_16px_30px_rgba(0,0,0,0.38)] drop-shadow-[0_12px_24px_rgba(0,0,0,0.12)]"
               />
             </AnimatePresence>
 
-            {/* Action Pills anchored at chest position - comfortably sitting on hoodie and elevated higher */}
-            <div className="absolute left-1/2 bottom-[54px] sm:bottom-[60px] md:bottom-[40px] lg:bottom-[82px] xl:bottom-[94px] 2xl:bottom-[102px] -translate-x-1/2 z-30 flex flex-nowrap sm:flex-wrap justify-center items-center gap-1.5 sm:gap-2.5 lg:gap-3.5 w-max max-w-[96vw]">
+            {/* Action Pills anchored at chest position - comfortably sitting on hoodie */}
+            <div className="absolute left-1/2 bottom-[26px] sm:bottom-[34px] md:bottom-[40px] lg:bottom-[82px] xl:bottom-[94px] 2xl:bottom-[102px] -translate-x-1/2 z-30 flex flex-nowrap sm:flex-wrap justify-center items-center gap-1.5 sm:gap-2.5 lg:gap-3.5 w-max max-w-[96vw]">
               <Link
                 to="/contact"
                 className="brand-gradient text-white px-3.5 py-1.5 sm:px-4 sm:py-2 lg:px-6 lg:py-3 rounded-full text-[11px] sm:text-[12.5px] lg:text-[14.5px] font-semibold flex items-center gap-1 sm:gap-1.5 shadow-[0_8px_20px_-6px_rgba(20,110,70,0.65)] hover:opacity-95 active:scale-95 transition-all whitespace-nowrap"
@@ -286,4 +286,6 @@ export default function HeroSection() {
     </section>
   );
 }
+
+
 

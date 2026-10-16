@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
 import { CASES, CaseStudy } from "@/data/portfolioData";
+import { notifyPortfolioDataUpdated } from "@/lib/portfolioDataSync";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -159,6 +160,7 @@ export default function CaseForm() {
       list = [formattedData, ...list];
     }
     localStorage.setItem("admin_cases", JSON.stringify(list));
+    notifyPortfolioDataUpdated();
 
     toast({
       title: isEditing ? "Case study updated successfully" : "Case study created successfully",

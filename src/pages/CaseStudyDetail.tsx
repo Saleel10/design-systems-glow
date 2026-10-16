@@ -1,15 +1,36 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-import { CASES, STEPS } from "@/data/portfolioData";
+import { CaseStudy, STEPS } from "@/data/portfolioData";
+import { getSyncedCases, DEFAULT_CASES } from "@/lib/portfolioDataSync";
 
 const CaseStudyDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const [cases, setCases] = useState<CaseStudy[]>(DEFAULT_CASES);
 
-  const currentIndex = CASES.findIndex((c) => c.id === id);
-  const cs = currentIndex !== -1 ? CASES[currentIndex] : CASES[0];
-  const nextCase = CASES[(currentIndex + 1) % CASES.length];
+  useEffect(() => {
+    const loadCases = async () => {
+      const data = await getSyncedCases();
+      if (Array.isArray(data) && data.length > 0) {
+        setCases(data);
+      }
+    };
+    loadCases();
+
+    window.addEventListener("portfolio_data_updated", loadCases);
+    return () => window.removeEventListener("portfolio_data_updated", loadCases);
+  }, []);
+
+  const currentIndex = cases.findIndex(
+    (c) => c.id.toLowerCase() === (id || "").toLowerCase()
+  );
+  const cs = currentIndex !== -1 ? cases[currentIndex] : cases[0] || DEFAULT_CASES[0];
+  const nextCase = cases.length > 1 ? cases[(currentIndex + 1) % cases.length] : cs;
+
+  const outcomeList = Array.isArray(cs.outcome)
+    ? cs.outcome.map((o: any) => (typeof o === "string" ? o : o.text || ""))
+    : [];
 
   const meta = [
     { k: "Client", v: cs.client },
@@ -395,7 +416,7 @@ const CaseStudyDetail = () => {
             04 — Outcome
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {cs.outcome.map((o, oi) => (
+            {outcomeList.map((o, oi) => (
               <div
                 key={oi}
                 style={{

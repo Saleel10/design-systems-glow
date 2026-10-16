@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { CASES } from "@/data/portfolioData";
 
+import { getSyncedWorks, getSyncedCases, getSyncedBlogs } from "@/lib/portfolioDataSync";
+
 export default function Dashboard() {
   const [worksCount, setWorksCount] = useState<number | null>(null);
   const [casesCount, setCasesCount] = useState<number | null>(null);
@@ -10,29 +12,25 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchCounts();
+    const handleUpdate = () => fetchCounts();
+    window.addEventListener("portfolio_data_updated", handleUpdate);
+    return () => window.removeEventListener("portfolio_data_updated", handleUpdate);
   }, []);
 
   const fetchCounts = async () => {
     try {
-      const [worksRes, blogsRes, casesRes] = await Promise.all([
-        supabase.from("works").select('*', { count: 'exact', head: true }),
-        supabase.from("blogs").select('*', { count: 'exact', head: true }),
-        supabase.from("case_studies").select('*', { count: 'exact', head: true })
+      const [w, c, b] = await Promise.all([
+        getSyncedWorks(),
+        getSyncedCases(),
+        getSyncedBlogs(),
       ]);
-
-      if (!worksRes.error && worksRes.count !== null) setWorksCount(worksRes.count);
-      if (!blogsRes.error && blogsRes.count !== null) setBlogsCount(blogsRes.count);
-
-      if (!casesRes.error && casesRes.count !== null) {
-        setCasesCount(casesRes.count);
-      } else {
-        // Fallback to static or localStorage
-        const stored = localStorage.getItem("admin_cases");
-        setCasesCount(stored ? JSON.parse(stored).length : CASES.length);
-      }
+      setWorksCount(w.length);
+      setCasesCount(c.length);
+      setBlogsCount(b.length);
     } catch {
-      const stored = localStorage.getItem("admin_cases");
-      setCasesCount(stored ? JSON.parse(stored).length : CASES.length);
+      setWorksCount(0);
+      setCasesCount(0);
+      setBlogsCount(0);
     }
   };
 

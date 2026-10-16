@@ -8,6 +8,7 @@ import { POSTS } from "@/data/portfolioData";
 import { blogPosts as fallbackBlogs } from "@/data/blogPosts";
 import { supabase } from "@/lib/supabase";
 import profileDark from "@/assets/profile-dark.png";
+import { getSyncedBlog } from "@/lib/portfolioDataSync";
 
 interface PostData {
   title: string;
@@ -83,58 +84,52 @@ export default function BlogPost() {
     const fetchPost = async () => {
       setLoading(true);
 
-      // Check localStorage for admin updates first
-      const stored = typeof window !== 'undefined' ? localStorage.getItem("admin_blogs") : null;
-      if (stored) {
-        try {
-          const list = JSON.parse(stored);
-          const found = list.find((b: any) => b.slug === slug || b.id === slug || (!slug && b.slug === "why-your-brand-needs-a-system"));
-          if (found) {
-            const rawTags = found.tags;
-            const parsedTags = Array.isArray(rawTags)
-              ? rawTags
-              : typeof rawTags === "string"
-              ? rawTags.split(",").map((t: string) => t.trim()).filter(Boolean)
-              : ["#branding", "#design-systems", "#strategy"];
+      try {
+        const synced = await getSyncedBlog(slug || "");
+        if (synced) {
+          const rawTags = synced.tags;
+          const parsedTags = Array.isArray(rawTags)
+            ? rawTags
+            : typeof rawTags === "string"
+            ? rawTags.split(",").map((t: string) => t.trim()).filter(Boolean)
+            : ["#branding", "#design-systems", "#strategy"];
 
-            // Format markdown if content is structured
-            let formattedContent = "";
-            if (typeof found.content === "string") {
-              formattedContent = found.content;
-            } else if (found.content && typeof found.content === "object") {
-              const c = found.content;
-              if (c.intro) formattedContent += `${c.intro}\n\n`;
-              if (Array.isArray(c.sections)) {
-                c.sections.forEach((sec: any) => {
-                  if (sec.heading) formattedContent += `### ${sec.heading}\n\n`;
-                  if (sec.body) formattedContent += `${sec.body}\n\n`;
-                });
-              }
-              if (c.callout) {
-                formattedContent += `> **${c.callout}**\n\n`;
-              }
-              if (c.conclusion) {
-                formattedContent += `${c.conclusion}\n\n`;
-              }
+          let formattedContent = "";
+          if (typeof synced.content === "string") {
+            formattedContent = synced.content;
+          } else if (synced.content && typeof synced.content === "object") {
+            const c = synced.content;
+            if (c.intro) formattedContent += `${c.intro}\n\n`;
+            if (Array.isArray(c.sections)) {
+              c.sections.forEach((sec: any) => {
+                if (sec.heading) formattedContent += `### ${sec.heading}\n\n`;
+                if (sec.body) formattedContent += `${sec.body}\n\n`;
+              });
             }
-
-            setPost({
-              title: found.title,
-              slug: found.slug,
-              cat: found.categories?.name || found.category || "Branding",
-              read: found.read_time || "5 min read",
-              subtitle: found.subtitle || found.excerpt || "",
-              date: found.date || "Sep 2026",
-              coverImage: found.image_url || "",
-              tags: parsedTags,
-              content: formattedContent || FEATURED_WHY_SYSTEM.content,
-            });
-            setLoading(false);
-            return;
+            if (c.callout) {
+              formattedContent += `> **${c.callout}**\n\n`;
+            }
+            if (c.conclusion) {
+              formattedContent += `${c.conclusion}\n\n`;
+            }
           }
-        } catch (e) {
-          console.error(e);
+
+          setPost({
+            title: synced.title,
+            slug: synced.slug,
+            cat: synced.categories?.name || synced.cat || "Branding",
+            read: synced.read_time || synced.read || "5 min read",
+            subtitle: synced.subtitle || synced.excerpt || "",
+            date: synced.date || (synced.created_at ? new Date(synced.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Sep 2026"),
+            coverImage: synced.image_url || "",
+            tags: parsedTags,
+            content: formattedContent || FEATURED_WHY_SYSTEM.content,
+          });
+          setLoading(false);
+          return;
         }
+      } catch (e) {
+        console.error(e);
       }
 
       // If user is viewing why-your-brand-needs-a-system or empty slug
@@ -142,31 +137,6 @@ export default function BlogPost() {
         setPost(FEATURED_WHY_SYSTEM);
         setLoading(false);
         return;
-      }
-
-      try {
-        const { data } = await supabase
-          .from("blogs")
-          .select("*, categories(name)")
-          .eq("slug", slug)
-          .single();
-
-        if (data) {
-          setPost({
-            title: data.title,
-            slug: data.slug,
-            cat: data.categories?.name || "Design",
-            read: "5 min read",
-            content: data.content,
-            subtitle: data.excerpt || "",
-            date: data.created_at ? new Date(data.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Sep 2026",
-            tags: ["#design", "#systems", "#creative"],
-          });
-          setLoading(false);
-          return;
-        }
-      } catch {
-        // Fall back to local
       }
 
       // Check fallbackBlogs
@@ -211,6 +181,8 @@ export default function BlogPost() {
     };
 
     fetchPost();
+    window.addEventListener("portfolio_data_updated", fetchPost);
+    return () => window.removeEventListener("portfolio_data_updated", fetchPost);
   }, [slug]);
 
   if (loading) {

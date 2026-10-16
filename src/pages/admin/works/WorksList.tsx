@@ -18,57 +18,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-type Work = {
-  id: string;
-  title: string;
-  slug: string;
-  category_id: string;
-  created_at: string;
-  categories: { name: string } | null;
-  description?: string;
-  image_url?: string;
-  details?: any;
-};
+import { getSyncedWorks, DEFAULT_WORKS, notifyPortfolioDataUpdated, SyncedWork } from "@/lib/portfolioDataSync";
 
-export const getDefaultWorks = (): Work[] => {
-  return projects.map((p, idx) => ({
-    id: p.slug,
-    title: p.title,
-    slug: p.slug,
-    category_id: p.category.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-    created_at: new Date(Date.now() - idx * 86400000).toISOString(),
-    categories: { name: p.category },
-    description: p.desc,
-    details: {
-      overview: p.overview,
-      problem: p.problem,
-      client: p.client,
-      year: p.year,
-      tools: p.tools?.join(", ") || "",
-      insights: (p.research || []).map((r) => ({ text: r })),
-      steps: (p.process || []).map((pr, i) => ({
-        number: `Step 0${i + 1}`,
-        title: pr,
-        desc: `Detailed execution and validation for ${pr.toLowerCase()}.`,
-      })),
-      impact: (p.results || []).map((res) => ({
-        metric: res.split(" ")[0] || "+",
-        label: res.split(" ").slice(1).join(" ") || res,
-      })),
-      outputs: (p.mockups || []).map((m) => ({
-        title: m.label,
-        type: "Design Output",
-        image_url: "",
-      })),
-      learnings: [
-        {
-          takeaway: "Deep user research uncovers the real leverage points early.",
-          elaboration: "Aligning user needs directly with stakeholder OKRs ensured maximum impact.",
-        },
-      ],
-    },
-  }));
-};
+export type Work = SyncedWork;
+
+export const getDefaultWorks = (): Work[] => DEFAULT_WORKS;
 
 export default function WorksList() {
   const [works, setWorks] = useState<Work[]>([]);
@@ -77,41 +31,15 @@ export default function WorksList() {
 
   useEffect(() => {
     fetchWorks();
+    const handleUpdate = () => fetchWorks();
+    window.addEventListener("portfolio_data_updated", handleUpdate);
+    return () => window.removeEventListener("portfolio_data_updated", handleUpdate);
   }, []);
 
   const fetchWorks = async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("works")
-        .select(`
-          *,
-          categories(name)
-        `)
-        .order("created_at", { ascending: false });
-
-      if (!error && data && data.length > 0) {
-        setWorks(data);
-      } else {
-        const stored = localStorage.getItem("admin_works");
-        if (stored) {
-          setWorks(JSON.parse(stored));
-        } else {
-          const initialWorks = getDefaultWorks();
-          setWorks(initialWorks);
-          localStorage.setItem("admin_works", JSON.stringify(initialWorks));
-        }
-      }
-    } catch {
-      const stored = localStorage.getItem("admin_works");
-      if (stored) {
-        setWorks(JSON.parse(stored));
-      } else {
-        const initialWorks = getDefaultWorks();
-        setWorks(initialWorks);
-        localStorage.setItem("admin_works", JSON.stringify(initialWorks));
-      }
-    }
+    const data = await getSyncedWorks();
+    setWorks(data);
     setLoading(false);
   };
 
@@ -132,6 +60,8 @@ export default function WorksList() {
     } else {
       setWorks((prev) => prev.filter((w) => w.id !== id && w.slug !== id));
     }
+
+    notifyPortfolioDataUpdated();
 
     toast({
       title: "Work deleted",

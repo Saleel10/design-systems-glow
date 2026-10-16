@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
 import { getDefaultBlogs } from "./BlogsList";
+import { notifyPortfolioDataUpdated } from "@/lib/portfolioDataSync";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -405,6 +406,7 @@ export default function BlogForm() {
     }
 
     localStorage.setItem("admin_blogs", JSON.stringify(list));
+    notifyPortfolioDataUpdated();
 
     toast({
       title: isEditing ? "Blog updated successfully" : "Blog created successfully",

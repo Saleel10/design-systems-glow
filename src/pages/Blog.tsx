@@ -3,42 +3,44 @@ import { Link } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
 import { POSTS } from "@/data/portfolioData";
+import { getSyncedBlogs, DEFAULT_BLOGS } from "@/lib/portfolioDataSync";
 
 const Blog = () => {
   const [allPosts, setAllPosts] = useState(POSTS);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("admin_blogs");
-      if (stored) {
-        try {
-          const list = JSON.parse(stored);
-          if (Array.isArray(list) && list.length > 0) {
-            const formatted = list
-              .filter((b: any) => b.published !== false)
-              .map((b: any, i: number) => ({
-                slug: b.slug,
-                title: b.title,
-                cat: b.categories?.name || b.category || "Branding",
-                read: b.read_time || "5 min read",
-                ex:
-                  b.subtitle ||
-                  b.excerpt ||
-                  (typeof b.content === "string"
-                    ? b.content.slice(0, 140)
-                    : b.content?.intro || ""),
-                img: `blog-${(i % 4) + 1}`,
-                image_url: b.image_url,
-              }));
-            if (formatted.length > 0) {
-              setAllPosts(formatted);
-            }
+    const loadBlogs = async () => {
+      try {
+        const list = await getSyncedBlogs();
+        if (Array.isArray(list) && list.length > 0) {
+          const formatted = list
+            .filter((b: any) => b.published !== false)
+            .map((b: any, i: number) => ({
+              slug: b.slug,
+              title: b.title,
+              cat: b.categories?.name || b.cat || "Branding",
+              read: b.read_time || b.read || "5 min read",
+              ex:
+                b.subtitle ||
+                b.excerpt ||
+                (typeof b.content === "string"
+                  ? b.content.slice(0, 140)
+                  : b.content?.intro || ""),
+              img: `blog-${(i % 4) + 1}`,
+              image_url: b.image_url,
+            }));
+          if (formatted.length > 0) {
+            setAllPosts(formatted);
           }
-        } catch (e) {
-          console.error(e);
         }
+      } catch (e) {
+        console.error(e);
       }
-    }
+    };
+
+    loadBlogs();
+    window.addEventListener("portfolio_data_updated", loadBlogs);
+    return () => window.removeEventListener("portfolio_data_updated", loadBlogs);
   }, []);
 
   const featured = allPosts[0] || POSTS[0];

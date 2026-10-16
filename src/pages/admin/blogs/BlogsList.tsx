@@ -167,6 +167,8 @@ export const getDefaultBlogs = (): Blog[] => [
   },
 ];
 
+import { getSyncedBlogs, notifyPortfolioDataUpdated } from "@/lib/portfolioDataSync";
+
 export default function BlogsList() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -174,41 +176,15 @@ export default function BlogsList() {
 
   useEffect(() => {
     fetchBlogs();
+    const handleUpdate = () => fetchBlogs();
+    window.addEventListener("portfolio_data_updated", handleUpdate);
+    return () => window.removeEventListener("portfolio_data_updated", handleUpdate);
   }, []);
 
   const fetchBlogs = async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("blogs")
-        .select(`
-          *,
-          categories(name)
-        `)
-        .order("created_at", { ascending: false });
-
-      if (!error && data && data.length > 0) {
-        setBlogs(data);
-      } else {
-        const stored = localStorage.getItem("admin_blogs");
-        if (stored) {
-          setBlogs(JSON.parse(stored));
-        } else {
-          const defaults = getDefaultBlogs();
-          setBlogs(defaults);
-          localStorage.setItem("admin_blogs", JSON.stringify(defaults));
-        }
-      }
-    } catch {
-      const stored = localStorage.getItem("admin_blogs");
-      if (stored) {
-        setBlogs(JSON.parse(stored));
-      } else {
-        const defaults = getDefaultBlogs();
-        setBlogs(defaults);
-        localStorage.setItem("admin_blogs", JSON.stringify(defaults));
-      }
-    }
+    const data = await getSyncedBlogs();
+    setBlogs(data);
     setLoading(false);
   };
 
@@ -229,8 +205,10 @@ export default function BlogsList() {
       setBlogs((prev) => prev.filter((b) => b.id !== id && b.slug !== id));
     }
 
+    notifyPortfolioDataUpdated();
+
     toast({
-      title: "Blog deleted",
+      title: "Blog post deleted",
     });
   };
 

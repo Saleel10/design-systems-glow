@@ -19,8 +19,11 @@ export default function SplashScreen({ onComplete, minDuration = 2200 }: SplashS
   const [progress, setProgress] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
 
-  // Skip splash screen entirely for admin routes
-  const isAdminRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+  // Skip splash screen for admin routes or test parameter
+  const isAdminRoute =
+    typeof window !== 'undefined' &&
+    (window.location.pathname.startsWith('/admin') ||
+      window.location.search.includes('nosplash=1'));
 
   useEffect(() => {
     if (isAdminRoute) {
