@@ -140,17 +140,17 @@ export default function VisitorPassCard() {
           >
             {/* Lanyard Top Attachment: Ribbon hangs from top: 0 behind the navbar */}
             <div className="flex flex-col items-center -mb-1 sm:-mb-1.5 xl:-mb-2 relative z-10 pointer-events-none">
-              {/* Green Lanyard Ribbon: increased strap length on mobile responsive view */}
-              <div className="w-2.5 sm:w-3.5 md:w-4 xl:w-6 h-[98px] sm:h-[104px] md:h-[108px] xl:h-[114px] bg-gradient-to-b from-[#13806f] via-[#1ea87a] to-[#56a933] shadow-md border-x border-[#13806f]/40" />
+              {/* Green Lanyard Ribbon: compact strap on mobile so card sits neatly in corner without covering title */}
+              <div className="w-2 sm:w-3 md:w-3.5 xl:w-5 h-[34px] sm:h-[55px] md:h-[75px] xl:h-[110px] bg-gradient-to-b from-[#13806f] via-[#1ea87a] to-[#56a933] shadow-md border-x border-[#13806f]/40" />
               {/* Silver Metallic Clip holding card */}
-              <div className="w-3.5 sm:w-4.5 md:w-5.5 xl:w-7 h-1.5 sm:h-2 xl:h-3 bg-neutral-300 rounded-t-xs shadow-inner border border-neutral-400" />
+              <div className="w-2.5 sm:w-3.5 md:w-5 xl:w-6.5 h-1 sm:h-1.5 xl:h-2.5 bg-neutral-300 rounded-t-xs shadow-inner border border-neutral-400" />
             </div>
 
             {/* Main Physical Visitor Pass Card */}
-            {/* Compact size on mobile (w-[130px]) with translucent glass (bg-[#0c0e0c]/70) so texts behind it stay visible */}
-            <div className="relative w-[130px] sm:w-[165px] md:w-[195px] xl:w-[265px] flex flex-col justify-between rounded-[14px] sm:rounded-[18px] xl:rounded-[28px] bg-[#0c0e0c]/70 sm:bg-[#0c0e0c]/85 xl:bg-[#0c0e0c]/95 border border-white/20 p-2 sm:p-2.5 md:p-3 xl:p-6 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.7),0_0_15px_rgba(92,184,71,0.12)] backdrop-blur-md overflow-hidden text-left">
+            {/* Decreased compact size on mobile (w-[96px]) with translucent glass (bg-[#0c0e0c]/70) so texts behind it stay visible */}
+            <div className="relative w-[96px] sm:w-[125px] md:w-[160px] xl:w-[250px] flex flex-col justify-between rounded-[10px] sm:rounded-[14px] xl:rounded-[24px] bg-[#0c0e0c]/75 sm:bg-[#0c0e0c]/85 xl:bg-[#0c0e0c]/95 border border-white/20 p-1.5 sm:p-2 md:p-3 xl:p-5 shadow-[0_12px_28px_-8px_rgba(0,0,0,0.7),0_0_12px_rgba(92,184,71,0.12)] backdrop-blur-md overflow-hidden text-left">
               {/* Card Top Punch Hole Notch for Lanyard */}
-              <div className="w-5 sm:w-6 md:w-8 xl:w-10 h-0.5 sm:h-1 xl:h-1.5 bg-black/60 rounded-full mx-auto -mt-0.5 sm:-mt-1 mb-1 sm:mb-1.5 xl:mb-3 border border-white/10" />
+              <div className="w-3.5 sm:w-5 md:w-7 xl:w-9 h-0.5 sm:h-1 xl:h-1.5 bg-black/60 rounded-full mx-auto -mt-0.5 sm:-mt-1 mb-0.5 sm:mb-1 xl:mb-2.5 border border-white/10" />
 
               {/* Dynamic Glass Specular Sheen (Reacts to Cursor) */}
               <motion.div
@@ -166,40 +166,40 @@ export default function VisitorPassCard() {
               <div>
                 {/* Header: VISITOR PASS & Status Indicator + Close */}
                 <div className="flex items-center justify-between relative z-10">
-                  <span className="text-[7px] sm:text-[8px] md:text-[9px] xl:text-[11px] font-heading font-bold tracking-[0.14em] xl:tracking-[0.2em] text-neutral-400 uppercase">
+                  <span className="text-[6px] sm:text-[7.5px] md:text-[8.5px] xl:text-[11px] font-heading font-bold tracking-[0.1em] xl:tracking-[0.18em] text-neutral-400 uppercase">
                     VISITOR PASS
                   </span>
 
-                  <div className="flex items-center gap-1 xl:gap-2">
-                    <span className="w-1.5 h-1.5 xl:w-2.5 xl:h-2.5 rounded-full bg-[#22c55e] shadow-[0_0_6px_#22c55e] animate-pulse" />
+                  <div className="flex items-center gap-0.5 xl:gap-2">
+                    <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 xl:w-2 xl:h-2 rounded-full bg-[#22c55e] shadow-[0_0_5px_#22c55e] animate-pulse" />
                     <button
                       type="button"
                       onClick={() => setIsCardOpen(false)}
                       aria-label="Close pass"
-                      className="p-0.5 xl:p-1 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                      className="p-0.5 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                     >
-                      <X size={9} className="sm:w-3 sm:h-3 xl:w-4 xl:h-4" />
+                      <X size={8} className="sm:w-2.5 sm:h-2.5 xl:w-3.5 xl:h-3.5" />
                     </button>
                   </div>
                 </div>
 
                 {/* Avatar Box with Initial */}
-                <div className="relative z-10 w-5.5 h-5.5 sm:w-7 sm:h-7 md:w-8 md:h-8 xl:w-12 xl:h-12 rounded-md sm:rounded-lg xl:rounded-2xl bg-gradient-to-br from-[#13806f] to-[#56a933] flex items-center justify-center text-white text-[10px] sm:text-xs md:text-sm xl:text-2xl font-bold shadow-md my-1 sm:my-1.5 xl:my-4">
+                <div className="relative z-10 w-4 h-4 sm:w-5.5 sm:h-5.5 md:w-7 md:h-7 xl:w-11 xl:h-11 rounded sm:rounded-md xl:rounded-xl bg-gradient-to-br from-[#13806f] to-[#56a933] flex items-center justify-center text-white text-[8px] sm:text-[10px] md:text-xs xl:text-xl font-bold shadow-md my-0.5 sm:my-1 xl:my-3">
                   {firstLetter}
                 </div>
 
                 {/* Greeting & Name */}
                 <div className="relative z-10">
-                  <div className="text-neutral-400 text-[7px] sm:text-[8px] md:text-[9px] xl:text-sm font-normal leading-none xl:leading-normal">
+                  <div className="text-neutral-400 text-[6px] sm:text-[7.5px] md:text-[8.5px] xl:text-xs font-normal leading-none">
                     {greeting}
                   </div>
-                  <div className="text-[11px] sm:text-[13px] md:text-sm xl:text-[23px] font-heading font-bold text-white tracking-tight mt-0.5 break-words leading-tight">
+                  <div className="text-[9px] sm:text-[11px] md:text-sm xl:text-[20px] font-heading font-bold text-white tracking-tight mt-0.5 break-words leading-tight">
                     {visitorName}
                   </div>
                 </div>
 
-                {/* Welcome text */}
-                <p className="relative z-10 text-[6.5px] sm:text-[7.5px] md:text-[8.5px] xl:text-[12.5px] text-neutral-300/85 leading-tight xl:leading-[1.5] mt-0.5 sm:mt-1 xl:mt-2.5 line-clamp-2 xl:line-clamp-none">
+                {/* Welcome text - hidden on compact mobile to save vertical space */}
+                <p className="hidden sm:block relative z-10 text-[7px] md:text-[8px] xl:text-[11.5px] text-neutral-300/85 leading-tight xl:leading-[1.4] mt-0.5 xl:mt-2 line-clamp-2 xl:line-clamp-none">
                   Welcome to Saleel Designs — explore the work and say hi anytime.
                 </p>
               </div>
@@ -207,10 +207,10 @@ export default function VisitorPassCard() {
               {/* Bottom Meta Section */}
               <div className="relative z-10">
                 {/* Dashed divider */}
-                <div className="border-b border-dashed border-neutral-700/60 my-1 sm:my-1.5 xl:my-4" />
+                <div className="border-b border-dashed border-neutral-700/60 my-0.5 sm:my-1 xl:my-3" />
 
                 {/* Meta details table */}
-                <div className="flex flex-col gap-0.5 xl:gap-2 text-[6px] sm:text-[7.5px] md:text-[8px] xl:text-xs">
+                <div className="flex flex-col gap-0.5 xl:gap-1.5 text-[5px] sm:text-[6.5px] md:text-[7.5px] xl:text-[11px]">
                   <div className="flex justify-between items-center">
                     <span className="text-neutral-400">Date</span>
                     <span className="font-semibold text-white tracking-tight font-mono">{currentDate}</span>
