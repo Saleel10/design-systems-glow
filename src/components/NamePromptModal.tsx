@@ -58,7 +58,7 @@ export default function NamePromptModal() {
     <AnimatePresence>
       <motion.div
         key="name-prompt-modal"
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
         exit={{
           opacity: 0,

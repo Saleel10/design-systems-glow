@@ -22,8 +22,9 @@ const CaseStudyDetail = () => {
     return () => window.removeEventListener("portfolio_data_updated", loadCases);
   }, []);
 
+  const targetId = (id || "").toLowerCase().trim();
   const currentIndex = cases.findIndex(
-    (c) => c.id.toLowerCase() === (id || "").toLowerCase()
+    (c) => c.id.toLowerCase() === targetId || (c as any).slug?.toLowerCase() === targetId
   );
   const cs = currentIndex !== -1 ? cases[currentIndex] : cases[0] || DEFAULT_CASES[0];
   const nextCase = cases.length > 1 ? cases[(currentIndex + 1) % cases.length] : cs;

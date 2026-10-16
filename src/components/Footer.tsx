@@ -101,12 +101,6 @@ export default function Footer() {
           <span>© {new Date().getFullYear()} Saleel Designs. All rights reserved.</span>
           <div className="flex items-center gap-4">
             <span className="text-[var(--muted)] font-medium">Less decoration. More structure.</span>
-            <Link
-              to="/admin"
-              className="text-[var(--muted2)] hover:text-[var(--accent)] transition-colors opacity-70 hover:opacity-100 font-medium"
-            >
-              Admin ↗
-            </Link>
           </div>
         </div>
       </div>

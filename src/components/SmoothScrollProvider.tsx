@@ -10,6 +10,15 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
   useEffect(() => {
     if (isAdmin) return;
 
+    // Use native 120Hz momentum scrolling on mobile / touch devices to prevent any scroll jitter or image shift
+    const isTouchOrMobile =
+      typeof window !== 'undefined' &&
+      ('ontouchstart' in window ||
+        navigator.maxTouchPoints > 0 ||
+        window.innerWidth < 1024);
+
+    if (isTouchOrMobile) return;
+
     const lenis = new Lenis({
       lerp: 0.1, // slightly snappier than default
       smoothWheel: true,

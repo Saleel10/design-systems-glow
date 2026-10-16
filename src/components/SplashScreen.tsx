@@ -56,12 +56,13 @@ export default function SplashScreen({ onComplete, minDuration = 2200 }: SplashS
       if (rawProgress < 1) {
         requestAnimationFrame(updateProgress);
       } else {
-        // Hold at 100% briefly for visual satisfaction, then finish
+        // Hold at 100% briefly for visual satisfaction, then transition seamlessly to NamePromptModal
         setTimeout(() => {
-          setIsFinished(true);
-          document.body.style.overflow = '';
           setIsNamePromptOpen(true);
-          if (onComplete) onComplete();
+          setTimeout(() => {
+            setIsFinished(true);
+            if (onComplete) onComplete();
+          }, 40);
         }, 300);
       }
     };
@@ -71,10 +72,11 @@ export default function SplashScreen({ onComplete, minDuration = 2200 }: SplashS
     // Allow user to click anywhere or press Escape to skip if desired
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' || e.key === ' ') {
-        setIsFinished(true);
-        document.body.style.overflow = '';
         setIsNamePromptOpen(true);
-        if (onComplete) onComplete();
+        setTimeout(() => {
+          setIsFinished(true);
+          if (onComplete) onComplete();
+        }, 40);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
