@@ -86,6 +86,24 @@ export const VisitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setIsCardOpen(true);
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('sd_visitor_name', finalName);
+
+      // On mobile responsive, reset window scroll to top (0,0) so the hero is viewed, not the clients section
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+
+      // Handle delayed mobile Safari virtual keyboard dismissal scroll
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }, 60);
+
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      }, 260);
     }
   };
 

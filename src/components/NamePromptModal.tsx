@@ -7,12 +7,13 @@ export default function NamePromptModal() {
   const [name, setName] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input when modal opens
+  // Focus input when modal opens (desktop only to prevent mobile browser jumping)
   useEffect(() => {
     if (isNamePromptOpen) {
       document.body.style.overflow = 'hidden';
       const timer = setTimeout(() => {
-        if (inputRef.current) {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+        if (!isMobile && inputRef.current) {
           inputRef.current.focus();
         }
       }, 200);
@@ -34,10 +35,18 @@ export default function NamePromptModal() {
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
+    (document.activeElement as HTMLElement)?.blur();
     submitName(name.trim() || 'Guest');
   };
 
   const handleGuest = () => {
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
+    (document.activeElement as HTMLElement)?.blur();
     submitName('Guest');
   };
 
