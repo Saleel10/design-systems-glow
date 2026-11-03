@@ -225,7 +225,14 @@ export default function WorkForm() {
             }))
           : [];
 
-        const matchedCat = cats.find((c: any) => c.id === work.category_id || c.slug === work.category_id);
+        const matchedCat = cats.find(
+          (c: any) =>
+            c.id === work.category_id ||
+            c.slug === work.category_id ||
+            (work.cat && c.name?.toLowerCase() === work.cat?.toLowerCase()) ||
+            (work.categories?.name && c.name?.toLowerCase() === work.categories.name?.toLowerCase()) ||
+            (work.category_id === "social" && c.slug === "social-media-creatives")
+        );
         form.reset({
           title: work.title || "",
           slug: work.slug || "",

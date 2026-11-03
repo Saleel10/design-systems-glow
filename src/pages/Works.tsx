@@ -125,24 +125,28 @@ const Works = () => {
       const workHas = (tokens: string[]) => hasAny(wCat, tokens) || hasAny(wCatName, tokens) || hasAny(wCatId, tokens);
 
       // UI/UX matching
-      if (targetHas(["ui/ux", "ui-ux", "ui ux", "user interface"]) && workHas(["ui", "user interface"])) {
+      if (targetHas(["ui/ux", "ui-ux", "ui ux", "user interface"]) && (workHas(["ui", "user interface"]) || wSlug === "trevio")) {
         return true;
       }
 
       // Social Media Creatives matching
-      if (targetHas(["social"]) && workHas(["social"])) {
+      if (targetHas(["social"]) && (workHas(["social"]) || wSlug === "raidhan")) {
         return true;
       }
 
       // Package Designs matching
-      if (targetHas(["packag"]) && workHas(["packag"])) {
+      if (targetHas(["packag"]) && (workHas(["packag"]) || wSlug === "2nd-street")) {
         return true;
       }
 
-      // Brand Profiles matching (distinct from general branding)
+      // Brand Profiles matching (strictly for profile items; never match social media creatives or shad)
       if (
         targetHas(["profile"]) &&
-        (workHas(["profile"]) || wSlug === "shad" || wSlug === "shad-creative-education")
+        workHas(["profile"]) &&
+        !workHas(["social"]) &&
+        wSlug !== "raidhan" &&
+        wSlug !== "shad" &&
+        wSlug !== "shad-creative-education"
       ) {
         return true;
       }
@@ -153,13 +157,18 @@ const Works = () => {
         !targetHas(["profile"]) &&
         !workHas(["profile"])
       ) {
-        if (workHas(["brand", "identity"])) {
+        if (
+          workHas(["brand", "identity"]) ||
+          wSlug === "taxverse" ||
+          wSlug === "shad" ||
+          wSlug === "shad-creative-education"
+        ) {
           return true;
         }
       }
 
       // Web matching
-      if (targetHas(["web"]) && workHas(["web"])) {
+      if (targetHas(["web"]) && (workHas(["web"]) || wSlug === "buraq" || wSlug === "buraq-contracting")) {
         return true;
       }
 

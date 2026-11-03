@@ -204,12 +204,12 @@ export const DEFAULT_WORKS: SyncedWork[] = [
     id: 'shad',
     slug: 'shad-creative-education',
     title: 'Shad Creative Education',
-    cat: 'Brand Profiles',
-    category_id: 'brand-profiles',
-    cta: 'Brand profile system',
+    cat: 'Branding',
+    category_id: 'branding',
+    cta: 'Visual system',
     year: '2024',
     created_at: new Date('2024-11-20').toISOString(),
-    categories: { name: 'Brand Profiles' },
+    categories: { name: 'Branding' },
     description: 'A modern, bilingual visual system for a creative education institute inspiring the next generation of designers.',
     details: {
       overview: 'A modern, bilingual visual system for a creative education institute inspiring the next generation of designers.',
@@ -531,10 +531,38 @@ export async function getSyncedWorks(): Promise<SyncedWork[]> {
       if (Array.isArray(parsed) && parsed.length > 0) {
         const hasDummy = parsed.some((p: any) => p.slug === 'nexus-brand-system' || p.id === 'nexus-brand-system');
         if (!hasDummy) {
-          return parsed.map((w: any) => ({
-            ...w,
-            cat: w.categories?.name || w.cat || 'Branding',
-          }));
+          // Auto-fix any misclassified works from legacy cache
+          const cleaned = parsed.map((w: any) => {
+            const slug = (w.slug || w.id || '').toLowerCase();
+            // Ensure Raidhan is in Social Media Creatives
+            if (slug === 'raidhan') {
+              return {
+                ...w,
+                cat: 'Social Media Creatives',
+                category_id: 'social-media-creatives',
+                categories: { name: 'Social Media Creatives' },
+                cta: w.cta || 'Campaign creatives',
+              };
+            }
+            // Ensure Shad is in Branding, not Brand Profiles
+            if (slug === 'shad' || slug === 'shad-creative-education') {
+              if (w.cat === 'Brand Profiles' || w.category_id === 'brand-profiles' || w.category_id === 'work-brand-profiles') {
+                return {
+                  ...w,
+                  cat: 'Branding',
+                  category_id: 'branding',
+                  categories: { name: 'Branding' },
+                  cta: 'Visual system',
+                };
+              }
+            }
+            return {
+              ...w,
+              cat: w.categories?.name || w.cat || 'Branding',
+            };
+          });
+          localStorage.setItem('admin_works', JSON.stringify(cleaned));
+          return cleaned;
         }
       }
     } catch {

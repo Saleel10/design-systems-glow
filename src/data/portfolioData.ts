@@ -264,7 +264,7 @@ export const SKILLS: SkillCategory[] = [
 export const WORKS: WorkItem[] = [
   { id: 'taxverse', slug: 'taxverse', title: 'Taxverse', cat: 'Branding', cta: 'Brand identity', year: '2025', ph: 'Taxverse — brand identity', img: 'Taxverse-logo.png' },
   { id: 'trevio', slug: 'trevio', title: 'Trevio', cat: 'UI/UX Designs', cta: 'Product design', year: '2025', ph: 'Trevio — app screens', img: 'trevio-logo.png' },
-  { id: 'shad', slug: 'shad-creative-education', title: 'Shad Creative Education', cat: 'Brand Profiles', cta: 'Brand profile system', year: '2024', ph: 'Shad — identity system', img: 'shad-logo.png' },
+  { id: 'shad', slug: 'shad-creative-education', title: 'Shad Creative Education', cat: 'Branding', cta: 'Visual system', year: '2024', ph: 'Shad — identity system', img: 'shad-logo.png' },
   { id: 'buraq', slug: 'buraq-contracting', title: 'Buraq Contracting', cat: 'Web', cta: 'Website', year: '2024', ph: 'Buraq — website', img: 'buraq-logo.png' },
   { id: '2nd-street', slug: '2nd-street', title: '2nd Street', cat: 'Package Designs', cta: 'Package design', year: '2024', ph: '2nd Street — packaging', img: 'Secondstreet-logo.png' },
   { id: 'raidhan', slug: 'raidhan', title: 'Raidhan', cat: 'Social Media Creatives', cta: 'Campaign creatives', year: '2023', ph: 'Raidhan — social campaign', img: 'raidhan-logo.png' },

@@ -41,15 +41,46 @@ describe("Works page dynamic categories", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Taxverse")).toBeInTheDocument();
+      expect(screen.getByText("Raidhan")).toBeInTheDocument();
     });
 
-    // Click UI/UX Designs
+    // 1. Click UI/UX Designs
     const uiUxBtn = screen.getByRole("button", { name: "UI/UX Designs" });
     fireEvent.click(uiUxBtn);
 
     await waitFor(() => {
       expect(screen.getByText("Trevio")).toBeInTheDocument();
       expect(screen.queryByText("Taxverse")).not.toBeInTheDocument();
+    });
+
+    // 2. Click Social Media Creatives: should show Raidhan
+    const socialBtn = screen.getByRole("button", { name: "Social Media Creatives" });
+    fireEvent.click(socialBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Raidhan")).toBeInTheDocument();
+      expect(screen.queryByText("Taxverse")).not.toBeInTheDocument();
+      expect(screen.queryByText("Shad Creative Education")).not.toBeInTheDocument();
+    });
+
+    // 3. Click Brand Profiles: should NOT include Social Media Creatives (Raidhan) or Shad
+    const brandProfilesBtn = screen.getByRole("button", { name: "Brand Profiles" });
+    fireEvent.click(brandProfilesBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Raidhan")).not.toBeInTheDocument();
+      expect(screen.queryByText("Shad Creative Education")).not.toBeInTheDocument();
+      expect(screen.getByText(/No projects in “Brand Profiles” yet/i)).toBeInTheDocument();
+    });
+
+    // 4. Click Branding: should show Taxverse and Shad Creative Education
+    const brandingBtn = screen.getByRole("button", { name: "Branding" });
+    fireEvent.click(brandingBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Taxverse")).toBeInTheDocument();
+      expect(screen.getByText("Shad Creative Education")).toBeInTheDocument();
+      expect(screen.queryByText("Raidhan")).not.toBeInTheDocument();
     });
   });
 
