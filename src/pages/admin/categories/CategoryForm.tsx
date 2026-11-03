@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,6 +22,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
+import {
+  getSyncedCategories,
+  saveSyncedCategory,
+} from "@/lib/portfolioDataSync";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -38,17 +41,24 @@ const formSchema = z.object({
 
 export default function CategoryForm() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryType = searchParams.get("type");
   const isEditing = !!id;
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(isEditing);
+
+  const initialType: "work" | "case" | "blog" =
+    queryType === "blog" || queryType === "case" || queryType === "work"
+      ? queryType
+      : "work";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       slug: "",
-      type: "work",
+      type: initialType,
     },
   });
 
@@ -56,27 +66,20 @@ export default function CategoryForm() {
     if (isEditing) {
       fetchCategory();
     }
-  }, [id]);
+  }, [id, queryType]);
 
   const fetchCategory = async () => {
-    let catData: any = null;
-    try {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .eq("id", id)
-        .single();
-      if (!error && data) catData = data;
-    } catch {
-      // Ignore
-    }
-
+    const list = await getSyncedCategories();
+    // Match by ID and queryType first to distinguish categories that share the same slug/name across types
+    let catData = list.find((c: any) => c.id === id && (!queryType || c.type === queryType));
     if (!catData) {
-      const stored = localStorage.getItem("admin_categories");
-      if (stored) {
-        const list = JSON.parse(stored);
-        catData = list.find((c: any) => c.id === id || c.slug === id);
-      }
+      catData = list.find((c: any) => c.id === id);
+    }
+    if (!catData && queryType) {
+      catData = list.find((c: any) => c.slug === id && c.type === queryType);
+    }
+    if (!catData) {
+      catData = list.find((c: any) => c.slug === id);
     }
 
     if (!catData) {
@@ -90,7 +93,7 @@ export default function CategoryForm() {
       form.reset({
         name: catData.name,
         slug: catData.slug,
-        type: catData.type || "work",
+        type: catData.type || initialType,
       });
     }
     setLoading(false);
@@ -98,40 +101,24 @@ export default function CategoryForm() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      if (isEditing) {
-        const { error } = await supabase
-          .from("categories")
-          .update(values)
-          .eq("id", id);
-        if (error) throw error;
-        toast({ title: "Category updated successfully" });
-      } else {
-        const { error } = await supabase.from("categories").insert([values]);
-        if (error) throw error;
-        toast({ title: "Category created successfully" });
-      }
-    } catch {
-      // Local storage fallback
-      const stored = localStorage.getItem("admin_categories");
-      let list = stored ? JSON.parse(stored) : [];
-      if (isEditing) {
-        list = list.map((c: any) =>
-          c.id === id || c.slug === id ? { ...c, ...values } : c
-        );
-      } else {
-        list.push({
-          ...values,
-          id: values.slug,
-          created_at: new Date().toISOString(),
-        });
-      }
-      localStorage.setItem("admin_categories", JSON.stringify(list));
+      await saveSyncedCategory({
+        ...(isEditing && id ? { id } : {}),
+        name: values.name,
+        slug: values.slug,
+        type: values.type,
+      });
+
       toast({
-        title: isEditing ? "Category updated (Local Storage)" : "Category created (Local Storage)",
+        title: isEditing ? "Category updated successfully" : "Category created successfully",
+      });
+      navigate("/admin/categories");
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Error saving category",
+        description: err?.message || "Could not save category.",
       });
     }
-
-    navigate("/admin/categories");
   };
 
   if (loading) {

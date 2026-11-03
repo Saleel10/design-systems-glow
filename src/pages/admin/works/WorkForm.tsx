@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
 import { getDefaultWorks } from "./WorksList";
-import { notifyPortfolioDataUpdated } from "@/lib/portfolioDataSync";
+import { notifyPortfolioDataUpdated, getSyncedCategories, saveSyncedCategory } from "@/lib/portfolioDataSync";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -153,33 +153,20 @@ export default function WorkForm() {
 
   useEffect(() => {
     fetchData();
-  }, [id]);
 
-  const defaultCategories = [
-    { id: "branding", name: "Branding" },
-    { id: "ui-ux-design", name: "UI/UX Design" },
-    { id: "design-systems", name: "Design Systems" },
-    { id: "web-design", name: "Web Design" },
-    { id: "mobile-app", name: "Mobile App" },
-  ];
+    window.addEventListener("portfolio_data_updated", fetchData);
+    return () => window.removeEventListener("portfolio_data_updated", fetchData);
+  }, [id]);
 
   const fetchData = async () => {
     setLoading(true);
+    let cats: any[] = [];
 
     try {
-      const { data: cats } = await supabase
-        .from("categories")
-        .select("id, name")
-        .eq("type", "work")
-        .order("name");
-
-      if (cats && cats.length > 0) {
-        setCategories(cats);
-      } else {
-        setCategories(defaultCategories);
-      }
+      cats = await getSyncedCategories("work");
+      setCategories(cats);
     } catch {
-      setCategories(defaultCategories);
+      // Fallback
     }
 
     if (isEditing) {
@@ -238,11 +225,12 @@ export default function WorkForm() {
             }))
           : [];
 
+        const matchedCat = cats.find((c: any) => c.id === work.category_id || c.slug === work.category_id);
         form.reset({
           title: work.title || "",
           slug: work.slug || "",
           description: work.description || "",
-          category_id: work.category_id || "",
+          category_id: matchedCat?.id || work.category_id || "",
           image_url: work.image_url || "",
           details: {
             overview: details.overview || "",
@@ -278,18 +266,19 @@ export default function WorkForm() {
     if (!newCatName.trim()) return;
     const slug = newCatName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
     
-    const { data, error } = await supabase.from("categories").insert([
-      { name: newCatName, slug, type: "work" }
-    ]).select();
-
-    if (error) {
-      toast({ variant: "destructive", title: "Error creating category", description: error.message });
-    } else if (data) {
-      setCategories([...categories, data[0]]);
-      form.setValue("category_id", data[0].id);
+    try {
+      const created = await saveSyncedCategory({
+        name: newCatName.trim(),
+        slug,
+        type: "work",
+      });
+      setCategories((prev) => [...prev.filter((c) => c.id !== created.id), created]);
+      form.setValue("category_id", created.id);
       setNewCatName("");
       setIsCatDialogOpen(false);
-      toast({ title: "Category created" });
+      toast({ title: "Category created", description: created.name });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error creating category", description: error?.message });
     }
   };
 
@@ -372,7 +361,11 @@ export default function WorkForm() {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const catObj = categories.find((c) => c.id === values.category_id);
+    const catObj = categories.find(
+      (c) =>
+        (c.id === values.category_id || c.slug === values.category_id) &&
+        (!c.type || c.type === "work")
+    );
     const catName = catObj?.name || values.category_id;
 
     try {

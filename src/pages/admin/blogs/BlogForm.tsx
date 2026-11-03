@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
 import { getDefaultBlogs } from "./BlogsList";
-import { notifyPortfolioDataUpdated } from "@/lib/portfolioDataSync";
+import { notifyPortfolioDataUpdated, getSyncedCategories, saveSyncedCategory } from "@/lib/portfolioDataSync";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -166,25 +166,22 @@ export default function BlogForm() {
 
   useEffect(() => {
     fetchData();
+
+    window.addEventListener("portfolio_data_updated", fetchData);
+    return () => window.removeEventListener("portfolio_data_updated", fetchData);
   }, [id]);
 
   const fetchData = async () => {
     setLoading(true);
+    let cats: any[] = [];
 
     try {
-      const { data: cats } = await supabase
-        .from("categories")
-        .select("id, name")
-        .eq("type", "blog")
-        .order("name");
-
+      cats = await getSyncedCategories("blog");
       if (cats && cats.length > 0) {
         setCategories(cats);
-      } else {
-        setCategories(DEFAULT_CATEGORIES);
       }
     } catch {
-      setCategories(DEFAULT_CATEGORIES);
+      // Fallback
     }
 
     if (isEditing) {
@@ -261,11 +258,12 @@ export default function BlogForm() {
           contentObj = { intro, sections, callout, conclusion };
         }
 
+        const matchedCat = cats.find((c: any) => c.id === blog.category_id || c.slug === blog.category_id);
         form.reset({
           title: blog.title || "",
           slug: blog.slug || "",
           subtitle: blog.subtitle || blog.excerpt || "",
-          category_id: blog.category_id || "branding",
+          category_id: matchedCat?.id || blog.category_id || "blog-branding",
           date: blog.date || "Sep 2026",
           read_time: blog.read_time || "5 min read",
           published: blog.published ?? true,
@@ -298,12 +296,20 @@ export default function BlogForm() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
 
-    const newCat = { id: slug, name: newCatName.trim() };
-    setCategories((prev) => [...prev, newCat]);
-    form.setValue("category_id", slug);
-    setIsCatDialogOpen(false);
-    setNewCatName("");
-    toast({ title: "Category added", description: newCatName });
+    try {
+      const created = await saveSyncedCategory({
+        name: newCatName.trim(),
+        slug,
+        type: "blog",
+      });
+      setCategories((prev) => [...prev.filter((c) => c.id !== created.id), created]);
+      form.setValue("category_id", created.id);
+      setIsCatDialogOpen(false);
+      setNewCatName("");
+      toast({ title: "Category added", description: created.name });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Error creating category", description: err?.message });
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -352,7 +358,11 @@ export default function BlogForm() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const rawMarkdown = formatToMarkdown(values);
-    const catObj = categories.find((c) => c.id === values.category_id);
+    const catObj = categories.find(
+      (c) =>
+        (c.id === values.category_id || c.slug === values.category_id) &&
+        (!c.type || c.type === "blog")
+    );
 
     const blogRecord = {
       ...values,
@@ -417,7 +427,12 @@ export default function BlogForm() {
   };
 
   const formValues = form.watch();
-  const selectedCat = categories.find((c) => c.id === formValues.category_id)?.name || "Branding";
+  const selectedCat =
+    categories.find(
+      (c) =>
+        (c.id === formValues.category_id || c.slug === formValues.category_id) &&
+        (!c.type || c.type === "blog")
+    )?.name || "Branding";
   const parsedTagList = formValues.tags
     ? formValues.tags.split(",").map((t) => t.trim()).filter(Boolean)
     : ["#branding", "#design-systems", "#strategy"];

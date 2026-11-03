@@ -27,6 +27,79 @@ export interface SyncedWork {
   };
 }
 
+export interface SyncedCategory {
+  id: string;
+  name: string;
+  slug: string;
+  type: 'work' | 'case' | 'blog';
+  created_at?: string;
+  order?: number;
+}
+
+export const DEFAULT_CATEGORIES: SyncedCategory[] = [
+  // Work Categories
+  { id: 'work-branding', name: 'Branding', slug: 'branding', type: 'work', created_at: '2026-10-30T10:00:00.000Z', order: 1 },
+  { id: 'work-social-media-creatives', name: 'Social Media Creatives', slug: 'social-media-creatives', type: 'work', created_at: '2026-10-30T10:01:00.000Z', order: 2 },
+  { id: 'work-ui-ux-designs', name: 'UI/UX Designs', slug: 'ui-ux-designs', type: 'work', created_at: '2026-10-30T10:02:00.000Z', order: 3 },
+  { id: 'work-brand-profiles', name: 'Brand Profiles', slug: 'brand-profiles', type: 'work', created_at: '2026-10-30T10:03:00.000Z', order: 4 },
+  { id: 'work-package-designing', name: 'Package Designs', slug: 'package-designing', type: 'work', created_at: '2026-10-30T10:04:00.000Z', order: 5 },
+  { id: 'work-web', name: 'Web', slug: 'web', type: 'work', created_at: '2026-10-30T10:05:00.000Z', order: 6 },
+
+  // Case Study Categories
+  { id: 'case-1', name: 'FinTech & Banking', slug: 'fintech-banking', type: 'case', created_at: '2026-10-30T10:00:00.000Z', order: 1 },
+  { id: 'case-2', name: 'SaaS Platforms', slug: 'saas-platforms', type: 'case', created_at: '2026-10-30T10:01:00.000Z', order: 2 },
+  { id: 'case-3', name: 'Strategic Branding', slug: 'strategic-branding', type: 'case', created_at: '2026-10-30T10:02:00.000Z', order: 3 },
+  { id: 'case-4', name: 'Design Systems', slug: 'case-design-systems', type: 'case', created_at: '2026-10-30T10:03:00.000Z', order: 4 },
+
+  // Blog Categories (Can share identical category names/slugs like "Branding" without conflict)
+  { id: 'blog-branding', name: 'Branding', slug: 'branding', type: 'blog', created_at: '2026-10-30T10:00:00.000Z', order: 1 },
+  { id: 'blog-process', name: 'Process', slug: 'process', type: 'blog', created_at: '2026-10-30T10:01:00.000Z', order: 2 },
+  { id: 'blog-design-systems', name: 'Design systems', slug: 'design-systems', type: 'blog', created_at: '2026-10-30T10:02:00.000Z', order: 3 },
+  { id: 'blog-web-design', name: 'Web Design', slug: 'web-design', type: 'blog', created_at: '2026-10-30T10:03:00.000Z', order: 4 },
+  { id: 'blog-theory', name: 'Design Theory', slug: 'design-theory', type: 'blog', created_at: '2026-10-30T10:04:00.000Z', order: 5 },
+  { id: 'blog-strategy', name: 'Strategy', slug: 'strategy', type: 'blog', created_at: '2026-10-30T10:05:00.000Z', order: 6 },
+];
+
+export const WORK_CATEGORY_PRIORITY: Record<string, number> = {
+  branding: 1,
+  'social-media-creatives': 2,
+  'social-media': 2,
+  social: 2,
+  'ui-ux-designs': 3,
+  'ui-ux-design': 3,
+  'ui-ux': 3,
+  'brand-profiles': 4,
+  'brand-profile': 4,
+  'package-designing': 5,
+  'package-designs': 5,
+  packaging: 5,
+  web: 6,
+  'web-design': 6,
+};
+
+export function sortWorkCategories(categories: SyncedCategory[]): SyncedCategory[] {
+  return [...categories].sort((a, b) => {
+    // 1. Explicit custom order if present
+    if (typeof a.order === 'number' && typeof b.order === 'number' && a.order !== b.order) {
+      return a.order - b.order;
+    }
+    const slugA = (a.slug || a.name || '').toLowerCase();
+    const slugB = (b.slug || b.name || '').toLowerCase();
+    const priorityA = WORK_CATEGORY_PRIORITY[slugA] ?? WORK_CATEGORY_PRIORITY[a.name?.toLowerCase()] ?? 999;
+    const priorityB = WORK_CATEGORY_PRIORITY[slugB] ?? WORK_CATEGORY_PRIORITY[b.name?.toLowerCase()] ?? 999;
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+    // 2. Chronological for newly added categories (so newly created categories append nicely)
+    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+    if (timeA && timeB && timeA !== timeB) {
+      return timeA - timeB;
+    }
+    return (a.name || '').localeCompare(b.name || '');
+  });
+}
+
 export interface SyncedBlog {
   id: string;
   slug: string;
@@ -92,12 +165,12 @@ export const DEFAULT_WORKS: SyncedWork[] = [
     id: 'trevio',
     slug: 'trevio',
     title: 'Trevio',
-    cat: 'UI/UX',
-    category_id: 'ui-ux',
+    cat: 'UI/UX Designs',
+    category_id: 'ui-ux-designs',
     cta: 'Product design',
     year: '2025',
     created_at: new Date('2025-02-10').toISOString(),
-    categories: { name: 'UI/UX' },
+    categories: { name: 'UI/UX Designs' },
     description: 'A fast, dependable booking experience and multi-platform design system for travel and hospitality management.',
     details: {
       overview: 'A fast, dependable booking experience and multi-platform design system for travel and hospitality management.',
@@ -131,12 +204,12 @@ export const DEFAULT_WORKS: SyncedWork[] = [
     id: 'shad',
     slug: 'shad-creative-education',
     title: 'Shad Creative Education',
-    cat: 'Branding',
-    category_id: 'branding',
-    cta: 'Visual system',
+    cat: 'Brand Profiles',
+    category_id: 'brand-profiles',
+    cta: 'Brand profile system',
     year: '2024',
     created_at: new Date('2024-11-20').toISOString(),
-    categories: { name: 'Branding' },
+    categories: { name: 'Brand Profiles' },
     description: 'A modern, bilingual visual system for a creative education institute inspiring the next generation of designers.',
     details: {
       overview: 'A modern, bilingual visual system for a creative education institute inspiring the next generation of designers.',
@@ -204,12 +277,12 @@ export const DEFAULT_WORKS: SyncedWork[] = [
     id: '2nd-street',
     slug: '2nd-street',
     title: '2nd Street',
-    cat: 'Branding',
-    category_id: 'branding',
-    cta: 'Brand & packaging',
+    cat: 'Package Designs',
+    category_id: 'package-designing',
+    cta: 'Package design',
     year: '2024',
     created_at: new Date('2024-06-25').toISOString(),
-    categories: { name: 'Branding' },
+    categories: { name: 'Package Designs' },
     description: 'Boutique retail identity, packaging design and bespoke storefront touchpoints for an artisanal specialty store.',
     details: {
       overview: 'Boutique retail identity, packaging design and bespoke storefront touchpoints for an artisanal specialty store.',
@@ -238,12 +311,12 @@ export const DEFAULT_WORKS: SyncedWork[] = [
     id: 'raidhan',
     slug: 'raidhan',
     title: 'Raidhan',
-    cat: 'Social',
-    category_id: 'social',
+    cat: 'Social Media Creatives',
+    category_id: 'social-media-creatives',
     cta: 'Campaign creatives',
     year: '2023',
     created_at: new Date('2023-12-05').toISOString(),
-    categories: { name: 'Social' },
+    categories: { name: 'Social Media Creatives' },
     description: 'High-impact campaign creatives and multi-channel social media systems for an emerging lifestyle brand.',
     details: {
       overview: 'High-impact campaign creatives and multi-channel social media systems for an emerging lifestyle brand.',
@@ -592,4 +665,175 @@ export async function getSyncedBlog(slugOrId: string): Promise<SyncedBlog | null
       (!target && b.slug === 'why-your-brand-needs-a-system')
   );
   return found || null;
+}
+
+// ----------------------------------------------------
+// CATEGORIES SYNC
+// ----------------------------------------------------
+export async function getSyncedCategories(type?: 'work' | 'case' | 'blog'): Promise<SyncedCategory[]> {
+  if (typeof window === 'undefined') {
+    const list = type ? DEFAULT_CATEGORIES.filter((c) => c.type === type) : DEFAULT_CATEGORIES;
+    return type === 'work' ? sortWorkCategories(list) : list;
+  }
+
+  let list: SyncedCategory[] = [];
+
+  // 1. Try Supabase if configured
+  if (isSupabaseConfigured) {
+    try {
+      let query = supabase.from('categories').select('*').order('created_at', { ascending: false });
+      if (type) {
+        query = query.eq('type', type);
+      }
+      const { data, error } = await query;
+      if (!error && Array.isArray(data) && data.length > 0) {
+        list = data;
+        // Merge Supabase categories into localStorage without overwriting cross-type duplicates
+        const stored = localStorage.getItem('admin_categories');
+        const existing: SyncedCategory[] = stored ? JSON.parse(stored) : [];
+        const merged = [...data];
+        existing.forEach((e) => {
+          if (!merged.some((m) => m.id === e.id || (m.slug === e.slug && m.type === e.type))) {
+            merged.push(e);
+          }
+        });
+        localStorage.setItem('admin_categories', JSON.stringify(merged));
+      }
+    } catch {
+      // Fall through to localStorage
+    }
+  }
+
+  // 2. Try localStorage
+  const stored = localStorage.getItem('admin_categories');
+  if (stored) {
+    try {
+      const parsed: SyncedCategory[] = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Legacy migration: ensure the 6 user categories from Image 2 are present if old template was stored
+        const hasImage2Cats = parsed.some(
+          (c) => c.type === 'work' && (c.slug === 'brand-profiles' || c.slug === 'package-designing' || c.slug === 'social-media-creatives')
+        );
+        if (!hasImage2Cats) {
+          const defaultWorkCats = DEFAULT_CATEGORIES.filter((c) => c.type === 'work');
+          defaultWorkCats.forEach((dw) => {
+            if (!parsed.some((c) => c.slug === dw.slug && c.type === 'work')) {
+              parsed.push(dw);
+            }
+          });
+          localStorage.setItem('admin_categories', JSON.stringify(parsed));
+        }
+        list = type ? parsed.filter((c) => c.type === type) : parsed;
+      }
+    } catch {
+      // Fall through
+    }
+  }
+
+  // 3. Fallback if storage was empty
+  if (list.length === 0) {
+    list = type ? DEFAULT_CATEGORIES.filter((c) => c.type === type) : [...DEFAULT_CATEGORIES];
+    if (!stored) {
+      localStorage.setItem('admin_categories', JSON.stringify(DEFAULT_CATEGORIES));
+    }
+  }
+
+  return type === 'work' ? sortWorkCategories(list) : list;
+}
+
+export async function saveSyncedCategory(category: {
+  id?: string;
+  name: string;
+  slug: string;
+  type: 'work' | 'case' | 'blog';
+  order?: number;
+}): Promise<SyncedCategory> {
+  const generatedId = category.id || `${category.type}-${category.slug}`;
+  const newCat: SyncedCategory = {
+    id: generatedId,
+    name: category.name.trim(),
+    slug: category.slug.trim(),
+    type: category.type,
+    created_at: new Date().toISOString(),
+    order: category.order,
+  };
+
+  // 1. Try Supabase
+  if (isSupabaseConfigured) {
+    try {
+      // If updating an existing database record (UUID format)
+      if (category.id && !category.id.startsWith(`${category.type}-`)) {
+        await supabase.from('categories').update({
+          name: newCat.name,
+          slug: newCat.slug,
+          type: newCat.type,
+        }).eq('id', category.id);
+      } else {
+        const { data } = await supabase.from('categories').insert([{
+          name: newCat.name,
+          slug: newCat.slug,
+          type: newCat.type,
+        }]).select();
+        if (data && data[0]?.id) {
+          newCat.id = data[0].id;
+        }
+      }
+    } catch {
+      // Fall through to localStorage
+    }
+  }
+
+  // 2. localStorage - Match on ID OR (same slug AND same type)
+  // NEVER overwrite a category of a different type!
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('admin_categories');
+    let list: SyncedCategory[] = stored ? JSON.parse(stored) : [...DEFAULT_CATEGORIES];
+    const index = list.findIndex(
+      (c) => c.id === newCat.id || (c.slug === newCat.slug && c.type === newCat.type)
+    );
+    if (index >= 0) {
+      list[index] = { ...list[index], ...newCat };
+    } else {
+      list.push(newCat);
+    }
+    localStorage.setItem('admin_categories', JSON.stringify(list));
+    notifyPortfolioDataUpdated();
+  }
+
+  return newCat;
+}
+
+export async function deleteSyncedCategory(id: string, type?: 'work' | 'case' | 'blog'): Promise<void> {
+  // 1. Try Supabase
+  if (isSupabaseConfigured) {
+    try {
+      let query = supabase.from('categories').delete().eq('id', id);
+      if (type) {
+        query = query.eq('type', type);
+      }
+      await query;
+    } catch {
+      // Fall through
+    }
+  }
+
+  // 2. localStorage - Safe deletion only targeting the specified type
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('admin_categories');
+    let list: SyncedCategory[] = stored ? JSON.parse(stored) : [...DEFAULT_CATEGORIES];
+    list = list.filter((c) => {
+      // Exact ID match:
+      if (c.id === id) {
+        if (type && c.type && c.type !== type) return true; // keep if different type
+        return false;
+      }
+      // Slug match:
+      if (type && c.slug === id && c.type === type) {
+        return false;
+      }
+      return true;
+    });
+    localStorage.setItem('admin_categories', JSON.stringify(list));
+    notifyPortfolioDataUpdated();
+  }
 }

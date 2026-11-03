@@ -1,11 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
-import { getSyncedWorks, SyncedWork, DEFAULT_WORKS } from "@/lib/portfolioDataSync";
+import {
+  getSyncedWorks,
+  getSyncedCategories,
+  sortWorkCategories,
+  DEFAULT_CATEGORIES,
+  SyncedWork,
+  SyncedCategory,
+  DEFAULT_WORKS,
+} from "@/lib/portfolioDataSync";
 import { ArrowUpRight } from "lucide-react";
-
-const FILTERS = ["All", "Branding", "UI/UX", "Web", "Social"];
 
 // Preview configurations for work cards (rich visual previews without client logos)
 const WORK_PREVIEWS: Record<
@@ -50,29 +56,116 @@ const WORK_PREVIEWS: Record<
 
 const Works = () => {
   const [works, setWorks] = useState<SyncedWork[]>(DEFAULT_WORKS);
+  const [categories, setCategories] = useState<SyncedCategory[]>(() =>
+    sortWorkCategories(DEFAULT_CATEGORIES.filter((c) => c.type === "work"))
+  );
   const [filter, setFilter] = useState("All");
 
   useEffect(() => {
-    const loadWorks = async () => {
-      const data = await getSyncedWorks();
-      if (Array.isArray(data) && data.length > 0) {
-        setWorks(data);
+    const loadData = async () => {
+      const [worksData, catsData] = await Promise.all([
+        getSyncedWorks(),
+        getSyncedCategories("work"),
+      ]);
+      if (Array.isArray(worksData) && worksData.length > 0) {
+        setWorks(worksData);
+      }
+      if (Array.isArray(catsData) && catsData.length > 0) {
+        setCategories(sortWorkCategories(catsData));
       }
     };
-    loadWorks();
+    loadData();
 
-    window.addEventListener("portfolio_data_updated", loadWorks);
-    return () => window.removeEventListener("portfolio_data_updated", loadWorks);
+    window.addEventListener("portfolio_data_updated", loadData);
+    return () => window.removeEventListener("portfolio_data_updated", loadData);
   }, []);
 
-  const filteredWorks =
-    filter === "All"
-      ? works
-      : works.filter(
-          (w) =>
-            w.cat?.toLowerCase() === filter.toLowerCase() ||
-            w.categories?.name?.toLowerCase() === filter.toLowerCase()
-        );
+  const filterOptions = useMemo(() => {
+    return [
+      { id: "all", name: "All", slug: "all" },
+      ...categories.map((c) => ({
+        id: c.id || c.slug,
+        name: c.name,
+        slug: c.slug,
+      })),
+    ];
+  }, [categories]);
+
+  const filteredWorks = useMemo(() => {
+    if (filter === "All") return works;
+
+    const selectedCat = categories.find(
+      (c) =>
+        c.name.toLowerCase() === filter.toLowerCase() ||
+        c.slug.toLowerCase() === filter.toLowerCase()
+    );
+
+    const targetName = (selectedCat?.name || filter).toLowerCase().trim();
+    const targetSlug = (selectedCat?.slug || "").toLowerCase().trim();
+
+    return works.filter((w) => {
+      const wCat = (w.cat || "").toLowerCase().trim();
+      const wCatName = (w.categories?.name || "").toLowerCase().trim();
+      const wCatId = (w.category_id || "").toLowerCase().trim();
+      const wSlug = (w.slug || "").toLowerCase().trim();
+
+      // 1. Direct match with name, slug, or ID
+      if (
+        wCat === targetName ||
+        wCatName === targetName ||
+        (targetSlug && (wCatId === targetSlug || wCat === targetSlug || wCatName === targetSlug)) ||
+        (selectedCat && (wCatId === selectedCat.id.toLowerCase() || wCatId === selectedCat.slug.toLowerCase()))
+      ) {
+        return true;
+      }
+
+      // Helper for multi-token fuzzy matching
+      const hasAny = (val: string, tokens: string[]) => tokens.some((t) => val.includes(t));
+      const targetHas = (tokens: string[]) => hasAny(targetName, tokens) || hasAny(targetSlug, tokens);
+      const workHas = (tokens: string[]) => hasAny(wCat, tokens) || hasAny(wCatName, tokens) || hasAny(wCatId, tokens);
+
+      // UI/UX matching
+      if (targetHas(["ui/ux", "ui-ux", "ui ux", "user interface"]) && workHas(["ui", "user interface"])) {
+        return true;
+      }
+
+      // Social Media Creatives matching
+      if (targetHas(["social"]) && workHas(["social"])) {
+        return true;
+      }
+
+      // Package Designs matching
+      if (targetHas(["packag"]) && workHas(["packag"])) {
+        return true;
+      }
+
+      // Brand Profiles matching (distinct from general branding)
+      if (
+        targetHas(["profile"]) &&
+        (workHas(["profile"]) || wSlug === "shad" || wSlug === "shad-creative-education")
+      ) {
+        return true;
+      }
+
+      // General Branding matching (excluding profiles)
+      if (
+        (targetName === "branding" || targetSlug === "branding") &&
+        !targetHas(["profile"]) &&
+        !workHas(["profile"])
+      ) {
+        if (workHas(["brand", "identity"])) {
+          return true;
+        }
+      }
+
+      // Web matching
+      if (targetHas(["web"]) && workHas(["web"])) {
+        return true;
+      }
+
+      return false;
+    });
+  }, [filter, works, categories]);
 
   return (
     <PageContainer>
@@ -118,27 +211,50 @@ const Works = () => {
 
         {/* Filters with Brand Gradient on Selected Category */}
         <div className="flex flex-wrap gap-2.5 mt-9">
-          {FILTERS.map((f) => {
-            const isActive = filter === f;
+          {filterOptions.map((f) => {
+            const isActive = filter.toLowerCase() === f.name.toLowerCase();
             return (
               <button
-                key={f}
+                key={f.id}
                 type="button"
-                onClick={() => setFilter(f)}
+                onClick={() => setFilter(f.name)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer ${
                   isActive
                     ? "brand-gradient text-white border border-transparent shadow-[0_4px_16px_rgba(92,184,71,0.35)] scale-105"
                     : "border border-[var(--line)] bg-[var(--card)] text-[var(--body)] hover:border-[#5cb847] hover:text-[#5cb847] hover:bg-[#5cb847]/5"
                 }`}
               >
-                {f}
+                {f.name}
               </button>
             );
           })}
         </div>
 
+        {/* Empty state when no works match the active filter */}
+        {filteredWorks.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 px-6 text-center rounded-[24px] border border-[var(--line)] bg-[var(--card)] mt-8">
+            <div className="w-12 h-12 rounded-full bg-[#5cb847]/10 flex items-center justify-center text-[#5cb847] font-semibold text-lg mb-3">
+              ✦
+            </div>
+            <h3 className="font-heading text-xl font-medium text-[var(--ink)]">
+              No projects in &ldquo;{filter}&rdquo; yet
+            </h3>
+            <p className="text-sm text-[var(--muted)] mt-1.5 max-w-md">
+              New projects added to this category in the admin panel will appear here automatically.
+            </p>
+            <button
+              type="button"
+              onClick={() => setFilter("All")}
+              className="mt-6 px-5 py-2.5 rounded-full border border-[#5cb847] text-sm font-medium text-[#5cb847] hover:bg-[#5cb847] hover:text-white transition-all duration-200"
+            >
+              View all projects
+            </button>
+          </div>
+        )}
+
         {/* Works Grid: Fixed 3-column layout on desktop so single work cards retain the exact same size */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mt-8">
+        {filteredWorks.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mt-8">
           {filteredWorks.map((w) => {
             const targetUrl = `/work/${w.slug}`;
             const preview = WORK_PREVIEWS[w.id] || {
@@ -334,6 +450,7 @@ const Works = () => {
             );
           })}
         </div>
+        )}
       </main>
     </PageContainer>
   );
