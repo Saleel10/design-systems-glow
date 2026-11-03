@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -36,142 +36,20 @@ type Blog = {
   content?: any;
 };
 
-export const getDefaultBlogs = (): Blog[] => [
-  {
-    id: "why-your-brand-needs-a-system",
-    slug: "why-your-brand-needs-a-system",
-    title: "Why your brand needs a system, not just a logo",
-    subtitle: "A logo is a starting point. The real value is in the rules that make every touchpoint feel like the same brand.",
-    category_id: "branding",
-    categories: { name: "Branding" },
-    read_time: "5 min read",
-    date: "Sep 2026",
-    published: true,
-    created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
-    image_url: "",
-    author_name: "Muhammed Saleel CP",
-    author_role: "Creative & UI/UX Designer",
-    tags: "#branding, #design-systems, #strategy",
-    content: {
-      intro: "Most businesses start with a logo and stop there. But a logo on its own can't carry a brand across a website, a social feed, packaging and a pitch deck. What carries it is the system around the logo.",
-      sections: [
-        {
-          heading: "A logo is a signature, not a language",
-          body: "A logo identifies you. A brand system lets you speak — consistently — in every place your customers meet you. Colour, typography, layout, imagery and tone are the vocabulary.\n\nWithout those rules, every new asset is designed from scratch, and small differences pile up until the brand feels like five different companies.",
-        },
-        {
-          heading: "What a brand system actually includes",
-          body: "At minimum: a logo suite, a colour palette with clear usage, a type hierarchy, spacing and layout principles, and a set of ready-made templates for the things you make most often.\n\nThe goal isn't a thick PDF nobody reads. It's a toolkit that makes the right choice the easy choice.",
-        },
-        {
-          heading: "Why it pays off",
-          body: "Consistency builds recognition, and recognition builds trust. A system also saves time and money: your team stops reinventing layouts and starts shipping.",
-        },
-      ],
-      callout: "Consistency isn't boring. It's what makes a brand recognisable at a glance.",
-      conclusion: "If your brand feels scattered, the fix is rarely a new logo. It's usually a system that ties everything you already have together.",
-    },
-  },
-  {
-    id: "designing-for-clarity",
-    slug: "designing-for-clarity",
-    title: "Designing for clarity: lessons from 800+ projects",
-    subtitle: "How removing visual noise and focusing on user intent accelerates decision-making.",
-    category_id: "process",
-    categories: { name: "Process" },
-    read_time: "5 min read",
-    date: "Aug 2026",
-    published: true,
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-    image_url: "",
-    author_name: "Muhammed Saleel CP",
-    author_role: "Creative & UI/UX Designer",
-    tags: "#process, #ui-ux, #clarity",
-    content: {
-      intro: "After delivering hundreds of design projects across branding and interfaces, one pattern emerges repeatedly: the enemy of good design is rarely lack of skill. It is unnecessary complexity.",
-      sections: [
-        {
-          heading: "Subtract until only the purpose remains",
-          body: "When building an interface or an identity, every unnecessary decorative flourish creates cognitive load. The best designs solve problems with quiet confidence.",
-        },
-        {
-          heading: "Hierarchy leads the eye",
-          body: "Users don't read every word on a screen. They scan for anchors. A clear typography hierarchy tells them instantly what matters first, second, and third.",
-        },
-      ],
-      callout: "Simplicity is not the absence of clutter; it is the presence of clear purpose.",
-      conclusion: "When in doubt, simplify. Your users and your metrics will thank you.",
-    },
-  },
-  {
-    id: "building-your-first-design-system-in-figma",
-    slug: "building-your-first-design-system-in-figma",
-    title: "Building your first design system in Figma",
-    subtitle: "Practical token architecture, variable modes, and component anatomy for growing teams.",
-    category_id: "design-systems",
-    categories: { name: "Design systems" },
-    read_time: "8 min read",
-    date: "Jul 2026",
-    published: true,
-    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-    image_url: "",
-    author_name: "Muhammed Saleel CP",
-    author_role: "Creative & UI/UX Designer",
-    tags: "#figma, #design-systems, #tokens",
-    content: {
-      intro: "Design systems often start with grand ambitions and end as abandoned component graveyards. Here is how to build one that teams actually use every day.",
-      sections: [
-        {
-          heading: "Tokens before components",
-          body: "Start with atomic values: colors, spacing scale, typography, and corner radiuses. Variables in Figma allow you to map these directly to semantic tokens.",
-        },
-        {
-          heading: "Component variants with restraint",
-          body: "Avoid creating 50 variants of a button before you need them. Build the primary, secondary, and ghost variants first, with clear states.",
-        },
-      ],
-      callout: "A design system is a living product, not a finished monument.",
-      conclusion: "Start small, govern consistently, and let the system evolve alongside your product.",
-    },
-  },
-  {
-    id: "landing-pages-that-convert",
-    slug: "landing-pages-that-convert",
-    title: "Landing pages that convert: structure before style",
-    subtitle: "Why hierarchy, contrast, and message sequencing beat trendy animations every time.",
-    category_id: "web-design",
-    categories: { name: "Web Design" },
-    read_time: "4 min read",
-    date: "Jun 2026",
-    published: true,
-    created_at: new Date(Date.now() - 4 * 86400000).toISOString(),
-    image_url: "",
-    author_name: "Muhammed Saleel CP",
-    author_role: "Creative & UI/UX Designer",
-    tags: "#web-design, #conversion, #landing-page",
-    content: {
-      intro: "Too many landing pages treat the hero section like a canvas for abstract 3D art rather than answering the user's primary questions.",
-      sections: [
-        {
-          heading: "The 5-second test",
-          body: "A visitor should understand what you do, who it is for, and how to take the next step within five seconds of landing on your page.",
-        },
-        {
-          heading: "Sequencing the narrative",
-          body: "Structure your page like an argument: hook with problem & value proposition, prove with social proof and metrics, clarify with features, and close with a strong CTA.",
-        },
-      ],
-      callout: "Design should remove friction between curiosity and commitment.",
-      conclusion: "Prioritize clear communication over decorative noise every single time.",
-    },
-  },
-];
+import {
+  getSyncedBlogs,
+  deleteSyncedBlog,
+  restoreDefaultBlogs,
+  DEFAULT_BLOGS,
+  notifyPortfolioDataUpdated,
+} from "@/lib/portfolioDataSync";
 
-import { getSyncedBlogs, notifyPortfolioDataUpdated } from "@/lib/portfolioDataSync";
+export const getDefaultBlogs = (): Blog[] => DEFAULT_BLOGS as any as Blog[];
 
 export default function BlogsList() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [restoring, setRestoring] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -184,29 +62,32 @@ export default function BlogsList() {
   const fetchBlogs = async () => {
     setLoading(true);
     const data = await getSyncedBlogs();
-    setBlogs(data);
+    setBlogs(data as any as Blog[]);
     setLoading(false);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleRestoreDefaults = async () => {
+    setRestoring(true);
     try {
-      await supabase.from("blogs").delete().eq("id", id);
-    } catch (err) {
-      console.log(err);
+      const restored = await restoreDefaultBlogs();
+      setBlogs(restored as any as Blog[]);
+      toast({
+        title: "Default blogs restored",
+        description: "All original articles are now available in the admin panel.",
+      });
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Error restoring default blogs",
+      });
+    } finally {
+      setRestoring(false);
     }
+  };
 
-    const stored = localStorage.getItem("admin_blogs");
-    if (stored) {
-      const list = JSON.parse(stored);
-      const updated = list.filter((b: Blog) => b.id !== id && b.slug !== id);
-      localStorage.setItem("admin_blogs", JSON.stringify(updated));
-      setBlogs(updated);
-    } else {
-      setBlogs((prev) => prev.filter((b) => b.id !== id && b.slug !== id));
-    }
-
-    notifyPortfolioDataUpdated();
-
+  const handleDelete = async (id: string) => {
+    await deleteSyncedBlog(id);
+    setBlogs((prev) => prev.filter((b) => b.id !== id && b.slug !== id));
     toast({
       title: "Blog post deleted",
     });
@@ -214,14 +95,31 @@ export default function BlogsList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Blogs</h1>
-        <Button asChild>
-          <Link to="/admin/blogs/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Blog
-          </Link>
-        </Button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Blogs</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage your articles, design notes, and published guides.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRestoreDefaults}
+            disabled={restoring}
+            className="hover:border-[#5cb847]/40 hover:text-[#5cb847]"
+          >
+            <RotateCcw className={`mr-2 h-4 w-4 ${restoring ? "animate-spin" : ""}`} />
+            Restore All Defaults
+          </Button>
+          <Button asChild>
+            <Link to="/admin/blogs/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Blog
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-md border bg-card">
@@ -246,8 +144,17 @@ export default function BlogsList() {
               </TableRow>
             ) : blogs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  No blogs found.
+                <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                  <p className="mb-3">No blogs found.</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRestoreDefaults}
+                    disabled={restoring}
+                  >
+                    <RotateCcw className={`mr-2 h-4 w-4 ${restoring ? "animate-spin" : ""}`} />
+                    Restore Default Blogs
+                  </Button>
                 </TableCell>
               </TableRow>
             ) : (

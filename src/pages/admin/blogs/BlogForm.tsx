@@ -92,6 +92,8 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: "web-design", name: "Web Design" },
   { id: "theory", name: "Design Theory" },
   { id: "strategy", name: "Strategy" },
+  { id: "freelancing", name: "Freelancing" },
+  { id: "career", name: "Career" },
 ];
 
 export default function BlogForm() {
@@ -205,6 +207,11 @@ export default function BlogForm() {
       }
 
       if (!blog) {
+        const defaults = getDefaultBlogs();
+        blog = defaults.find((b: any) => b.id === id || b.slug === id);
+      }
+
+      if (!blog) {
         toast({
           variant: "destructive",
           title: "Blog not found",
@@ -258,7 +265,13 @@ export default function BlogForm() {
           contentObj = { intro, sections, callout, conclusion };
         }
 
-        const matchedCat = cats.find((c: any) => c.id === blog.category_id || c.slug === blog.category_id);
+        const matchedCat = cats.find(
+          (c: any) =>
+            c.id === blog.category_id ||
+            c.slug === blog.category_id ||
+            c.slug === blog.cat?.toLowerCase().replace(/[^a-z0-9]+/g, "-") ||
+            c.name?.toLowerCase() === (blog.cat || blog.categories?.name)?.toLowerCase()
+        );
         form.reset({
           title: blog.title || "",
           slug: blog.slug || "",
@@ -416,6 +429,20 @@ export default function BlogForm() {
     }
 
     localStorage.setItem("admin_blogs", JSON.stringify(list));
+
+    const deletedRaw = localStorage.getItem("admin_deleted_blogs");
+    if (deletedRaw) {
+      try {
+        const deletedIds: string[] = JSON.parse(deletedRaw);
+        const filtered = deletedIds.filter(
+          (did) => did !== blogRecord.id && did !== blogRecord.slug
+        );
+        localStorage.setItem("admin_deleted_blogs", JSON.stringify(filtered));
+      } catch {
+        // Fall through
+      }
+    }
+
     notifyPortfolioDataUpdated();
 
     toast({
