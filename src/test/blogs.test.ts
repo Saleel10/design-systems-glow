@@ -63,3 +63,4 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
     expect(restored.some((b) => b.slug === 'cmyk-vs-rgb-vs-hsl')).toBe(true);
   });
 });
+
