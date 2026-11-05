@@ -40,7 +40,7 @@ export const DEFAULT_CATEGORIES: SyncedCategory[] = [
   // Work Categories
   { id: 'work-branding', name: 'Branding', slug: 'branding', type: 'work', created_at: '2026-10-30T10:00:00.000Z', order: 1 },
   { id: 'work-social-media-creatives', name: 'Social Media Creatives', slug: 'social-media-creatives', type: 'work', created_at: '2026-10-30T10:01:00.000Z', order: 2 },
-  { id: 'work-ui-ux-designs', name: 'UI/UX Designs', slug: 'ui-ux-designs', type: 'work', created_at: '2026-10-30T10:02:00.000Z', order: 3 },
+  { id: 'work-ui-ux-design', name: 'UI/UX Design', slug: 'ui-ux-design', type: 'work', created_at: '2026-10-30T10:02:00.000Z', order: 3 },
   { id: 'work-brand-profiles', name: 'Brand Profiles', slug: 'brand-profiles', type: 'work', created_at: '2026-10-30T10:03:00.000Z', order: 4 },
   { id: 'work-package-designing', name: 'Package Designs', slug: 'package-designing', type: 'work', created_at: '2026-10-30T10:04:00.000Z', order: 5 },
   { id: 'work-web', name: 'Web', slug: 'web', type: 'work', created_at: '2026-10-30T10:05:00.000Z', order: 6 },
@@ -167,12 +167,12 @@ export const DEFAULT_WORKS: SyncedWork[] = [
     id: 'trevio',
     slug: 'trevio',
     title: 'Trevio',
-    cat: 'UI/UX Designs',
-    category_id: 'ui-ux-designs',
+    cat: 'UI/UX Design',
+    category_id: 'ui-ux-design',
     cta: 'Product design',
     year: '2025',
     created_at: new Date('2025-02-10').toISOString(),
-    categories: { name: 'UI/UX Designs' },
+    categories: { name: 'UI/UX Design' },
     description: 'A fast, dependable booking experience and multi-platform design system for travel and hospitality management.',
     details: {
       overview: 'A fast, dependable booking experience and multi-platform design system for travel and hospitality management.',
@@ -768,6 +768,16 @@ export async function getSyncedWorks(): Promise<SyncedWork[]> {
                 };
               }
             }
+            // Ensure Trevio is in UI/UX Design
+            if (slug === 'trevio') {
+              return {
+                ...w,
+                cat: 'UI/UX Design',
+                category_id: 'ui-ux-design',
+                categories: { name: 'UI/UX Design' },
+                cta: w.cta || 'Product design',
+              };
+            }
             return {
               ...w,
               cat: w.categories?.name || w.cat || 'Branding',
@@ -977,11 +987,70 @@ export async function getSyncedBlog(slugOrId: string): Promise<SyncedBlog | null
 }
 
 // ----------------------------------------------------
-// CATEGORIES SYNC
+// CATEGORIES SYNC & SANITIZATION
 // ----------------------------------------------------
+export function cleanWorkCategories(categories: SyncedCategory[]): SyncedCategory[] {
+  // Disallow blog/case slugs or obsolete slugs from polluting work categories
+  const disallowedWorkSlugs = new Set([
+    'web-design',
+    'design-systems',
+    'mobile-app',
+    'case-design-systems',
+    'fintech-banking',
+    'saas-platforms',
+    'strategic-branding',
+  ]);
+
+  const nonWork = categories.filter((c) => c.type !== 'work');
+  let work = categories.filter((c) => c.type === 'work');
+
+  // 1. Remove disallowed work slugs (e.g. blog/case categories that leaked into work)
+  work = work.filter((c) => !disallowedWorkSlugs.has((c.slug || '').toLowerCase()));
+
+  // 2. Unify UI/UX Designs / UI/UX Design into a single "UI/UX Design" (slug: ui-ux-design)
+  const hasUiUx = work.some((c) => c.slug === 'ui-ux-design' || c.slug === 'ui-ux-designs');
+  work = work.filter((c) => c.slug !== 'ui-ux-designs');
+  if (hasUiUx) {
+    const existing = work.find((c) => c.slug === 'ui-ux-design');
+    if (existing) {
+      existing.name = 'UI/UX Design';
+      existing.slug = 'ui-ux-design';
+      if (!existing.order) existing.order = 3;
+    } else {
+      work.push({
+        id: 'work-ui-ux-design',
+        name: 'UI/UX Design',
+        slug: 'ui-ux-design',
+        type: 'work',
+        created_at: '2026-10-30T10:02:00.000Z',
+        order: 3,
+      });
+    }
+  }
+
+  // 3. Ensure the 6 user-requested work categories are present unless explicitly deleted
+  const deletedRaw = typeof window !== 'undefined' ? localStorage.getItem('admin_deleted_categories') : null;
+  const deletedKeys: string[] = deletedRaw ? JSON.parse(deletedRaw) : [];
+
+  const defaultWork = DEFAULT_CATEGORIES.filter((c) => c.type === 'work');
+  defaultWork.forEach((dw) => {
+    const isDeleted =
+      deletedKeys.includes(`work:${dw.id}`) ||
+      deletedKeys.includes(`work:${dw.slug}`) ||
+      deletedKeys.includes(`all:${dw.id}`) ||
+      deletedKeys.includes(`all:${dw.slug}`);
+    if (!isDeleted && !work.some((w) => w.slug === dw.slug || w.id === dw.id)) {
+      work.push(dw);
+    }
+  });
+
+  return [...work, ...nonWork];
+}
+
 export async function getSyncedCategories(type?: 'work' | 'case' | 'blog'): Promise<SyncedCategory[]> {
   if (typeof window === 'undefined') {
-    const list = type ? DEFAULT_CATEGORIES.filter((c) => c.type === type) : DEFAULT_CATEGORIES;
+    const cleaned = cleanWorkCategories(DEFAULT_CATEGORIES);
+    const list = type ? cleaned.filter((c) => c.type === type) : cleaned;
     return type === 'work' ? sortWorkCategories(list) : list;
   }
 
@@ -996,8 +1065,6 @@ export async function getSyncedCategories(type?: 'work' | 'case' | 'blog'): Prom
       }
       const { data, error } = await query;
       if (!error && Array.isArray(data) && data.length > 0) {
-        list = data;
-        // Merge Supabase categories into localStorage without overwriting cross-type duplicates
         const stored = localStorage.getItem('admin_categories');
         const existing: SyncedCategory[] = stored ? JSON.parse(stored) : [];
         const merged = [...data];
@@ -1006,7 +1073,9 @@ export async function getSyncedCategories(type?: 'work' | 'case' | 'blog'): Prom
             merged.push(e);
           }
         });
-        localStorage.setItem('admin_categories', JSON.stringify(merged));
+        const cleaned = cleanWorkCategories(merged);
+        localStorage.setItem('admin_categories', JSON.stringify(cleaned));
+        list = type ? cleaned.filter((c) => c.type === type) : cleaned;
       }
     } catch {
       // Fall through to localStorage
@@ -1014,37 +1083,27 @@ export async function getSyncedCategories(type?: 'work' | 'case' | 'blog'): Prom
   }
 
   // 2. Try localStorage
-  const stored = localStorage.getItem('admin_categories');
-  if (stored) {
-    try {
-      const parsed: SyncedCategory[] = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        // Legacy migration: ensure the 6 user categories from Image 2 are present if old template was stored
-        const hasImage2Cats = parsed.some(
-          (c) => c.type === 'work' && (c.slug === 'brand-profiles' || c.slug === 'package-designing' || c.slug === 'social-media-creatives')
-        );
-        if (!hasImage2Cats) {
-          const defaultWorkCats = DEFAULT_CATEGORIES.filter((c) => c.type === 'work');
-          defaultWorkCats.forEach((dw) => {
-            if (!parsed.some((c) => c.slug === dw.slug && c.type === 'work')) {
-              parsed.push(dw);
-            }
-          });
-          localStorage.setItem('admin_categories', JSON.stringify(parsed));
+  if (list.length === 0) {
+    const stored = localStorage.getItem('admin_categories');
+    if (stored) {
+      try {
+        const parsed: SyncedCategory[] = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const cleaned = cleanWorkCategories(parsed);
+          localStorage.setItem('admin_categories', JSON.stringify(cleaned));
+          list = type ? cleaned.filter((c) => c.type === type) : cleaned;
         }
-        list = type ? parsed.filter((c) => c.type === type) : parsed;
+      } catch {
+        // Fall through
       }
-    } catch {
-      // Fall through
     }
   }
 
   // 3. Fallback if storage was empty
   if (list.length === 0) {
-    list = type ? DEFAULT_CATEGORIES.filter((c) => c.type === type) : [...DEFAULT_CATEGORIES];
-    if (!stored) {
-      localStorage.setItem('admin_categories', JSON.stringify(DEFAULT_CATEGORIES));
-    }
+    const cleaned = cleanWorkCategories(DEFAULT_CATEGORIES);
+    list = type ? cleaned.filter((c) => c.type === type) : [...cleaned];
+    localStorage.setItem('admin_categories', JSON.stringify(cleaned));
   }
 
   return type === 'work' ? sortWorkCategories(list) : list;
@@ -1105,6 +1164,25 @@ export async function saveSyncedCategory(category: {
     } else {
       list.push(newCat);
     }
+
+    // Clear from admin_deleted_categories if re-creating
+    const deletedRaw = localStorage.getItem('admin_deleted_categories');
+    if (deletedRaw) {
+      try {
+        const deletedKeys: string[] = JSON.parse(deletedRaw);
+        const filtered = deletedKeys.filter(
+          (k) =>
+            k !== `${newCat.type}:${newCat.id}` &&
+            k !== `${newCat.type}:${newCat.slug}` &&
+            k !== `all:${newCat.id}` &&
+            k !== `all:${newCat.slug}`
+        );
+        localStorage.setItem('admin_deleted_categories', JSON.stringify(filtered));
+      } catch {
+        // Fall through
+      }
+    }
+
     localStorage.setItem('admin_categories', JSON.stringify(list));
     notifyPortfolioDataUpdated();
   }
@@ -1131,18 +1209,24 @@ export async function deleteSyncedCategory(id: string, type?: 'work' | 'case' | 
     const stored = localStorage.getItem('admin_categories');
     let list: SyncedCategory[] = stored ? JSON.parse(stored) : [...DEFAULT_CATEGORIES];
     list = list.filter((c) => {
-      // Exact ID match:
-      if (c.id === id) {
-        if (type && c.type && c.type !== type) return true; // keep if different type
-        return false;
-      }
-      // Slug match:
-      if (type && c.slug === id && c.type === type) {
+      const typeMatches = !type || !c.type || c.type === type;
+      if (!typeMatches) return true;
+      if (c.id === id || c.slug === id || (type && c.id === `${type}-${id}`)) {
         return false;
       }
       return true;
     });
     localStorage.setItem('admin_categories', JSON.stringify(list));
+
+    // Record deleted key so default categories don't re-seed it
+    const deletedRaw = localStorage.getItem('admin_deleted_categories');
+    const deletedKeys: string[] = deletedRaw ? JSON.parse(deletedRaw) : [];
+    const key = `${type || 'all'}:${id}`;
+    if (!deletedKeys.includes(key)) {
+      deletedKeys.push(key);
+      localStorage.setItem('admin_deleted_categories', JSON.stringify(deletedKeys));
+    }
+
     notifyPortfolioDataUpdated();
   }
 }

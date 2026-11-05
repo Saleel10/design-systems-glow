@@ -23,10 +23,16 @@ describe("Works page dynamic categories", () => {
       expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Branding" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Social Media Creatives" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "UI/UX Designs" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "UI/UX Design" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Brand Profiles" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Package Designs" })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Web" })).toBeInTheDocument();
+
+      // Ensure blog categories and obsolete categories do NOT appear in works
+      expect(screen.queryByRole("button", { name: "Web Design" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Design Systems" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Mobile App" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "UI/UX Designs" })).not.toBeInTheDocument();
     });
   });
 
@@ -44,8 +50,8 @@ describe("Works page dynamic categories", () => {
       expect(screen.getByText("Raidhan")).toBeInTheDocument();
     });
 
-    // 1. Click UI/UX Designs
-    const uiUxBtn = screen.getByRole("button", { name: "UI/UX Designs" });
+    // 1. Click UI/UX Design
+    const uiUxBtn = screen.getByRole("button", { name: "UI/UX Design" });
     fireEvent.click(uiUxBtn);
 
     await waitFor(() => {

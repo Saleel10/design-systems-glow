@@ -19,7 +19,7 @@ describe("Categories management and ordering", () => {
       { id: "web", name: "Web", slug: "web", type: "work" },
       { id: "package-designing", name: "Package Designs", slug: "package-designing", type: "work" },
       { id: "social-media-creatives", name: "Social Media Creatives", slug: "social-media-creatives", type: "work" },
-      { id: "ui-ux-designs", name: "UI/UX Designs", slug: "ui-ux-designs", type: "work" },
+      { id: "ui-ux-design", name: "UI/UX Design", slug: "ui-ux-design", type: "work" },
       { id: "brand-profiles", name: "Brand Profiles", slug: "brand-profiles", type: "work" },
       { id: "branding", name: "Branding", slug: "branding", type: "work" },
     ];
@@ -30,7 +30,7 @@ describe("Categories management and ordering", () => {
     expect(names).toEqual([
       "Branding",
       "Social Media Creatives",
-      "UI/UX Designs",
+      "UI/UX Design",
       "Brand Profiles",
       "Package Designs",
       "Web",
@@ -44,7 +44,7 @@ describe("Categories management and ordering", () => {
       { id: "package-designing", name: "Package Designs", slug: "package-designing", type: "work" },
       { id: "social-media-creatives", name: "Social Media Creatives", slug: "social-media-creatives", type: "work" },
       { id: "motion-graphics", name: "Motion Graphics", slug: "motion-graphics", type: "work", created_at: "2026-11-02T10:00:00Z" },
-      { id: "ui-ux-designs", name: "UI/UX Designs", slug: "ui-ux-designs", type: "work" },
+      { id: "ui-ux-design", name: "UI/UX Design", slug: "ui-ux-design", type: "work" },
       { id: "brand-profiles", name: "Brand Profiles", slug: "brand-profiles", type: "work" },
       { id: "branding", name: "Branding", slug: "branding", type: "work" },
     ];
@@ -55,7 +55,7 @@ describe("Categories management and ordering", () => {
     expect(names).toEqual([
       "Branding",
       "Social Media Creatives",
-      "UI/UX Designs",
+      "UI/UX Design",
       "Brand Profiles",
       "Package Designs",
       "Web",
@@ -147,5 +147,41 @@ describe("Categories management and ordering", () => {
     expect(afterDeleteBlog.some((c) => c.id === blogBranding!.id)).toBe(false);
     // Work category remains intact
     expect(afterDeleteWork.some((c) => c.slug === "branding")).toBe(true);
+  });
+
+  it("filters out blog categories and obsolete categories from work section", async () => {
+    // Simulate polluted localStorage as shown in user's Image 2
+    const polluted = [
+      { id: "1", name: "Social Media Creatives", slug: "social-media-creatives", type: "work" },
+      { id: "2", name: "UI/UX Design", slug: "ui-ux-design", type: "work" },
+      { id: "3", name: "UI/UX Designs", slug: "ui-ux-designs", type: "work" },
+      { id: "4", name: "Brand Profiles", slug: "brand-profiles", type: "work" },
+      { id: "5", name: "Package Designs", slug: "package-designing", type: "work" },
+      { id: "6", name: "Web Design", slug: "web-design", type: "work" }, // blog category polluting work
+      { id: "7", name: "Web", slug: "web", type: "work" },
+      { id: "8", name: "Design Systems", slug: "design-systems", type: "work" }, // blog category polluting work
+      { id: "9", name: "Mobile App", slug: "mobile-app", type: "work" }, // obsolete category
+    ];
+    localStorage.setItem("admin_categories", JSON.stringify(polluted));
+
+    const workCategories = await getSyncedCategories("work");
+    const slugs = workCategories.map((c) => c.slug);
+    const names = workCategories.map((c) => c.name);
+
+    // Only the 6 requested categories must be in work
+    expect(slugs).toContain("branding");
+    expect(slugs).toContain("social-media-creatives");
+    expect(slugs).toContain("ui-ux-design");
+    expect(slugs).toContain("brand-profiles");
+    expect(slugs).toContain("package-designing");
+    expect(slugs).toContain("web");
+
+    // Must NOT contain blog categories or obsolete items
+    expect(slugs).not.toContain("web-design");
+    expect(slugs).not.toContain("design-systems");
+    expect(slugs).not.toContain("mobile-app");
+    expect(names).not.toContain("UI/UX Designs"); // unified into UI/UX Design
+    expect(names).toContain("UI/UX Design");
+    expect(workCategories.length).toBe(6);
   });
 });

@@ -21,10 +21,22 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   getSyncedCategories,
   saveSyncedCategory,
+  deleteSyncedCategory,
 } from "@/lib/portfolioDataSync";
 
 const formSchema = z.object({
@@ -97,6 +109,29 @@ export default function CategoryForm() {
       });
     }
     setLoading(false);
+  };
+
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!id) return;
+    setDeleting(true);
+    try {
+      await deleteSyncedCategory(id, form.getValues("type") || initialType);
+      toast({
+        title: "Category deleted",
+        description: `"${form.getValues("name")}" category has been removed.`,
+      });
+      navigate("/admin/categories");
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Error deleting category",
+        description: err?.message || "Could not delete category.",
+      });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -209,16 +244,52 @@ export default function CategoryForm() {
                 </FormItem>
               )}
             />
-            <div className="flex justify-end gap-4">
-              <Button type="button" variant="outline" asChild>
-                <Link to="/admin/categories">Cancel</Link>
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t">
+              <div>
+                {isEditing && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        disabled={deleting || form.formState.isSubmitting}
+                        className="gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Category
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Category?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete this category? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDelete}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 )}
-                Save Category
-              </Button>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button type="button" variant="outline" asChild>
+                  <Link to="/admin/categories">Cancel</Link>
+                </Button>
+                <Button type="submit" disabled={form.formState.isSubmitting || deleting}>
+                  {form.formState.isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Save Category
+                </Button>
+              </div>
             </div>
           </form>
         </Form>
