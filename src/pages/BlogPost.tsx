@@ -361,12 +361,12 @@ export default function BlogPost() {
                 className="group flex flex-col bg-[var(--card)] border border-[var(--line)] rounded-[22px] p-4 sm:p-5 hover:border-[var(--line2)] hover:-translate-y-1 transition-all shadow-sm"
               >
                 {/* Cover Image or Fallback */}
-                <div className="w-full aspect-[16/10] rounded-[16px] overflow-hidden border border-[var(--line)] bg-[var(--soft)] flex items-center justify-center mb-4 relative">
+                <div className="w-full aspect-[16/9] rounded-[16px] overflow-hidden border border-[var(--line)] bg-[var(--soft)] flex items-center justify-center mb-4 relative">
                   {rel.image_url ? (
                     <img
                       src={rel.image_url}
                       alt={rel.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-contain"
                       loading="lazy"
                     />
                   ) : (

@@ -142,7 +142,7 @@ const Blog = () => {
             <div
               style={{
                 position: "relative",
-                aspectRatio: "16/10",
+                aspectRatio: "1.91/1",
                 borderRadius: "24px",
                 overflow: "hidden",
                 background: "var(--soft)",
@@ -154,35 +154,12 @@ const Blog = () => {
               className="group-hover:border-[var(--accent)]/40 transition-colors shadow-lg"
             >
               {featured.image_url && !failedImages[featured.slug] ? (
-                <>
-                  <img
-                    src={featured.image_url}
-                    alt={featured.title}
-                    onError={() => handleImageError(featured.slug)}
-                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "16px",
-                      left: "16px",
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontSize: "11px",
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: "#5cb847",
-                      background: "rgba(10, 20, 14, 0.75)",
-                      backdropFilter: "blur(8px)",
-                      padding: "6px 14px",
-                      borderRadius: "999px",
-                      border: "1px solid rgba(92, 184, 71, 0.3)",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Featured Article
-                  </div>
-                </>
+                <img
+                  src={featured.image_url}
+                  alt={featured.title}
+                  onError={() => handleImageError(featured.slug)}
+                  className="w-full h-full object-contain"
+                />
               ) : (
                 <>
                   <div
@@ -284,7 +261,7 @@ const Blog = () => {
               <div
                 style={{
                   position: "relative",
-                  aspectRatio: "3/2",
+                  aspectRatio: "16/9",
                   borderRadius: "20px",
                   overflow: "hidden",
                   background: "var(--soft)",
@@ -296,36 +273,13 @@ const Blog = () => {
                 className="transition-all duration-300 group-hover:scale-[1.01] group-hover:border-[var(--accent)]/30"
               >
                 {p.image_url && !failedImages[p.slug] ? (
-                  <>
-                    <img
-                      src={p.image_url}
-                      alt={p.title}
-                      onError={() => handleImageError(p.slug)}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: "14px",
-                        left: "14px",
-                        fontFamily: "'Space Grotesk', sans-serif",
-                        fontSize: "11px",
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        color: "#5cb847",
-                        background: "rgba(10, 20, 14, 0.75)",
-                        backdropFilter: "blur(8px)",
-                        padding: "4px 10px",
-                        borderRadius: "999px",
-                        border: "1px solid rgba(92, 184, 71, 0.25)",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {p.cat}
-                    </span>
-                  </>
+                  <img
+                    src={p.image_url}
+                    alt={p.title}
+                    onError={() => handleImageError(p.slug)}
+                    className="w-full h-full object-contain"
+                    loading="lazy"
+                  />
                 ) : (
                   <>
                     <div
