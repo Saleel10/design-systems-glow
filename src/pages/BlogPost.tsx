@@ -8,7 +8,7 @@ import { POSTS } from "@/data/portfolioData";
 import { blogPosts as fallbackBlogs } from "@/data/blogPosts";
 import { supabase } from "@/lib/supabase";
 import profileDark from "@/assets/profile-dark.png";
-import { getSyncedBlog } from "@/lib/portfolioDataSync";
+import { getSyncedBlog, getSyncedBlogs } from "@/lib/portfolioDataSync";
 
 interface PostData {
   title: string;
@@ -79,12 +79,30 @@ export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<PostData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [relatedPosts, setRelatedPosts] = useState<any[]>(RELATED_POSTS);
 
   useEffect(() => {
     const fetchPost = async () => {
       setLoading(true);
 
       try {
+        const allBlogs = await getSyncedBlogs();
+        if (Array.isArray(allBlogs) && allBlogs.length > 0) {
+          const others = allBlogs
+            .filter((b: any) => b.published !== false && b.slug !== slug && b.id !== slug)
+            .slice(0, 3)
+            .map((b: any) => ({
+              slug: b.slug,
+              title: b.title,
+              cat: b.categories?.name || b.cat || "Branding",
+              read: b.read_time || b.read || "5 min read",
+              image_url: b.image_url,
+            }));
+          if (others.length > 0) {
+            setRelatedPosts(others);
+          }
+        }
+
         const synced = await getSyncedBlog(slug || "");
         if (synced) {
           const rawTags = synced.tags;
@@ -336,23 +354,31 @@ export default function BlogPost() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {RELATED_POSTS.map((rel) => (
+            {relatedPosts.map((rel) => (
               <Link
                 key={rel.slug}
                 to={`/blog/${rel.slug}`}
                 className="group flex flex-col bg-[var(--card)] border border-[var(--line)] rounded-[22px] p-4 sm:p-5 hover:border-[var(--line2)] hover:-translate-y-1 transition-all shadow-sm"
               >
-                {/* Dashed Cover placeholder */}
-                <div className="w-full aspect-[16/10] rounded-[16px] border border-dashed border-[var(--line2)] bg-[var(--soft)]/40 flex flex-col items-center justify-center text-center p-4 mb-4 group-hover:border-[var(--accent)]/50 transition-colors">
-                  <ImageIcon className="w-5 h-5 stroke-[1.4] text-[var(--muted2)] mb-1" />
-                  <span className="text-xs font-medium text-[var(--ink)]">Article cover</span>
-                  <span className="text-[10px] text-[var(--muted2)] underline mt-0.5">
-                    or browse files
-                  </span>
+                {/* Cover Image or Fallback */}
+                <div className="w-full aspect-[16/10] rounded-[16px] overflow-hidden border border-[var(--line)] bg-[var(--soft)] flex items-center justify-center mb-4 relative">
+                  {rel.image_url ? (
+                    <img
+                      src={rel.image_url}
+                      alt={rel.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-center p-4">
+                      <ImageIcon className="w-5 h-5 stroke-[1.4] text-[var(--muted2)] mb-1" />
+                      <span className="text-xs font-medium text-[var(--ink)]">{rel.cat}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="text-[11px] font-medium text-[var(--muted2)] mb-2">
-                  {rel.cat} · {rel.read}
+                  <span className="text-[#5cb847] font-semibold">{rel.cat}</span> · {rel.read}
                 </div>
                 <h3 className="font-heading font-semibold text-sm sm:text-base text-[var(--ink)] tracking-tight leading-snug group-hover:text-[var(--accent)] transition-colors">
                   {rel.title}

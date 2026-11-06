@@ -6,7 +6,43 @@ import { POSTS } from "@/data/portfolioData";
 import { getSyncedBlogs, DEFAULT_BLOGS } from "@/lib/portfolioDataSync";
 
 const Blog = () => {
-  const [allPosts, setAllPosts] = useState(POSTS);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+
+  const [allPosts, setAllPosts] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("admin_blogs");
+        if (stored) {
+          const list = JSON.parse(stored);
+          if (Array.isArray(list) && list.length > 0) {
+            return list
+              .filter((b: any) => b.published !== false)
+              .map((b: any, i: number) => ({
+                slug: b.slug,
+                title: b.title,
+                cat: b.categories?.name || b.cat || "Branding",
+                read: b.read_time || b.read || "5 min read",
+                ex:
+                  b.subtitle ||
+                  b.excerpt ||
+                  (typeof b.content === "string"
+                    ? b.content.slice(0, 140)
+                    : b.content?.intro || ""),
+                img: `blog-${(i % 4) + 1}`,
+                image_url: b.image_url,
+              }));
+          }
+        }
+      } catch {
+        // Fall back to POSTS
+      }
+    }
+    return POSTS;
+  });
+
+  const handleImageError = (slug: string) => {
+    setFailedImages((prev) => ({ ...prev, [slug]: true }));
+  };
 
   useEffect(() => {
     const loadBlogs = async () => {
@@ -114,32 +150,66 @@ const Blog = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "30px",
               }}
+              className="group-hover:border-[var(--accent)]/40 transition-colors shadow-lg"
             >
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "radial-gradient(ellipse at 50% 50%, rgba(19, 128, 111, 0.12) 0%, transparent 70%)",
-                }}
-              />
-              <div
-                style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontSize: "13px",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "var(--accent)",
-                  background: "var(--card)",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: "1px solid var(--line)",
-                }}
-              >
-                Featured Article
-              </div>
+              {featured.image_url && !failedImages[featured.slug] ? (
+                <>
+                  <img
+                    src={featured.image_url}
+                    alt={featured.title}
+                    onError={() => handleImageError(featured.slug)}
+                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "16px",
+                      left: "16px",
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "11px",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#5cb847",
+                      background: "rgba(10, 20, 14, 0.75)",
+                      backdropFilter: "blur(8px)",
+                      padding: "6px 14px",
+                      borderRadius: "999px",
+                      border: "1px solid rgba(92, 184, 71, 0.3)",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Featured Article
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "radial-gradient(ellipse at 50% 50%, rgba(19, 128, 111, 0.12) 0%, transparent 70%)",
+                    }}
+                  />
+                  <div
+                    style={{
+                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontSize: "13px",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "var(--accent)",
+                      background: "var(--card)",
+                      padding: "8px 16px",
+                      borderRadius: "999px",
+                      border: "1px solid var(--line)",
+                    }}
+                  >
+                    Featured Article
+                  </div>
+                </>
+              )}
             </div>
 
             <div>
@@ -222,32 +292,66 @@ const Blog = () => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: "24px",
                 }}
-                className="transition-transform duration-300 group-hover:scale-[1.01]"
+                className="transition-all duration-300 group-hover:scale-[1.01] group-hover:border-[var(--accent)]/30"
               >
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "radial-gradient(circle at center, rgba(19, 128, 111, 0.08) 0%, transparent 70%)",
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontSize: "11px",
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    color: "var(--muted2)",
-                    background: "var(--card)",
-                    padding: "6px 12px",
-                    borderRadius: "999px",
-                  }}
-                >
-                  {p.cat}
-                </span>
+                {p.image_url && !failedImages[p.slug] ? (
+                  <>
+                    <img
+                      src={p.image_url}
+                      alt={p.title}
+                      onError={() => handleImageError(p.slug)}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "14px",
+                        left: "14px",
+                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontSize: "11px",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        color: "#5cb847",
+                        background: "rgba(10, 20, 14, 0.75)",
+                        backdropFilter: "blur(8px)",
+                        padding: "4px 10px",
+                        borderRadius: "999px",
+                        border: "1px solid rgba(92, 184, 71, 0.25)",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {p.cat}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background:
+                          "radial-gradient(circle at center, rgba(19, 128, 111, 0.08) 0%, transparent 70%)",
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontSize: "11px",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        color: "var(--muted2)",
+                        background: "var(--card)",
+                        padding: "6px 12px",
+                        borderRadius: "999px",
+                      }}
+                    >
+                      {p.cat}
+                    </span>
+                  </>
+                )}
               </div>
 
               <div

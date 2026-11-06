@@ -84,6 +84,7 @@ export interface PostItem {
   read: string;
   ex?: string;
   img: string;
+  image_url?: string;
 }
 
 export const SERVICES: Service[] = [

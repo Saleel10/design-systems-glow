@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Plus, Pencil, Trash2, RotateCcw } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, RotateCcw, ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -160,7 +160,20 @@ export default function BlogsList() {
             ) : (
               blogs.map((blog) => (
                 <TableRow key={blog.id} className="group hover:bg-[#5cb847]/5 transition-colors">
-                  <TableCell className="font-medium group-hover:text-[#5cb847] transition-colors">{blog.title}</TableCell>
+                  <TableCell className="font-medium group-hover:text-[#5cb847] transition-colors">
+                    <div className="flex items-center gap-3">
+                      {blog.image_url ? (
+                        <div className="w-10 h-10 rounded-md overflow-hidden bg-muted border shrink-0">
+                          <img src={blog.image_url} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-md bg-muted/60 border shrink-0 flex items-center justify-center text-muted-foreground/60">
+                          <ImageIcon className="w-4 h-4" />
+                        </div>
+                      )}
+                      <span>{blog.title}</span>
+                    </div>
+                  </TableCell>
                   <TableCell className="text-muted-foreground">{blog.slug}</TableCell>
                   <TableCell>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#5cb847]/10 text-[#5cb847] border border-[#5cb847]/30">
