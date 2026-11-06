@@ -5,6 +5,7 @@ import {
   restoreDefaultBlogs,
   saveSyncedBlog,
   DEFAULT_BLOGS,
+  OBSOLETE_BLOG_SLUGS,
 } from '@/lib/portfolioDataSync';
 
 describe('Admin Blogs Sync & Defaults Restoration', () => {
@@ -12,23 +13,37 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
     localStorage.clear();
   });
 
-  it('loads all 9 default blogs when storage is empty', async () => {
+  it('loads exactly the 4 core default blogs when storage is empty', async () => {
     const blogs = await getSyncedBlogs();
-    expect(blogs.length).toBe(9);
+    expect(blogs.length).toBe(4);
 
     const slugs = blogs.map((b) => b.slug);
-    // 4 from portfolioData / design blogs
     expect(slugs).toContain('why-your-brand-needs-a-system');
     expect(slugs).toContain('designing-for-clarity');
-    expect(slugs).toContain('building-your-first-design-system-in-figma');
-    expect(slugs).toContain('landing-pages-that-convert');
-
-    // 5 original articles from blogPosts.ts
-    expect(slugs).toContain('cmyk-vs-rgb-vs-hsl');
     expect(slugs).toContain('how-to-build-brand-systems-that-scale');
     expect(slugs).toContain('freelancing-client-communication-problems');
-    expect(slugs).toContain('becoming-a-brand-designer');
-    expect(slugs).toContain('design-systems-in-ui');
+
+    // Asserts obsolete mock blogs are never present
+    OBSOLETE_BLOG_SLUGS.forEach((obs) => {
+      expect(slugs).not.toContain(obs);
+    });
+  });
+
+  it('filters out obsolete blogs if they exist in localStorage', async () => {
+    // Simulate user previously had obsolete blogs cached in localStorage
+    const legacyBlogs = [
+      { id: 'cmyk-vs-rgb-vs-hsl', slug: 'cmyk-vs-rgb-vs-hsl', title: 'CMYK vs RGB' },
+      { id: 'building-your-first-design-system-in-figma', slug: 'building-your-first-design-system-in-figma', title: 'Design System' },
+      { id: 'why-your-brand-needs-a-system', slug: 'why-your-brand-needs-a-system', title: 'Why your brand needs a system' },
+    ];
+    localStorage.setItem('admin_blogs', JSON.stringify(legacyBlogs));
+
+    const blogs = await getSyncedBlogs();
+    const slugs = blogs.map((b) => b.slug);
+
+    expect(slugs).not.toContain('cmyk-vs-rgb-vs-hsl');
+    expect(slugs).not.toContain('building-your-first-design-system-in-figma');
+    expect(slugs).toContain('why-your-brand-needs-a-system');
   });
 
   it('restores missing default blogs if storage has only a partial list', async () => {
@@ -43,25 +58,25 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
     localStorage.setItem('admin_blogs', JSON.stringify([customBlog]));
 
     const blogs = await getSyncedBlogs();
-    // 1 custom + 9 defaults = 10
-    expect(blogs.length).toBe(10);
+    // 1 custom + 4 defaults = 5
+    expect(blogs.length).toBe(5);
     expect(blogs.some((b) => b.slug === 'custom-ai-design')).toBe(true);
     expect(blogs.some((b) => b.slug === 'why-your-brand-needs-a-system')).toBe(true);
-    expect(blogs.some((b) => b.slug === 'cmyk-vs-rgb-vs-hsl')).toBe(true);
+    expect(blogs.some((b) => b.slug === 'how-to-build-brand-systems-that-scale')).toBe(true);
   });
 
   it('deletes a blog and respects deletion until defaults are restored', async () => {
     await getSyncedBlogs();
-    await deleteSyncedBlog('cmyk-vs-rgb-vs-hsl');
+    await deleteSyncedBlog('how-to-build-brand-systems-that-scale');
 
     const blogsAfterDelete = await getSyncedBlogs();
-    expect(blogsAfterDelete.some((b) => b.slug === 'cmyk-vs-rgb-vs-hsl')).toBe(false);
-    expect(blogsAfterDelete.length).toBe(8);
+    expect(blogsAfterDelete.some((b) => b.slug === 'how-to-build-brand-systems-that-scale')).toBe(false);
+    expect(blogsAfterDelete.length).toBe(3);
 
     // Now restore defaults
     const restored = await restoreDefaultBlogs();
-    expect(restored.length).toBe(9);
-    expect(restored.some((b) => b.slug === 'cmyk-vs-rgb-vs-hsl')).toBe(true);
+    expect(restored.length).toBe(4);
+    expect(restored.some((b) => b.slug === 'how-to-build-brand-systems-that-scale')).toBe(true);
   });
 
   it('saves and updates cover image on last two blogs reliably', async () => {
@@ -97,4 +112,3 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
     expect(blog2?.image_url).toBe('data:image/jpeg;base64,mockImageData2');
   });
 });
-

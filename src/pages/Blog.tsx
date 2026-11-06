@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
 import { POSTS } from "@/data/portfolioData";
-import { getSyncedBlogs, DEFAULT_BLOGS } from "@/lib/portfolioDataSync";
+import { getSyncedBlogs, DEFAULT_BLOGS, OBSOLETE_BLOG_SLUGS } from "@/lib/portfolioDataSync";
 
 const Blog = () => {
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
@@ -16,7 +16,11 @@ const Blog = () => {
           const list = JSON.parse(stored);
           if (Array.isArray(list) && list.length > 0) {
             return list
-              .filter((b: any) => b.published !== false)
+              .filter((b: any) => {
+                const s = (b.slug || "").toLowerCase().trim();
+                const id = (b.id || "").toLowerCase().trim();
+                return b.published !== false && !OBSOLETE_BLOG_SLUGS.has(s) && !OBSOLETE_BLOG_SLUGS.has(id);
+              })
               .map((b: any, i: number) => ({
                 slug: b.slug,
                 title: b.title,

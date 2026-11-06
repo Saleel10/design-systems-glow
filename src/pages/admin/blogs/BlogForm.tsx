@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { getDefaultBlogs } from "./BlogsList";
+import { saveBlogImageIdb, getBlogImageIdb } from "@/lib/idbStorage";
 import {
   notifyPortfolioDataUpdated,
   getSyncedCategories,
@@ -101,7 +102,7 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: "career", name: "Career" },
 ];
 
-export function compressImageFile(file: File, maxWidth = 1600, quality = 0.82): Promise<string> {
+export function compressImageFile(file: File, maxWidth = 1200, quality = 0.75): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!file.type.startsWith("image/")) {
       return reject(new Error("Selected file is not an image."));
@@ -136,9 +137,8 @@ export function compressImageFile(file: File, maxWidth = 1600, quality = 0.82): 
             }
 
             ctx.drawImage(img, 0, 0, width, height);
-            const isPng = file.type === "image/png";
-            // Large PNGs converted to JPEG save ~90% memory
-            const outputMime = isPng && file.size > 1024 * 1024 ? "image/jpeg" : file.type;
+            // Convert to JPEG for dramatic size reduction without noticeable visual loss
+            const outputMime = file.type === "image/png" && file.size < 300 * 1024 ? "image/png" : "image/jpeg";
             const compressed = canvas.toDataURL(outputMime, quality);
             resolve(compressed);
           } catch {
@@ -300,6 +300,15 @@ export default function BlogForm() {
       }
 
       if (blog) {
+        if (!blog.image_url) {
+          try {
+            const idbImg = (await getBlogImageIdb(id || "")) || (await getBlogImageIdb(blog.slug || ""));
+            if (idbImg) {
+              blog.image_url = idbImg;
+            }
+          } catch {}
+        }
+
         let contentObj = {
           intro: "",
           sections: [] as { heading: string; body: string }[],
@@ -411,9 +420,15 @@ export default function BlogForm() {
     setUploadProgress(25);
 
     try {
-      const optimizedDataUrl = await compressImageFile(file, 1600, 0.82);
+      const optimizedDataUrl = await compressImageFile(file, 1200, 0.75);
       setUploadProgress(100);
-      form.setValue("image_url", optimizedDataUrl);
+      form.setValue("image_url", optimizedDataUrl, { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+
+      const currentKey = id || form.getValues("slug");
+      if (currentKey) {
+        await saveBlogImageIdb(currentKey, optimizedDataUrl);
+      }
+
       setTimeout(() => {
         setUploading(false);
         setUploadProgress(0);
@@ -422,10 +437,16 @@ export default function BlogForm() {
     } catch (err) {
       console.warn("Client compression failed, falling back to FileReader:", err);
       const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
+      reader.onload = async (uploadEvent) => {
         setUploadProgress(100);
         const dataUrl = uploadEvent.target?.result as string;
-        form.setValue("image_url", dataUrl);
+        form.setValue("image_url", dataUrl, { shouldDirty: true, shouldValidate: true, shouldTouch: true });
+
+        const currentKey = id || form.getValues("slug");
+        if (currentKey) {
+          await saveBlogImageIdb(currentKey, dataUrl);
+        }
+
         setTimeout(() => {
           setUploading(false);
           setUploadProgress(0);
@@ -468,15 +489,25 @@ export default function BlogForm() {
           (!c.type || c.type === "blog")
       );
 
+      const targetId = id || values.slug;
       const blogRecord = {
         ...values,
         raw_content: rawMarkdown,
         content: values.content,
         categories: { name: catObj?.name || values.category_id },
         category: catObj?.name || values.category_id,
-        id: id || values.slug,
+        id: targetId,
         created_at: new Date().toISOString(),
       };
+
+      if (values.image_url) {
+        try {
+          await saveBlogImageIdb(targetId, values.image_url);
+          if (values.slug && values.slug !== targetId) {
+            await saveBlogImageIdb(values.slug, values.image_url);
+          }
+        } catch {}
+      }
 
       await saveSyncedBlog(blogRecord, id);
 

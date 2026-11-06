@@ -62,16 +62,16 @@ const RELATED_POSTS = [
     read: "5 min read",
   },
   {
-    slug: "building-your-first-design-system-in-figma",
-    title: "Building your first design system in Figma",
-    cat: "Design systems",
+    slug: "how-to-build-brand-systems-that-scale",
+    title: "How to Build Brand Systems That Scale",
+    cat: "Branding",
     read: "8 min read",
   },
   {
-    slug: "landing-pages-that-convert",
-    title: "Landing pages that convert: structure before style",
-    cat: "Web",
-    read: "4 min read",
+    slug: "freelancing-client-communication-problems",
+    title: "Freelancing: Solving Client Communication Problems",
+    cat: "Freelancing",
+    read: "5 min read",
   },
 ];
 

@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { CASES, CaseStudy } from '@/data/portfolioData';
+import { saveBlogImageIdb, getBlogImageIdb } from './idbStorage';
 
 export interface SyncedWork {
   id: string;
@@ -347,6 +348,14 @@ export const DEFAULT_WORKS: SyncedWork[] = [
 
 export const DEFAULT_CASES: CaseStudy[] = CASES;
 
+export const OBSOLETE_BLOG_SLUGS = new Set([
+  'building-your-first-design-system-in-figma',
+  'landing-pages-that-convert',
+  'cmyk-vs-rgb-vs-hsl',
+  'becoming-a-brand-designer',
+  'design-systems-in-ui',
+]);
+
 export const DEFAULT_BLOGS: SyncedBlog[] = [
   {
     id: 'why-your-brand-needs-a-system',
@@ -418,116 +427,6 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
       ],
       callout: 'Simplicity is not the absence of clutter; it is the presence of clear purpose.',
       conclusion: 'When in doubt, simplify. Your users and your metrics will thank you.',
-    },
-  },
-  {
-    id: 'building-your-first-design-system-in-figma',
-    slug: 'building-your-first-design-system-in-figma',
-    title: 'Building your first design system in Figma',
-    subtitle: 'Practical token architecture, variable modes, and component anatomy for growing teams.',
-    excerpt: 'Practical token architecture, variable modes, and component anatomy for growing teams.',
-    category_id: 'design-systems',
-    categories: { name: 'Design systems' },
-    cat: 'Design systems',
-    read: '8 min read',
-    read_time: '8 min read',
-    date: 'Jul 2026',
-    published: true,
-    created_at: new Date('2026-07-20').toISOString(),
-    image_url: '',
-    author_name: 'Muhammed Saleel CP',
-    author_role: 'Creative & UI/UX Designer',
-    tags: ['#figma', '#design-systems', '#tokens'],
-    content: {
-      intro: 'Design systems often start with grand ambitions and end as abandoned component graveyards. Here is how to build one that teams actually use every day.',
-      sections: [
-        {
-          heading: 'Tokens before components',
-          body: 'Start with atomic values: colors, spacing scale, typography, and corner radiuses. Variables in Figma allow you to map these directly to semantic tokens.',
-        },
-        {
-          heading: 'Component variants with restraint',
-          body: 'Avoid creating 50 variants of a button before you need them. Build the primary, secondary, and ghost variants first, with clear states.',
-        },
-      ],
-      callout: 'A design system is a living product, not a finished monument.',
-      conclusion: 'Start small, govern consistently, and let the system evolve alongside your product.',
-    },
-  },
-  {
-    id: 'landing-pages-that-convert',
-    slug: 'landing-pages-that-convert',
-    title: 'Landing pages that convert: structure before style',
-    subtitle: 'Why hierarchy, contrast, and message sequencing beat trendy animations every time.',
-    excerpt: 'Why hierarchy, contrast, and message sequencing beat trendy animations every time.',
-    category_id: 'web-design',
-    categories: { name: 'Web Design' },
-    cat: 'Web Design',
-    read: '4 min read',
-    read_time: '4 min read',
-    date: 'Jun 2026',
-    published: true,
-    created_at: new Date('2026-06-18').toISOString(),
-    image_url: '',
-    author_name: 'Muhammed Saleel CP',
-    author_role: 'Creative & UI/UX Designer',
-    tags: ['#web-design', '#conversion', '#landing-page'],
-    content: {
-      intro: 'Too many landing pages treat the hero section like a canvas for abstract 3D art rather than answering the user\'s primary questions.',
-      sections: [
-        {
-          heading: 'The 5-second test',
-          body: 'A visitor should understand what you do, who it is for, and how to take the next step within five seconds of landing on your page.',
-        },
-        {
-          heading: 'Sequencing the narrative',
-          body: 'Hook with the problem, demonstrate the solution with concrete UI, support with social proof, and remove friction at the call to action.',
-        },
-      ],
-      callout: 'Conversion is the natural result of visual clarity and honest copy.',
-      conclusion: 'Before picking colors or micro-interactions, nail the message hierarchy.',
-    },
-  },
-  {
-    id: 'cmyk-vs-rgb-vs-hsl',
-    slug: 'cmyk-vs-rgb-vs-hsl',
-    title: "CMYK vs RGB vs HSL — A Designer's Complete Guide",
-    subtitle: "Understanding color models is fundamental. Here's when and why to use each one.",
-    excerpt: "Understanding color models is fundamental. Here's when and why to use each one.",
-    category_id: 'design-theory',
-    categories: { name: 'Design Theory' },
-    cat: 'Design Theory',
-    read: '6 min read',
-    read_time: '6 min read',
-    date: 'Jan 15, 2024',
-    published: true,
-    created_at: new Date('2024-01-15').toISOString(),
-    image_url: '',
-    author_name: 'Muhammed Saleel CP',
-    author_role: 'Creative & UI/UX Designer',
-    tags: ['#colors', '#design-theory', '#print-vs-digital'],
-    content: {
-      intro: "Color is arguably the most powerful tool in a designer's arsenal. But to wield it effectively, you need to understand the systems behind it. Whether you're designing for screen, print, or building design tokens, choosing the right color model matters more than most designers realize.",
-      sections: [
-        {
-          heading: 'RGB: The Language of Screens',
-          body: "RGB (Red, Green, Blue) is an additive color model where colors are created by combining light. Every screen you've ever used — from your phone to a cinema projector — displays color using RGB. Each channel ranges from 0 to 255, giving us 16.7 million possible colors.\n\nWhen to use RGB: Digital designs, web development, app interfaces, video production, and any screen-based medium. Most design tools default to RGB, and CSS historically used it as the primary color notation.",
-        },
-        {
-          heading: 'CMYK: The Language of Print',
-          body: "CMYK (Cyan, Magenta, Yellow, Key/Black) is a subtractive color model used in print. Unlike screens that emit light, printed materials reflect it. Inks absorb certain wavelengths and reflect others, which is why the model works differently.\n\nWhen to use CMYK: Any design destined for physical printing — business cards, packaging, editorial layouts, signage, and merchandise. Always convert your files to CMYK before sending to print to avoid color shifts.",
-        },
-        {
-          heading: "HSL: The Designer's Secret Weapon",
-          body: "HSL (Hue, Saturation, Lightness) is arguably the most intuitive color model for designers. Instead of mixing channels, you think in terms of: What color? (Hue: 0-360°), How vivid? (Saturation: 0-100%), and How bright? (Lightness: 0-100%).\n\nHSL is incredibly powerful for building color systems and design tokens. Need a darker variant? Reduce lightness. Need a muted version? Lower saturation. The relationships are predictable and systematic.",
-        },
-        {
-          heading: 'Building Color Systems with HSL',
-          body: 'Modern design systems increasingly use HSL as their foundation. By keeping the hue constant and varying saturation and lightness, you can generate entire palettes programmatically. This is exactly how tools like Tailwind CSS and most design token systems work.\n\nFor example, your primary color at HSL(142, 72%, 37%) can spawn hover states, disabled states, and background tints — all by adjusting just one or two values. This systematic approach ensures consistency across your entire product.',
-        },
-      ],
-      callout: "Understanding color models isn't just academic knowledge — it's a practical superpower.",
-      conclusion: 'Use RGB for development, CMYK for print, and HSL for building systematic, scalable color palettes. Master all three, and you\'ll make better color decisions in every medium.',
     },
   },
   {
@@ -612,90 +511,6 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
       ],
       callout: "Great freelancing isn't about being the best designer in the room. It's about being the best communicator.",
       conclusion: 'Invest in your communication systems as much as your design skills, and watch your client relationships — and your business — transform.',
-    },
-  },
-  {
-    id: 'becoming-a-brand-designer',
-    slug: 'becoming-a-brand-designer',
-    title: 'Becoming a Brand Designer: The Complete Roadmap',
-    subtitle: 'From graphic design to strategic brand design — the skills you need.',
-    excerpt: 'From graphic design to strategic brand design — the skills you need.',
-    category_id: 'career',
-    categories: { name: 'Career' },
-    cat: 'Career',
-    read: '10 min read',
-    read_time: '10 min read',
-    date: 'Apr 5, 2024',
-    published: true,
-    created_at: new Date('2024-04-05').toISOString(),
-    image_url: '',
-    author_name: 'Muhammed Saleel CP',
-    author_role: 'Creative & UI/UX Designer',
-    tags: ['#career', '#branding', '#learning'],
-    content: {
-      intro: "Brand design sits at the intersection of strategy, psychology, and visual craft. It's not about making things look good — it's about making things mean something. Here's the roadmap for getting there.",
-      sections: [
-        {
-          heading: 'Foundation: Master the Craft',
-          body: "Before you can break rules, you need to know them. Build a strong foundation in typography (study type classification, pairing, and hierarchy), color theory (beyond the basics — understand cultural associations and accessibility), composition and layout principles, and drawing and sketching. These aren't just 'graphic design skills.' They're the visual literacy that makes strategic thinking tangible.",
-        },
-        {
-          heading: 'Level Up: Think in Systems',
-          body: 'The leap from graphic designer to brand designer happens when you start thinking systematically. A graphic designer creates a logo. A brand designer creates a visual system that includes a logo. Start seeing patterns across your work. How do your color choices create consistency? How does your typography create hierarchy? How do all elements work together to create a cohesive feeling?',
-        },
-        {
-          heading: 'Strategy: The Multiplier',
-          body: "Strategy is what separates a $500 logo from a $50,000 brand identity. Learn competitive analysis and market positioning. Understand brand archetypes and personality frameworks. Study how great brands communicate and evolve. Practice writing brand strategy documents.\n\nWhen you can articulate why a design decision serves a business goal, you become invaluable.",
-        },
-        {
-          heading: 'Build Your Portfolio Strategically',
-          body: "Your portfolio should demonstrate thinking, not just execution. Show the problem before the solution. Walk through your process, not just final deliverables. Include metrics and outcomes where possible. Case studies beat galleries — always.\n\nDon't have client work? Create spec projects for brands you admire. The quality of your thinking matters more than whether it was 'real.'",
-        },
-      ],
-      callout: 'Becoming a brand designer is a journey from execution to strategy, from decoration to communication.',
-      conclusion: 'Start building systems today — your future self will thank you.',
-    },
-  },
-  {
-    id: 'design-systems-in-ui',
-    slug: 'design-systems-in-ui',
-    title: 'Design Systems in UI: Why Every Product Needs One',
-    subtitle: 'How design systems reduce debt, speed up development, and ensure consistency.',
-    excerpt: 'How design systems reduce debt, speed up development, and ensure consistency.',
-    category_id: 'design-systems',
-    categories: { name: 'Design systems' },
-    cat: 'Design systems',
-    read: '7 min read',
-    read_time: '7 min read',
-    date: 'May 20, 2024',
-    published: true,
-    created_at: new Date('2024-05-20').toISOString(),
-    image_url: '',
-    author_name: 'Muhammed Saleel CP',
-    author_role: 'Creative & UI/UX Designer',
-    tags: ['#design-systems', '#ui-ux', '#product-design'],
-    content: {
-      intro: "If your product has more than 10 screens and more than 2 people working on it, you need a design system. Not a component library — a system. Here's why, and how to build one that actually gets adopted.",
-      sections: [
-        {
-          heading: 'The Cost of Not Having a System',
-          body: "Without a design system, every new feature is designed from scratch. Buttons look different on every page. Spacing is inconsistent. Developers interpret mockups differently. Design reviews become debates about pixels instead of user experience.\n\nThis is design debt, and like technical debt, it compounds. The longer you wait to systematize, the more expensive it becomes.",
-        },
-        {
-          heading: 'Tokens → Components → Patterns',
-          body: 'A design system has three layers. Design Tokens are the foundation — colors, typography, spacing, shadows, and motion values. Components are the building blocks — buttons, inputs, cards, modals built from tokens. Patterns are the solutions — login flows, data tables, navigation structures built from components.\n\nEach layer builds on the one below. Change a token, and it cascades through components and patterns. This is the power of systematic design.',
-        },
-        {
-          heading: 'Adoption is the Real Challenge',
-          body: 'The graveyard of design systems is full of beautifully documented libraries that nobody uses. Adoption requires: involvement from the start (don\'t build in isolation), solving real problems (start with the components teams need most), making it easier than not using it (great documentation, copy-paste examples), continuous maintenance (a design system is a product, not a project).\n\nThe best design system is the one your team actually uses.',
-        },
-        {
-          heading: 'Measuring Success',
-          body: 'Track your design system\'s impact: design-to-development time, visual consistency across the product, new designer onboarding time, bug reports related to UI inconsistencies, and developer satisfaction scores.\n\nIf these metrics improve, your system is working. If they don\'t, iterate. A design system should be treated with the same rigor as any other product.',
-        },
-      ],
-      callout: "Design systems aren't overhead — they're infrastructure.",
-      conclusion: 'Start small, think big, and always optimize for adoption over perfection.',
     },
   },
 ];
@@ -864,6 +679,12 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
 
   let blogs: SyncedBlog[] = [];
 
+  const isObsolete = (item: any) => {
+    const slug = (item.slug || '').toLowerCase().trim();
+    const id = (item.id || '').toLowerCase().trim();
+    return OBSOLETE_BLOG_SLUGS.has(slug) || OBSOLETE_BLOG_SLUGS.has(id);
+  };
+
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabase
@@ -872,12 +693,14 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
         .order('created_at', { ascending: false });
 
       if (!error && Array.isArray(data) && data.length > 0) {
-        blogs = data.map((b: any) => ({
-          ...b,
-          cat: b.categories?.name || b.cat || 'Branding',
-          read: b.read_time || b.read || '5 min read',
-          excerpt: b.subtitle || b.excerpt || '',
-        }));
+        blogs = data
+          .filter((b: any) => !isObsolete(b))
+          .map((b: any) => ({
+            ...b,
+            cat: b.categories?.name || b.cat || 'Branding',
+            read: b.read_time || b.read || '5 min read',
+            excerpt: b.subtitle || b.excerpt || '',
+          }));
       }
     } catch {
       // Fall through
@@ -889,12 +712,14 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
     try {
       const parsed = JSON.parse(stored);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        const localBlogs = parsed.map((b: any) => ({
-          ...b,
-          cat: b.categories?.name || b.cat || 'Branding',
-          read: b.read_time || b.read || '5 min read',
-          excerpt: b.subtitle || b.excerpt || '',
-        }));
+        const localBlogs = parsed
+          .filter((b: any) => !isObsolete(b))
+          .map((b: any) => ({
+            ...b,
+            cat: b.categories?.name || b.cat || 'Branding',
+            read: b.read_time || b.read || '5 min read',
+            excerpt: b.subtitle || b.excerpt || '',
+          }));
         if (blogs.length === 0) {
           blogs = localBlogs;
         } else {
@@ -917,7 +742,21 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
   const deletedRaw = localStorage.getItem('admin_deleted_blogs');
   const deletedIds: string[] = deletedRaw ? JSON.parse(deletedRaw) : [];
 
-  // Merge in DEFAULT_BLOGS so that old blogs are always present unless explicitly deleted
+  // Ensure obsolete blogs are persistently recorded in deleted list
+  let updatedDeleted = false;
+  OBSOLETE_BLOG_SLUGS.forEach((obsSlug) => {
+    if (!deletedIds.includes(obsSlug)) {
+      deletedIds.push(obsSlug);
+      updatedDeleted = true;
+    }
+  });
+  if (updatedDeleted) {
+    try {
+      localStorage.setItem('admin_deleted_blogs', JSON.stringify(deletedIds));
+    } catch {}
+  }
+
+  // Merge in DEFAULT_BLOGS so that official default blogs are present unless explicitly deleted
   const merged = [...blogs];
   DEFAULT_BLOGS.forEach((db) => {
     const isDeleted = !forceRestoreDefaults && deletedIds.some((did) => did === db.id || did === db.slug);
@@ -926,7 +765,32 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
     }
   });
 
-  localStorage.setItem('admin_blogs', JSON.stringify(merged));
+  // Enrich with images stored in IndexedDB if missing or empty
+  for (const b of merged) {
+    if (!b.image_url) {
+      try {
+        const idbImg = (await getBlogImageIdb(b.id)) || (await getBlogImageIdb(b.slug));
+        if (idbImg) {
+          b.image_url = idbImg;
+        }
+      } catch {}
+    }
+  }
+
+  // Cache to localStorage safely
+  try {
+    localStorage.setItem('admin_blogs', JSON.stringify(merged));
+  } catch (storageErr) {
+    console.warn('LocalStorage quota limit reached in getSyncedBlogs, persisting without large data URLs:', storageErr);
+    try {
+      const lightweight = merged.map((b) => ({
+        ...b,
+        image_url: b.image_url && b.image_url.startsWith('data:') ? '' : b.image_url,
+      }));
+      localStorage.setItem('admin_blogs', JSON.stringify(lightweight));
+    } catch {}
+  }
+
   return merged;
 }
 
@@ -967,7 +831,8 @@ export async function deleteSyncedBlog(idOrSlug: string): Promise<void> {
 
 export async function restoreDefaultBlogs(): Promise<SyncedBlog[]> {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('admin_deleted_blogs');
+    // Only remove legitimate deleted IDs; keep obsolete slugs deleted
+    localStorage.setItem('admin_deleted_blogs', JSON.stringify(Array.from(OBSOLETE_BLOG_SLUGS)));
     localStorage.setItem('admin_blogs', JSON.stringify(DEFAULT_BLOGS));
     notifyPortfolioDataUpdated();
   }
@@ -983,6 +848,14 @@ export async function getSyncedBlog(slugOrId: string): Promise<SyncedBlog | null
       b.id.toLowerCase() === target ||
       (!target && b.slug === 'why-your-brand-needs-a-system')
   );
+  if (found && !found.image_url) {
+    try {
+      const idbImg = (await getBlogImageIdb(found.id)) || (await getBlogImageIdb(found.slug));
+      if (idbImg) {
+        found.image_url = idbImg;
+      }
+    } catch {}
+  }
   return found || null;
 }
 
@@ -991,6 +864,19 @@ export async function saveSyncedBlog(blogRecord: any, id?: string): Promise<Sync
   const targetId = id || blogRecord.id || blogRecord.slug;
   const targetSlug = blogRecord.slug || targetId;
 
+  // 1. Immediately store cover image in IndexedDB (bypasses localStorage 5MB quota)
+  if (blogRecord.image_url) {
+    try {
+      await saveBlogImageIdb(targetId, blogRecord.image_url);
+      if (targetSlug && targetSlug !== targetId) {
+        await saveBlogImageIdb(targetSlug, blogRecord.image_url);
+      }
+    } catch (idbErr) {
+      console.warn('IndexedDB save failed:', idbErr);
+    }
+  }
+
+  // 2. Supabase sync if configured
   if (isSupabaseConfigured) {
     try {
       const payload = {
@@ -1015,6 +901,7 @@ export async function saveSyncedBlog(blogRecord: any, id?: string): Promise<Sync
     }
   }
 
+  // 3. Local storage sync
   if (typeof window !== 'undefined') {
     let list: any[] = [];
     try {
@@ -1023,6 +910,13 @@ export async function saveSyncedBlog(blogRecord: any, id?: string): Promise<Sync
     } catch {
       list = [...DEFAULT_BLOGS];
     }
+
+    // Filter out obsolete mock blogs
+    list = list.filter((b: any) => {
+      const bId = (b.id || '').toLowerCase().trim();
+      const bSlug = (b.slug || '').toLowerCase().trim();
+      return !OBSOLETE_BLOG_SLUGS.has(bId) && !OBSOLETE_BLOG_SLUGS.has(bSlug);
+    });
 
     const normTarget = (targetId || '').toLowerCase().trim();
     const normSlug = (targetSlug || '').toLowerCase().trim();
@@ -1046,9 +940,13 @@ export async function saveSyncedBlog(blogRecord: any, id?: string): Promise<Sync
       localStorage.setItem('admin_blogs', JSON.stringify(list));
     } catch (storageErr) {
       console.warn('LocalStorage quota issue when saving blogs:', storageErr);
+      // Fallback without large data URLs since they are securely stored in IndexedDB
       try {
-        localStorage.removeItem('admin_deleted_blogs');
-        localStorage.setItem('admin_blogs', JSON.stringify(list));
+        const lightweightList = list.map((b: any) => ({
+          ...b,
+          image_url: b.image_url && b.image_url.startsWith('data:') ? '' : b.image_url,
+        }));
+        localStorage.setItem('admin_blogs', JSON.stringify(lightweightList));
       } catch (innerErr) {
         console.error('Critical storage quota error:', innerErr);
       }
