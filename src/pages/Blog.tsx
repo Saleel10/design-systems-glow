@@ -94,36 +94,19 @@ const Blog = () => {
         url="https://saleeldesigns.com/blog"
       />
 
-      <main style={{ padding: "40px clamp(20px,5vw,64px) 96px" }} className="max-w-7xl mx-auto w-full">
+      <main className="max-w-7xl mx-auto w-full px-5 sm:px-8 lg:px-12 pt-8 sm:pt-12 pb-24">
         <div className="font-heading text-xs tracking-[0.14em] uppercase text-[#5cb847] hover:text-[#76d65e] transition-colors font-semibold">
           Blog
         </div>
 
-        <h1
-          style={{
-            margin: "14px 0 0",
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 600,
-            fontSize: "clamp(44px,6.4vw,90px)",
-            lineHeight: 1,
-            letterSpacing: "-0.04em",
-          }}
-        >
+        <h1 className="font-heading font-semibold text-4xl sm:text-6xl md:text-7xl lg:text-[76px] leading-[1.05] tracking-tight mt-3 text-[var(--ink)]">
           Notes on{" "}
           <span className="font-serif-italic brand-gradient-text">
             design.
           </span>
         </h1>
 
-        <p
-          style={{
-            margin: "22px 0 0",
-            maxWidth: "520px",
-            fontSize: "17px",
-            lineHeight: 1.55,
-            color: "var(--muted)",
-          }}
-        >
+        <p className="mt-4 sm:mt-5 max-w-xl text-base sm:text-lg text-[var(--muted)] leading-relaxed">
           Thoughts on branding, systems, and building things people connect with.
         </p>
 
@@ -131,105 +114,44 @@ const Blog = () => {
         {featured && (
           <Link
             to={`/blog/${featured.slug}`}
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
-              gap: "28px",
-              marginTop: "56px",
-              alignItems: "center",
-              textDecoration: "none",
-              color: "inherit",
-            }}
-            className="group"
+            className="group grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 mt-8 sm:mt-14 items-center no-underline text-inherit p-4 sm:p-6 lg:p-7 rounded-[24px] sm:rounded-[32px] border border-[var(--line)] bg-[var(--card)]/40 hover:border-[#5cb847]/40 hover:bg-[var(--card)]/80 transition-all duration-300"
           >
-            <div
-              style={{
-                position: "relative",
-                aspectRatio: "16/9",
-                borderRadius: "24px",
-                overflow: "hidden",
-                background: "var(--soft)",
-                border: "1px solid var(--line)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              className="group-hover:border-[var(--accent)]/40 transition-colors shadow-lg"
-            >
+            <div className="lg:col-span-7 relative w-full aspect-[16/9] rounded-[18px] sm:rounded-[24px] overflow-hidden bg-[var(--soft)] border border-[var(--line)] flex items-center justify-center shadow-lg group-hover:border-[#5cb847]/40 transition-colors">
               {featured.image_url && !failedImages[featured.slug] ? (
                 <img
                   src={featured.image_url}
                   alt={featured.title}
                   onError={() => handleImageError(featured.slug)}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-[1.015] transition-transform duration-500"
                 />
               ) : (
                 <>
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background:
-                        "radial-gradient(ellipse at 50% 50%, rgba(19, 128, 111, 0.12) 0%, transparent 70%)",
-                    }}
-                  />
-                  <div
-                    style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontSize: "13px",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      color: "var(--accent)",
-                      background: "var(--card)",
-                      padding: "8px 16px",
-                      borderRadius: "999px",
-                      border: "1px solid var(--line)",
-                    }}
-                  >
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(19,128,111,0.12)_0%,transparent_70%)]" />
+                  <div className="font-heading text-xs uppercase tracking-wider text-[var(--accent)] bg-[var(--card)] px-4 py-2 rounded-full border border-[var(--line)] font-medium">
                     Featured Article
                   </div>
                 </>
               )}
             </div>
 
-            <div>
-              <div
-                style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontSize: "12px",
-                  color: "var(--muted2)",
-                }}
-              >
-                Featured · {featured.cat} · {featured.read}
+            <div className="lg:col-span-5 flex flex-col justify-center">
+              <div className="font-heading text-xs text-[var(--muted2)] flex items-center gap-2">
+                <span className="text-[#5cb847] font-semibold">Featured</span>
+                <span>·</span>
+                <span>{featured.cat}</span>
+                <span>·</span>
+                <span>{featured.read}</span>
               </div>
 
-              <div
-                style={{
-                  fontWeight: 600,
-                  fontSize: "clamp(32px, 3.4vw, 48px)",
-                  lineHeight: 1.05,
-                  marginTop: "14px",
-                  letterSpacing: "-0.01em",
-                  color: "var(--ink)",
-                }}
-                className="group-hover:text-primary transition-colors"
-              >
+              <h2 className="font-heading font-semibold text-2xl sm:text-3xl lg:text-[34px] leading-tight mt-3 text-[var(--ink)] group-hover:text-primary transition-colors tracking-tight">
                 {featured.title}
-              </div>
+              </h2>
 
-              <div
-                style={{
-                  fontSize: "16px",
-                  lineHeight: 1.6,
-                  color: "var(--muted)",
-                  marginTop: "14px",
-                }}
-              >
+              <p className="text-sm sm:text-base text-[var(--muted)] leading-relaxed mt-3 line-clamp-3">
                 {featured.ex}
-              </div>
+              </p>
 
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--line)] bg-[var(--card)] text-sm font-medium text-[var(--ink)] shadow-sm group-hover:border-[#5cb847] group-hover:text-[#5cb847] group-hover:bg-[#5cb847]/10 group-hover:shadow-[0_0_16px_rgba(92,184,71,0.25)] group-hover:scale-[1.02] transition-all duration-200 w-fit mt-5">
+              <div className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full border border-[var(--line)] bg-[var(--card)] text-xs sm:text-sm font-medium text-[var(--ink)] shadow-sm group-hover:border-[#5cb847] group-hover:text-[#5cb847] group-hover:bg-[#5cb847]/10 group-hover:shadow-[0_0_16px_rgba(92,184,71,0.25)] group-hover:scale-[1.02] transition-all duration-200 w-fit mt-4 sm:mt-5">
                 <span>Read article</span>
                 <span className="text-base leading-none">→</span>
               </div>
@@ -238,106 +160,51 @@ const Blog = () => {
         )}
 
         {/* Post Grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
-            gap: "28px 20px",
-            marginTop: "64px",
-            paddingTop: "40px",
-            borderTop: "1px solid var(--line)",
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mt-12 sm:mt-16 pt-8 sm:pt-10 border-t border-[var(--line)]">
           {restPosts.map((p) => (
             <Link
               key={p.slug}
               to={`/blog/${p.slug}`}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px",
-                textDecoration: "none",
-                color: "inherit",
-              }}
-              className="group"
+              className="group flex flex-col gap-3.5 no-underline text-inherit p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-[var(--line)] bg-[var(--card)]/30 hover:border-[#5cb847]/40 hover:bg-[var(--card)]/60 transition-all duration-300"
             >
-              <div
-                style={{
-                  position: "relative",
-                  aspectRatio: "16/9",
-                  borderRadius: "20px",
-                  overflow: "hidden",
-                  background: "var(--soft)",
-                  border: "1px solid var(--line)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                className="transition-all duration-300 group-hover:scale-[1.01] group-hover:border-[var(--accent)]/30"
-              >
+              <div className="relative w-full aspect-[16/9] rounded-xl sm:rounded-2xl overflow-hidden bg-[var(--soft)] border border-[var(--line)] flex items-center justify-center shadow-sm">
                 {p.image_url && !failedImages[p.slug] ? (
                   <img
                     src={p.image_url}
                     alt={p.title}
                     onError={() => handleImageError(p.slug)}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />
                 ) : (
                   <>
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background:
-                          "radial-gradient(circle at center, rgba(19, 128, 111, 0.08) 0%, transparent 70%)",
-                      }}
-                    />
-                    <span
-                      style={{
-                        fontFamily: "'Space Grotesk', sans-serif",
-                        fontSize: "11px",
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        color: "var(--muted2)",
-                        background: "var(--card)",
-                        padding: "6px 12px",
-                        borderRadius: "999px",
-                      }}
-                    >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(19,128,111,0.08)_0%,transparent_70%)]" />
+                    <span className="font-heading text-xs uppercase tracking-wider text-[var(--muted2)] bg-[var(--card)] px-3 py-1.5 rounded-full border border-[var(--line)] font-medium">
                       {p.cat}
                     </span>
                   </>
                 )}
               </div>
 
-              <div
-                style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontSize: "12px",
-                  color: "var(--muted2)",
-                }}
-              >
-                <span className="text-[#5cb847] font-medium group-hover:text-[#76d65e] transition-colors">{p.cat}</span> · {p.read}
-              </div>
+              <div className="flex flex-col gap-2 p-1">
+                <div className="font-heading text-xs text-[var(--muted2)] flex items-center gap-1.5">
+                  <span className="text-[#5cb847] font-semibold">{p.cat}</span>
+                  <span>·</span>
+                  <span>{p.read}</span>
+                </div>
 
-              <div
-                style={{
-                  fontSize: "20px",
-                  fontWeight: 500,
-                  lineHeight: 1.25,
-                  letterSpacing: "-0.01em",
-                  color: "var(--ink)",
-                }}
-                className="group-hover:text-[#5cb847] transition-colors"
-              >
-                {p.title}
-              </div>
+                <h3 className="font-heading font-medium text-lg sm:text-xl leading-snug tracking-tight text-[var(--ink)] group-hover:text-[#5cb847] transition-colors line-clamp-2">
+                  {p.title}
+                </h3>
 
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--line)] bg-[var(--card)] text-xs font-medium text-[var(--ink)] shadow-sm group-hover:border-[#5cb847] group-hover:text-[#5cb847] group-hover:bg-[#5cb847]/10 group-hover:shadow-[0_0_14px_rgba(92,184,71,0.25)] group-hover:scale-[1.02] transition-all duration-200 w-fit mt-2">
-                <span>Read article</span>
-                <span className="text-sm leading-none">→</span>
+                <p className="text-xs sm:text-sm text-[var(--muted)] leading-relaxed line-clamp-2 mt-0.5">
+                  {p.ex}
+                </p>
+
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[var(--line)] bg-[var(--card)] text-xs font-medium text-[var(--ink)] shadow-sm group-hover:border-[#5cb847] group-hover:text-[#5cb847] group-hover:bg-[#5cb847]/10 group-hover:shadow-[0_0_14px_rgba(92,184,71,0.25)] group-hover:scale-[1.02] transition-all duration-200 w-fit mt-2">
+                  <span>Read article</span>
+                  <span className="text-sm leading-none">→</span>
+                </div>
               </div>
             </Link>
           ))}

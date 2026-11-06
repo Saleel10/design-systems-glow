@@ -1,3 +1,5 @@
+import blogLogoBeginning from '@/assets/blog-logo-beginning.jpg';
+
 export interface Service {
   n: string;
   title: string;
@@ -335,11 +337,12 @@ export const STEPS: CaseStep[] = [
 export const POSTS: PostItem[] = [
   {
     slug: 'why-your-brand-needs-a-system',
-    title: 'Why your brand needs a system, not just a logo',
+    title: 'A Logo Is Just the Beginning of a Brand',
     cat: 'Branding',
-    read: '6 min read',
-    ex: 'A logo is a starting point. The real value is in the rules that make every touchpoint feel like the same brand.',
+    read: '7 min read',
+    ex: 'A strong brand is built through every interaction, not just the symbol placed on a business card.',
     img: 'blog-1',
+    image_url: blogLogoBeginning,
   },
   {
     slug: 'designing-for-clarity',
@@ -348,6 +351,7 @@ export const POSTS: PostItem[] = [
     read: '5 min read',
     ex: 'How removing visual noise and focusing on user intent accelerates decision-making.',
     img: 'blog-2',
+    image_url: blogLogoBeginning,
   },
   {
     slug: 'how-to-build-brand-systems-that-scale',

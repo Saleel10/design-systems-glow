@@ -8,6 +8,7 @@ import { POSTS } from "@/data/portfolioData";
 import { blogPosts as fallbackBlogs } from "@/data/blogPosts";
 import { supabase } from "@/lib/supabase";
 import profileDark from "@/assets/profile-dark.png";
+import blogLogoBeginning from "@/assets/blog-logo-beginning.jpg";
 import { getSyncedBlog, getSyncedBlogs } from "@/lib/portfolioDataSync";
 
 interface PostData {
@@ -24,12 +25,13 @@ interface PostData {
 
 const FEATURED_WHY_SYSTEM: PostData = {
   slug: "why-your-brand-needs-a-system",
-  title: "Why your brand needs a system, not just a logo",
+  title: "A Logo Is Just the Beginning of a Brand",
   subtitle:
-    "A logo is a starting point. The real value is in the rules that make every touchpoint feel like the same brand.",
+    "A strong brand is built through every interaction, not just the symbol placed on a business card.",
   cat: "Branding",
-  read: "5 min read",
+  read: "7 min read",
   date: "Sep 2026",
+  coverImage: blogLogoBeginning,
   tags: ["#branding", "#design-systems", "#strategy"],
   content: `Most businesses start with a logo and stop there. But a logo on its own can't carry a brand across a website, a social feed, packaging and a pitch deck. What carries it is the system around the logo.
 
@@ -232,41 +234,41 @@ export default function BlogPost() {
         url={`https://saleeldesigns.com/blog/${post.slug}`}
       />
 
-      <article className="max-w-4xl mx-auto w-full px-6 md:px-12 pt-8 sm:pt-14 pb-20">
+      <article className="max-w-4xl mx-auto w-full px-4 sm:px-8 md:px-12 pt-6 sm:pt-12 pb-16 sm:pb-24">
         {/* Back Link */}
         <Link
           to="/blog"
-          className="inline-flex items-center gap-2 text-sm text-[var(--muted)] hover:text-[var(--ink)] transition-colors mb-7"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm text-[var(--muted)] hover:text-[var(--ink)] transition-colors mb-5 sm:mb-7"
         >
           <ArrowLeft size={15} />
           <span>Back to blog</span>
         </Link>
 
         {/* Category Pill & Read Time */}
-        <div className="flex items-center gap-3 mb-5">
-          <span className="px-3.5 py-1 rounded-full bg-[#1b3826] text-[#5cb847] text-xs font-semibold tracking-wide border border-[#5cb847]/20">
+        <div className="flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5">
+          <span className="px-3 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-[#1b3826] text-[#5cb847] text-[11px] sm:text-xs font-semibold tracking-wide border border-[#5cb847]/20">
             {post.cat}
           </span>
-          <span className="text-xs text-[var(--muted2)] font-medium">
+          <span className="text-[11px] sm:text-xs text-[var(--muted2)] font-medium">
             {post.date || "Sep 2026"} · {post.read}
           </span>
         </div>
 
         {/* Main Heading */}
-        <h1 className="font-heading font-semibold text-3xl sm:text-5xl md:text-[54px] leading-[1.1] tracking-tight text-[var(--ink)]">
+        <h1 className="font-heading font-semibold text-2xl sm:text-4xl md:text-[48px] leading-[1.15] sm:leading-[1.1] tracking-tight text-[var(--ink)]">
           {post.title}
         </h1>
 
         {/* Subtitle */}
         {post.subtitle && (
-          <p className="mt-4 text-base sm:text-lg text-[var(--muted)] leading-relaxed max-w-3xl">
+          <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-[var(--muted)] leading-relaxed max-w-3xl">
             {post.subtitle}
           </p>
         )}
 
         {/* Author Bar */}
-        <div className="flex items-center gap-3.5 py-6 mt-6 border-b border-[var(--line)]">
-          <div className="w-11 h-11 rounded-full overflow-hidden bg-[var(--soft)] border border-[var(--line)] shrink-0 flex items-center justify-center">
+        <div className="flex items-center gap-3 sm:gap-3.5 py-4 sm:py-6 mt-4 sm:mt-6 border-b border-[var(--line)]">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-[var(--soft)] border border-[var(--line)] shrink-0 flex items-center justify-center">
             <img
               src={profileDark}
               alt="Muhammed Saleel CP"
@@ -274,10 +276,10 @@ export default function BlogPost() {
             />
           </div>
           <div>
-            <div className="text-sm font-semibold text-[var(--ink)] tracking-tight">
+            <div className="text-xs sm:text-sm font-semibold text-[var(--ink)] tracking-tight">
               Muhammed Saleel CP
             </div>
-            <div className="text-xs text-[var(--muted)]">
+            <div className="text-[11px] sm:text-xs text-[var(--muted)]">
               Creative &amp; UI/UX Designer
             </div>
           </div>
@@ -285,16 +287,16 @@ export default function BlogPost() {
 
         {/* Article Cover Image Container */}
         {post.coverImage ? (
-          <div className="my-10 w-full aspect-[16/9] sm:aspect-[2/1] rounded-[24px] sm:rounded-[32px] overflow-hidden border border-[var(--line)] bg-[var(--card)] shadow-lg">
+          <div className="my-6 sm:my-10 w-full aspect-[16/9] sm:aspect-[2/1] rounded-2xl sm:rounded-[32px] overflow-hidden border border-[var(--line)] bg-[var(--card)] shadow-lg">
             <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
           </div>
         ) : (
-          <div className="my-10 w-full aspect-[16/9] sm:aspect-[2/1] rounded-[24px] sm:rounded-[32px] border border-dashed border-[var(--line2)] bg-[var(--card)]/40 flex flex-col items-center justify-center text-center p-8 group hover:border-[var(--accent)]/50 transition-colors">
-            <div className="w-14 h-14 rounded-2xl bg-[var(--soft)] border border-[var(--line)] flex items-center justify-center text-[var(--muted2)] mb-3 group-hover:scale-105 transition-transform">
-              <ImageIcon className="w-6 h-6 stroke-[1.4]" />
+          <div className="my-6 sm:my-10 w-full aspect-[16/9] sm:aspect-[2/1] rounded-2xl sm:rounded-[32px] border border-dashed border-[var(--line2)] bg-[var(--card)]/40 flex flex-col items-center justify-center text-center p-6 sm:p-8 group hover:border-[var(--accent)]/50 transition-colors">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[var(--soft)] border border-[var(--line)] flex items-center justify-center text-[var(--muted2)] mb-3 group-hover:scale-105 transition-transform">
+              <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.4]" />
             </div>
-            <span className="text-sm font-medium text-[var(--ink)]">Article cover image</span>
-            <span className="text-xs text-[var(--muted2)] mt-1 underline cursor-pointer hover:text-[var(--accent)]">
+            <span className="text-xs sm:text-sm font-medium text-[var(--ink)]">Article cover image</span>
+            <span className="text-[11px] sm:text-xs text-[var(--muted2)] mt-1 underline cursor-pointer hover:text-[var(--accent)]">
               or browse files
             </span>
           </div>

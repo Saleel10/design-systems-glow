@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { CASES, CaseStudy } from '@/data/portfolioData';
 import { saveBlogImageIdb, getBlogImageIdb } from './idbStorage';
+import blogLogoBeginning from '@/assets/blog-logo-beginning.jpg';
 
 export interface SyncedWork {
   id: string;
@@ -360,18 +361,18 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
   {
     id: 'why-your-brand-needs-a-system',
     slug: 'why-your-brand-needs-a-system',
-    title: 'Why your brand needs a system, not just a logo',
-    subtitle: 'A logo is a starting point. The real value is in the rules that make every touchpoint feel like the same brand.',
-    excerpt: 'A logo is a starting point. The real value is in the rules that make every touchpoint feel like the same brand.',
+    title: 'A Logo Is Just the Beginning of a Brand',
+    subtitle: 'A strong brand is built through every interaction, not just the symbol placed on a business card.',
+    excerpt: 'A strong brand is built through every interaction, not just the symbol placed on a business card.',
     category_id: 'branding',
     categories: { name: 'Branding' },
     cat: 'Branding',
-    read: '5 min read',
-    read_time: '5 min read',
+    read: '7 min read',
+    read_time: '7 min read',
     date: 'Sep 2026',
     published: true,
     created_at: new Date('2026-09-10').toISOString(),
-    image_url: '',
+    image_url: blogLogoBeginning,
     author_name: 'Muhammed Saleel CP',
     author_role: 'Creative & UI/UX Designer',
     tags: ['#branding', '#design-systems', '#strategy'],
@@ -772,6 +773,8 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
         const idbImg = (await getBlogImageIdb(b.id)) || (await getBlogImageIdb(b.slug));
         if (idbImg) {
           b.image_url = idbImg;
+        } else if (b.slug === 'why-your-brand-needs-a-system' || b.id === 'why-your-brand-needs-a-system') {
+          b.image_url = blogLogoBeginning;
         }
       } catch {}
     }
