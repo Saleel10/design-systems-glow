@@ -101,3 +101,4 @@ describe("Blog page cover image rendering", () => {
     });
   });
 });
+
