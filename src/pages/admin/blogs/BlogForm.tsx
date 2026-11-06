@@ -3,9 +3,14 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { getDefaultBlogs } from "./BlogsList";
-import { notifyPortfolioDataUpdated, getSyncedCategories, saveSyncedCategory } from "@/lib/portfolioDataSync";
+import {
+  notifyPortfolioDataUpdated,
+  getSyncedCategories,
+  saveSyncedCategory,
+  saveSyncedBlog,
+} from "@/lib/portfolioDataSync";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -95,6 +100,59 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: "freelancing", name: "Freelancing" },
   { id: "career", name: "Career" },
 ];
+
+export function compressImageFile(file: File, maxWidth = 1600, quality = 0.82): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      return reject(new Error("Selected file is not an image."));
+    }
+
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const resultData = e.target?.result as string;
+      if (typeof window === "undefined" || typeof document === "undefined") {
+        return resolve(resultData);
+      }
+
+      try {
+        const img = new Image();
+        img.onerror = () => resolve(resultData);
+        img.onload = () => {
+          try {
+            let { width, height } = img;
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext("2d");
+            if (!ctx) {
+              return resolve(resultData);
+            }
+
+            ctx.drawImage(img, 0, 0, width, height);
+            const isPng = file.type === "image/png";
+            // Large PNGs converted to JPEG save ~90% memory
+            const outputMime = isPng && file.size > 1024 * 1024 ? "image/jpeg" : file.type;
+            const compressed = canvas.toDataURL(outputMime, quality);
+            resolve(compressed);
+          } catch {
+            resolve(resultData);
+          }
+        };
+        img.src = resultData;
+      } catch {
+        resolve(resultData);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function BlogForm() {
   const { id } = useParams();
@@ -189,26 +247,46 @@ export default function BlogForm() {
     if (isEditing) {
       let blog: any = null;
 
-      try {
-        const { data, error } = await supabase
-          .from("blogs")
-          .select("*")
-          .eq("id", id)
-          .single();
-        if (!error && data) blog = data;
-      } catch {
-        // Fallback to local
+      if (isSupabaseConfigured) {
+        try {
+          const fetchPromise = supabase
+            .from("blogs")
+            .select("*")
+            .eq("id", id)
+            .single();
+          const { data, error }: any = await Promise.race([
+            fetchPromise,
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000)),
+          ]);
+          if (!error && data) blog = data;
+        } catch {
+          // Fallback to local
+        }
       }
+
+      const targetId = (id || "").toLowerCase().trim();
 
       if (!blog) {
         const stored = localStorage.getItem("admin_blogs");
         const list = stored ? JSON.parse(stored) : getDefaultBlogs();
-        blog = list.find((b: any) => b.id === id || b.slug === id);
+        blog = list.find(
+          (b: any) =>
+            b.id === id ||
+            b.slug === id ||
+            b.id?.toLowerCase().trim() === targetId ||
+            b.slug?.toLowerCase().trim() === targetId
+        );
       }
 
       if (!blog) {
         const defaults = getDefaultBlogs();
-        blog = defaults.find((b: any) => b.id === id || b.slug === id);
+        blog = defaults.find(
+          (b: any) =>
+            b.id === id ||
+            b.slug === id ||
+            b.id?.toLowerCase().trim() === targetId ||
+            b.slug?.toLowerCase().trim() === targetId
+        );
       }
 
       if (!blog) {
@@ -325,25 +403,37 @@ export default function BlogForm() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
 
     setUploading(true);
-    setUploadProgress(20);
+    setUploadProgress(25);
 
-    const reader = new FileReader();
-    reader.onload = (uploadEvent) => {
+    try {
+      const optimizedDataUrl = await compressImageFile(file, 1600, 0.82);
       setUploadProgress(100);
-      const dataUrl = uploadEvent.target?.result as string;
-      form.setValue("image_url", dataUrl);
+      form.setValue("image_url", optimizedDataUrl);
       setTimeout(() => {
         setUploading(false);
         setUploadProgress(0);
-        toast({ title: "Cover image loaded" });
-      }, 400);
-    };
-    reader.readAsDataURL(file);
+        toast({ title: "Cover image loaded & optimized" });
+      }, 300);
+    } catch (err) {
+      console.warn("Client compression failed, falling back to FileReader:", err);
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        setUploadProgress(100);
+        const dataUrl = uploadEvent.target?.result as string;
+        form.setValue("image_url", dataUrl);
+        setTimeout(() => {
+          setUploading(false);
+          setUploadProgress(0);
+          toast({ title: "Cover image loaded" });
+        }, 300);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleRemoveImage = () => {
@@ -370,87 +460,40 @@ export default function BlogForm() {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const rawMarkdown = formatToMarkdown(values);
-    const catObj = categories.find(
-      (c) =>
-        (c.id === values.category_id || c.slug === values.category_id) &&
-        (!c.type || c.type === "blog")
-    );
-
-    const blogRecord = {
-      ...values,
-      raw_content: rawMarkdown,
-      content: values.content,
-      categories: { name: catObj?.name || values.category_id },
-      category: catObj?.name || values.category_id,
-      id: id || values.slug,
-      created_at: new Date().toISOString(),
-    };
-
     try {
-      if (isEditing) {
-        await supabase
-          .from("blogs")
-          .update({
-            title: values.title,
-            slug: values.slug,
-            category_id: values.category_id,
-            content: rawMarkdown,
-            image_url: values.image_url,
-            published: values.published,
-          })
-          .eq("id", id);
-      } else {
-        await supabase.from("blogs").insert([
-          {
-            title: values.title,
-            slug: values.slug,
-            category_id: values.category_id,
-            content: rawMarkdown,
-            image_url: values.image_url,
-            published: values.published,
-          },
-        ]);
-      }
-    } catch {
-      // In local mode without Supabase, proceed with localStorage
-    }
-
-    // Always synchronize with local storage
-    const stored = localStorage.getItem("admin_blogs");
-    let list = stored ? JSON.parse(stored) : getDefaultBlogs();
-
-    if (isEditing) {
-      list = list.map((b: any) =>
-        b.id === id || b.slug === id ? { ...b, ...blogRecord } : b
+      const rawMarkdown = formatToMarkdown(values);
+      const catObj = categories.find(
+        (c) =>
+          (c.id === values.category_id || c.slug === values.category_id) &&
+          (!c.type || c.type === "blog")
       );
-    } else {
-      list.unshift(blogRecord);
+
+      const blogRecord = {
+        ...values,
+        raw_content: rawMarkdown,
+        content: values.content,
+        categories: { name: catObj?.name || values.category_id },
+        category: catObj?.name || values.category_id,
+        id: id || values.slug,
+        created_at: new Date().toISOString(),
+      };
+
+      await saveSyncedBlog(blogRecord, id);
+
+      toast({
+        title: isEditing ? "Blog updated successfully" : "Blog created successfully",
+        description: "Saved and ready for viewing.",
+      });
+
+      navigate("/admin/blogs");
+    } catch (err: any) {
+      console.error("Save blog error:", err);
+      toast({
+        variant: "destructive",
+        title: "Error saving blog",
+        description: err?.message || "Failed to save blog post.",
+      });
     }
-
-    localStorage.setItem("admin_blogs", JSON.stringify(list));
-
-    const deletedRaw = localStorage.getItem("admin_deleted_blogs");
-    if (deletedRaw) {
-      try {
-        const deletedIds: string[] = JSON.parse(deletedRaw);
-        const filtered = deletedIds.filter(
-          (did) => did !== blogRecord.id && did !== blogRecord.slug
-        );
-        localStorage.setItem("admin_deleted_blogs", JSON.stringify(filtered));
-      } catch {
-        // Fall through
-      }
-    }
-
-    notifyPortfolioDataUpdated();
-
-    toast({
-      title: isEditing ? "Blog updated successfully" : "Blog created successfully",
-      description: "Saved and ready for viewing.",
-    });
-
-    navigate("/admin/blogs");
   };
 
   const formValues = form.watch();

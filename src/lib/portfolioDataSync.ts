@@ -986,6 +986,94 @@ export async function getSyncedBlog(slugOrId: string): Promise<SyncedBlog | null
   return found || null;
 }
 
+export async function saveSyncedBlog(blogRecord: any, id?: string): Promise<SyncedBlog> {
+  const isEditing = Boolean(id);
+  const targetId = id || blogRecord.id || blogRecord.slug;
+  const targetSlug = blogRecord.slug || targetId;
+
+  if (isSupabaseConfigured) {
+    try {
+      const payload = {
+        title: blogRecord.title,
+        slug: blogRecord.slug,
+        category_id: blogRecord.category_id,
+        content: blogRecord.raw_content || blogRecord.content,
+        image_url: blogRecord.image_url,
+        published: blogRecord.published ?? true,
+      };
+
+      const savePromise = isEditing
+        ? supabase.from('blogs').update(payload).eq('id', targetId)
+        : supabase.from('blogs').insert([payload]);
+
+      await Promise.race([
+        savePromise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase timeout')), 2500)),
+      ]);
+    } catch (e) {
+      console.warn('Supabase save failed/timed out, continuing with local storage:', e);
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    let list: any[] = [];
+    try {
+      const stored = localStorage.getItem('admin_blogs');
+      list = stored ? JSON.parse(stored) : [...DEFAULT_BLOGS];
+    } catch {
+      list = [...DEFAULT_BLOGS];
+    }
+
+    const normTarget = (targetId || '').toLowerCase().trim();
+    const normSlug = (targetSlug || '').toLowerCase().trim();
+
+    let updated = false;
+    list = list.map((b: any) => {
+      const bId = (b.id || '').toLowerCase().trim();
+      const bSlug = (b.slug || '').toLowerCase().trim();
+      if (bId === normTarget || bSlug === normTarget || bSlug === normSlug || bId === normSlug) {
+        updated = true;
+        return { ...b, ...blogRecord, id: b.id || targetId };
+      }
+      return b;
+    });
+
+    if (!updated) {
+      list.unshift({ ...blogRecord, id: targetId });
+    }
+
+    try {
+      localStorage.setItem('admin_blogs', JSON.stringify(list));
+    } catch (storageErr) {
+      console.warn('LocalStorage quota issue when saving blogs:', storageErr);
+      try {
+        localStorage.removeItem('admin_deleted_blogs');
+        localStorage.setItem('admin_blogs', JSON.stringify(list));
+      } catch (innerErr) {
+        console.error('Critical storage quota error:', innerErr);
+      }
+    }
+
+    // Remove from deleted list if present
+    try {
+      const deletedRaw = localStorage.getItem('admin_deleted_blogs');
+      if (deletedRaw) {
+        const deletedIds: string[] = JSON.parse(deletedRaw);
+        const filtered = deletedIds.filter(
+          (did) => did.toLowerCase().trim() !== normTarget && did.toLowerCase().trim() !== normSlug
+        );
+        localStorage.setItem('admin_deleted_blogs', JSON.stringify(filtered));
+      }
+    } catch {
+      // Fall through
+    }
+
+    notifyPortfolioDataUpdated();
+  }
+
+  return blogRecord;
+}
+
 // ----------------------------------------------------
 // CATEGORIES SYNC & SANITIZATION
 // ----------------------------------------------------

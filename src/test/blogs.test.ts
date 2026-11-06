@@ -3,6 +3,7 @@ import {
   getSyncedBlogs,
   deleteSyncedBlog,
   restoreDefaultBlogs,
+  saveSyncedBlog,
   DEFAULT_BLOGS,
 } from '@/lib/portfolioDataSync';
 
@@ -61,6 +62,39 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
     const restored = await restoreDefaultBlogs();
     expect(restored.length).toBe(9);
     expect(restored.some((b) => b.slug === 'cmyk-vs-rgb-vs-hsl')).toBe(true);
+  });
+
+  it('saves and updates cover image on last two blogs reliably', async () => {
+    await getSyncedBlogs();
+
+    // 1. Update How to Build Brand Systems That Scale
+    await saveSyncedBlog(
+      {
+        id: 'how-to-build-brand-systems-that-scale',
+        slug: 'how-to-build-brand-systems-that-scale',
+        title: 'How to Build Brand Systems That Scale',
+        image_url: 'data:image/jpeg;base64,mockImageData1',
+      },
+      'how-to-build-brand-systems-that-scale'
+    );
+
+    // 2. Update Freelancing with case-insensitive id
+    await saveSyncedBlog(
+      {
+        id: 'freelancing-client-communication-problems',
+        slug: 'freelancing-client-communication-problems',
+        title: 'Freelancing: Solving Client Communication Problems',
+        image_url: 'data:image/jpeg;base64,mockImageData2',
+      },
+      'Freelancing-Client-Communication-Problems'
+    );
+
+    const updatedBlogs = await getSyncedBlogs();
+    const blog1 = updatedBlogs.find((b) => b.slug === 'how-to-build-brand-systems-that-scale');
+    const blog2 = updatedBlogs.find((b) => b.slug === 'freelancing-client-communication-problems');
+
+    expect(blog1?.image_url).toBe('data:image/jpeg;base64,mockImageData1');
+    expect(blog2?.image_url).toBe('data:image/jpeg;base64,mockImageData2');
   });
 });
 
