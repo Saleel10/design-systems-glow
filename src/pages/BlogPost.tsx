@@ -366,7 +366,7 @@ export default function BlogPost() {
                     <img
                       src={rel.image_url}
                       alt={rel.title}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover"
                       loading="lazy"
                     />
                   ) : (

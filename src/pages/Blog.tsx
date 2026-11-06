@@ -142,7 +142,7 @@ const Blog = () => {
             <div
               style={{
                 position: "relative",
-                aspectRatio: "1.91/1",
+                aspectRatio: "16/9",
                 borderRadius: "24px",
                 overflow: "hidden",
                 background: "var(--soft)",
@@ -158,7 +158,7 @@ const Blog = () => {
                   src={featured.image_url}
                   alt={featured.title}
                   onError={() => handleImageError(featured.slug)}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <>
@@ -277,7 +277,7 @@ const Blog = () => {
                     src={p.image_url}
                     alt={p.title}
                     onError={() => handleImageError(p.slug)}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
                     loading="lazy"
                   />
                 ) : (
