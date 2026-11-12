@@ -249,14 +249,17 @@ export default function BlogForm() {
 
       if (isSupabaseConfigured) {
         try {
-          const fetchPromise = supabase
-            .from("blogs")
-            .select("*")
-            .eq("id", id)
-            .single();
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || "");
+          let query = supabase.from("blogs").select("*");
+          if (isUuid) {
+            query = query.or(`id.eq.${id},slug.eq.${id}`);
+          } else {
+            query = query.eq("slug", id);
+          }
+          const fetchPromise = query.maybeSingle();
           const { data, error }: any = await Promise.race([
             fetchPromise,
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000)),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000)),
           ]);
           if (!error && data) blog = data;
         } catch {
@@ -309,6 +312,16 @@ export default function BlogForm() {
           } catch {}
         }
 
+        let parsedContent = blog.content;
+        if (typeof parsedContent === "string") {
+          const trimmed = parsedContent.trim();
+          if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+            try {
+              parsedContent = JSON.parse(trimmed);
+            } catch {}
+          }
+        }
+
         let contentObj = {
           intro: "",
           sections: [] as { heading: string; body: string }[],
@@ -316,16 +329,16 @@ export default function BlogForm() {
           conclusion: "",
         };
 
-        if (blog.content && typeof blog.content === "object" && !Array.isArray(blog.content)) {
+        if (parsedContent && typeof parsedContent === "object" && !Array.isArray(parsedContent)) {
           contentObj = {
-            intro: blog.content.intro || "",
-            sections: Array.isArray(blog.content.sections) ? blog.content.sections : [],
-            callout: blog.content.callout || "",
-            conclusion: blog.content.conclusion || "",
+            intro: parsedContent.intro || "",
+            sections: Array.isArray(parsedContent.sections) ? parsedContent.sections : [],
+            callout: parsedContent.callout || "",
+            conclusion: parsedContent.conclusion || "",
           };
-        } else if (typeof blog.content === "string") {
+        } else if (typeof parsedContent === "string") {
           // Parse string markdown into structured sections
-          const parts = blog.content.split(/\n###\s+/);
+          const parts = parsedContent.split(/\n###\s+/);
           const intro = parts[0]?.trim() || "";
           const sections: { heading: string; body: string }[] = [];
           let callout = "";

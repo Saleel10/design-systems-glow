@@ -357,6 +357,52 @@ export const OBSOLETE_BLOG_SLUGS = new Set([
   'design-systems-in-ui',
 ]);
 
+export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export const KNOWN_CATEGORY_UUIDS: Record<string, string> = {
+  branding: '3aa6317c-169f-4506-8aa8-99b37e7d0399',
+  'blog-branding': '3aa6317c-169f-4506-8aa8-99b37e7d0399',
+  process: 'b259426f-b76d-45d3-a5e5-095a48c03f29',
+  'blog-process': 'b259426f-b76d-45d3-a5e5-095a48c03f29',
+  freelancing: 'e5ed0c1a-a116-4d8e-9894-6c9fb2b1ff39',
+  'blog-freelancing': 'e5ed0c1a-a116-4d8e-9894-6c9fb2b1ff39',
+  'design-systems': '4ae1203b-c5f8-4316-a5c6-8d20696c0b45',
+  'design-system': '4ae1203b-c5f8-4316-a5c6-8d20696c0b45',
+  'blog-design-systems': '4ae1203b-c5f8-4316-a5c6-8d20696c0b45',
+  'ui-ux-design': '7d0cda15-ead8-46dc-b1ee-386db7590882',
+  'ui-ux-designs': '05922005-f5b0-4588-99bb-318a1734a406',
+  'ui-ux': '7d0cda15-ead8-46dc-b1ee-386db7590882',
+  'graphic-design': 'f9f08fc7-5e5a-4eb0-9ff9-6e579f2dfa80',
+  'brand-profiles': '00824680-0f68-45bc-b161-c13e5f6d1838',
+  'social-media-creatives': 'bc6d78bb-cd11-4180-a3d8-9ac20221c007',
+  web: 'ffed5d26-b8a0-4172-9a81-23638b295dca',
+  'package-designing': '5b28f83e-e509-4b20-8128-0a44ded2a53e',
+  'package-designs': '5b28f83e-e509-4b20-8128-0a44ded2a53e',
+};
+
+export function resolveCategoryUuid(val?: string): string | null {
+  if (!val) return null;
+  const str = String(val).trim();
+  if (UUID_REGEX.test(str)) return str;
+  const lower = str.toLowerCase();
+  return KNOWN_CATEGORY_UUIDS[lower] || null;
+}
+
+export function parseBlogContent(content: any): any {
+  if (!content) return { intro: '', sections: [], callout: '', conclusion: '' };
+  if (typeof content === 'object') return content;
+  if (typeof content === 'string') {
+    const trimmed = content.trim();
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      try {
+        return JSON.parse(trimmed);
+      } catch {}
+    }
+    return content;
+  }
+  return content;
+}
+
 export const DEFAULT_BLOGS: SyncedBlog[] = [
   {
     id: 'why-your-brand-needs-a-system',
@@ -364,7 +410,7 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
     title: 'A Logo Is Just the Beginning of a Brand',
     subtitle: 'A strong brand is built through every interaction, not just the symbol placed on a business card.',
     excerpt: 'A strong brand is built through every interaction, not just the symbol placed on a business card.',
-    category_id: 'branding',
+    category_id: '3aa6317c-169f-4506-8aa8-99b37e7d0399',
     categories: { name: 'Branding' },
     cat: 'Branding',
     read: '7 min read',
@@ -402,7 +448,7 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
     title: 'Designing for clarity: lessons from 800+ projects',
     subtitle: 'How removing visual noise and focusing on user intent accelerates decision-making.',
     excerpt: 'How removing visual noise and focusing on user intent accelerates decision-making.',
-    category_id: 'process',
+    category_id: 'b259426f-b76d-45d3-a5e5-095a48c03f29',
     categories: { name: 'Process' },
     cat: 'Process',
     read: '5 min read',
@@ -436,7 +482,7 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
     title: 'How to Build Brand Systems That Scale',
     subtitle: 'A systematic approach to building brand identities that grow with your business.',
     excerpt: 'A systematic approach to building brand identities that grow with your business.',
-    category_id: 'branding',
+    category_id: '3aa6317c-169f-4506-8aa8-99b37e7d0399',
     categories: { name: 'Branding' },
     cat: 'Branding',
     read: '8 min read',
@@ -478,7 +524,7 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
     title: 'Freelancing: Solving Client Communication Problems',
     subtitle: 'Common client challenges and frameworks for better project outcomes.',
     excerpt: 'Common client challenges and frameworks for better project outcomes.',
-    category_id: 'freelancing',
+    category_id: 'e5ed0c1a-a116-4d8e-9894-6c9fb2b1ff39',
     categories: { name: 'Freelancing' },
     cat: 'Freelancing',
     read: '5 min read',
@@ -696,12 +742,25 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
       if (!error && Array.isArray(data) && data.length > 0) {
         blogs = data
           .filter((b: any) => !isObsolete(b))
-          .map((b: any) => ({
-            ...b,
-            cat: b.categories?.name || b.cat || 'Branding',
-            read: b.read_time || b.read || '5 min read',
-            excerpt: b.subtitle || b.excerpt || '',
-          }));
+          .map((b: any) => {
+            const parsed = parseBlogContent(b.content);
+            const excerpt =
+              b.subtitle ||
+              b.excerpt ||
+              (typeof parsed === 'object' && parsed?.intro ? parsed.intro : '') ||
+              (typeof b.content === 'string' && !b.content.startsWith('{') ? b.content.slice(0, 140) : '');
+
+            return {
+              ...b,
+              cat: b.categories?.name || b.cat || 'Branding',
+              read: b.read_time || b.read || '5 min read',
+              read_time: b.read_time || b.read || '5 min read',
+              excerpt,
+              subtitle: b.subtitle || excerpt,
+              content: parsed,
+              image_url: b.image_url || '',
+            };
+          });
       }
     } catch {
       // Fall through
@@ -715,12 +774,22 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
       if (Array.isArray(parsed) && parsed.length > 0) {
         const localBlogs = parsed
           .filter((b: any) => !isObsolete(b))
-          .map((b: any) => ({
-            ...b,
-            cat: b.categories?.name || b.cat || 'Branding',
-            read: b.read_time || b.read || '5 min read',
-            excerpt: b.subtitle || b.excerpt || '',
-          }));
+          .map((b: any) => {
+            const parsedContent = parseBlogContent(b.content);
+            const excerpt =
+              b.subtitle ||
+              b.excerpt ||
+              (typeof parsedContent === 'object' && parsedContent?.intro ? parsedContent.intro : '') ||
+              (typeof b.content === 'string' && !b.content.startsWith('{') ? b.content.slice(0, 140) : '');
+            return {
+              ...b,
+              cat: b.categories?.name || b.cat || 'Branding',
+              read: b.read_time || b.read || '5 min read',
+              excerpt,
+              subtitle: b.subtitle || excerpt,
+              content: parsedContent,
+            };
+          });
         if (blogs.length === 0) {
           blogs = localBlogs;
         } else {
@@ -802,9 +871,13 @@ export async function deleteSyncedBlog(idOrSlug: string): Promise<void> {
 
   if (isSupabaseConfigured) {
     try {
-      await supabase.from('blogs').delete().eq('id', idOrSlug);
-    } catch {
-      // Fall through
+      if (UUID_REGEX.test(idOrSlug)) {
+        await supabase.from('blogs').delete().eq('id', idOrSlug);
+      } else {
+        await supabase.from('blogs').delete().eq('slug', idOrSlug);
+      }
+    } catch (e) {
+      console.warn('Supabase delete error:', e);
     }
   }
 
@@ -851,19 +924,24 @@ export async function getSyncedBlog(slugOrId: string): Promise<SyncedBlog | null
       b.id.toLowerCase() === target ||
       (!target && b.slug === 'why-your-brand-needs-a-system')
   );
-  if (found && !found.image_url) {
-    try {
-      const idbImg = (await getBlogImageIdb(found.id)) || (await getBlogImageIdb(found.slug));
-      if (idbImg) {
-        found.image_url = idbImg;
-      }
-    } catch {}
+  if (found) {
+    if (!found.image_url) {
+      try {
+        const idbImg = (await getBlogImageIdb(found.id)) || (await getBlogImageIdb(found.slug));
+        if (idbImg) {
+          found.image_url = idbImg;
+        } else if (found.slug === 'why-your-brand-needs-a-system' || found.id === 'why-your-brand-needs-a-system') {
+          found.image_url = blogLogoBeginning;
+        }
+      } catch {}
+    }
+    found.content = parseBlogContent(found.content);
+    return found;
   }
-  return found || null;
+  return null;
 }
 
 export async function saveSyncedBlog(blogRecord: any, id?: string): Promise<SyncedBlog> {
-  const isEditing = Boolean(id);
   const targetId = id || blogRecord.id || blogRecord.slug;
   const targetSlug = blogRecord.slug || targetId;
 
@@ -882,23 +960,54 @@ export async function saveSyncedBlog(blogRecord: any, id?: string): Promise<Sync
   // 2. Supabase sync if configured
   if (isSupabaseConfigured) {
     try {
-      const payload = {
+      const validCategoryId =
+        resolveCategoryUuid(blogRecord.category_id) ||
+        resolveCategoryUuid(blogRecord.category) ||
+        resolveCategoryUuid(blogRecord.cat);
+
+      // Serialize structured content to JSON string if it's an object, or store string as-is
+      let serializedContent = blogRecord.content;
+      if (typeof serializedContent === 'object' && serializedContent !== null) {
+        serializedContent = JSON.stringify(serializedContent);
+      } else if (!serializedContent && blogRecord.raw_content) {
+        serializedContent = blogRecord.raw_content;
+      }
+
+      const payload: any = {
         title: blogRecord.title,
-        slug: blogRecord.slug,
-        category_id: blogRecord.category_id,
-        content: blogRecord.raw_content || blogRecord.content,
-        image_url: blogRecord.image_url,
+        slug: targetSlug,
+        category_id: validCategoryId,
+        content: serializedContent || '',
+        image_url: blogRecord.image_url || '',
         published: blogRecord.published ?? true,
       };
 
-      const savePromise = isEditing
-        ? supabase.from('blogs').update(payload).eq('id', targetId)
-        : supabase.from('blogs').insert([payload]);
+      // Check if row already exists in Supabase by slug or id
+      let existingId: string | null = null;
+      if (UUID_REGEX.test(targetId)) {
+        const { data } = await supabase.from('blogs').select('id').eq('id', targetId).maybeSingle();
+        if (data?.id) existingId = data.id;
+      }
+      if (!existingId && targetSlug) {
+        const { data } = await supabase.from('blogs').select('id').eq('slug', targetSlug).maybeSingle();
+        if (data?.id) existingId = data.id;
+      }
 
-      await Promise.race([
+      let savePromise;
+      if (existingId) {
+        savePromise = supabase.from('blogs').update(payload).eq('id', existingId);
+      } else {
+        savePromise = supabase.from('blogs').insert([payload]);
+      }
+
+      const { error: saveError } = (await Promise.race([
         savePromise,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase timeout')), 2500)),
-      ]);
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase timeout')), 5000)),
+      ])) as any;
+
+      if (saveError) {
+        console.error('Supabase save error:', saveError);
+      }
     } catch (e) {
       console.warn('Supabase save failed/timed out, continuing with local storage:', e);
     }

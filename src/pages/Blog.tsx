@@ -114,15 +114,15 @@ const Blog = () => {
         {featured && (
           <Link
             to={`/blog/${featured.slug}`}
-            className="group grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 mt-8 sm:mt-14 items-center no-underline text-inherit p-4 sm:p-6 lg:p-7 rounded-[24px] sm:rounded-[32px] border border-[var(--line)] bg-[var(--card)]/40 hover:border-[#5cb847]/40 hover:bg-[var(--card)]/80 transition-all duration-300"
+            className="group grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 mt-8 sm:mt-14 items-center no-underline text-inherit p-3.5 sm:p-6 lg:p-7 rounded-[24px] sm:rounded-[32px] border border-[var(--line)] bg-[var(--card)]/40 hover:border-[#5cb847]/50 hover:bg-[var(--card)]/70 transition-all duration-300"
           >
-            <div className="lg:col-span-7 relative w-full aspect-[16/9] rounded-[18px] sm:rounded-[24px] overflow-hidden bg-[var(--soft)] border border-[var(--line)] flex items-center justify-center shadow-lg group-hover:border-[#5cb847]/40 transition-colors">
+            <div className="lg:col-span-7 relative w-full aspect-[1.8/1] rounded-[18px] sm:rounded-[24px] overflow-hidden bg-black/40 flex items-center justify-center shadow-md">
               {featured.image_url && !failedImages[featured.slug] ? (
                 <img
                   src={featured.image_url}
                   alt={featured.title}
                   onError={() => handleImageError(featured.slug)}
-                  className="w-full h-full object-cover group-hover:scale-[1.015] transition-transform duration-500"
+                  className="w-full h-full object-cover object-center group-hover:scale-[1.015] transition-transform duration-500"
                 />
               ) : (
                 <>
@@ -167,13 +167,13 @@ const Blog = () => {
               to={`/blog/${p.slug}`}
               className="group flex flex-col gap-3.5 no-underline text-inherit p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-[var(--line)] bg-[var(--card)]/30 hover:border-[#5cb847]/40 hover:bg-[var(--card)]/60 transition-all duration-300"
             >
-              <div className="relative w-full aspect-[16/9] rounded-xl sm:rounded-2xl overflow-hidden bg-[var(--soft)] border border-[var(--line)] flex items-center justify-center shadow-sm">
+              <div className="relative w-full aspect-[1.8/1] rounded-xl sm:rounded-2xl overflow-hidden bg-[var(--soft)] border border-[var(--line)]/50 flex items-center justify-center shadow-sm">
                 {p.image_url && !failedImages[p.slug] ? (
                   <img
                     src={p.image_url}
                     alt={p.title}
                     onError={() => handleImageError(p.slug)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />
                 ) : (
