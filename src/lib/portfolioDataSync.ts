@@ -794,8 +794,21 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
           blogs = localBlogs;
         } else {
           localBlogs.forEach((lb: SyncedBlog) => {
-            if (!blogs.some((b) => b.id === lb.id || b.slug === lb.slug)) {
+            const existing = blogs.find((b) => b.id === lb.id || b.slug === lb.slug);
+            if (!existing) {
+              // Local blog not in Supabase yet -> preserve it so user uploaded blogs are not lost
               blogs.push(lb);
+            } else {
+              // Preserve local cover image or content if Supabase is blank
+              if (!existing.image_url && lb.image_url) {
+                existing.image_url = lb.image_url;
+              }
+              if (lb.content && (!existing.content || typeof existing.content !== 'object')) {
+                existing.content = lb.content;
+              }
+              if (lb.subtitle && !existing.subtitle) {
+                existing.subtitle = lb.subtitle;
+              }
             }
           });
         }
@@ -835,8 +848,13 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
     }
   });
 
+  // Filter out any blogs that have been explicitly deleted by the admin
+  const activeBlogs = merged.filter(
+    (b) => !deletedIds.includes(b.id) && !deletedIds.includes(b.slug)
+  );
+
   // Enrich with images stored in IndexedDB if missing or empty
-  for (const b of merged) {
+  for (const b of activeBlogs) {
     if (!b.image_url) {
       try {
         const idbImg = (await getBlogImageIdb(b.id)) || (await getBlogImageIdb(b.slug));
@@ -849,13 +867,32 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
     }
   }
 
+  // Sort with stable canonical order: "A Logo Is Just the Beginning of a Brand" is always the featured blog
+  const PREFERRED_BLOG_ORDER = [
+    'why-your-brand-needs-a-system',
+    'designing-for-clarity',
+    'how-to-build-brand-systems-that-scale',
+    'freelancing-client-communication-problems',
+  ];
+
+  activeBlogs.sort((a, b) => {
+    const idxA = PREFERRED_BLOG_ORDER.indexOf(a.slug);
+    const idxB = PREFERRED_BLOG_ORDER.indexOf(b.slug);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+    return timeB - timeA;
+  });
+
   // Cache to localStorage safely
   try {
-    localStorage.setItem('admin_blogs', JSON.stringify(merged));
+    localStorage.setItem('admin_blogs', JSON.stringify(activeBlogs));
   } catch (storageErr) {
     console.warn('LocalStorage quota limit reached in getSyncedBlogs, persisting without large data URLs:', storageErr);
     try {
-      const lightweight = merged.map((b) => ({
+      const lightweight = activeBlogs.map((b) => ({
         ...b,
         image_url: b.image_url && b.image_url.startsWith('data:') ? '' : b.image_url,
       }));
@@ -863,7 +900,7 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
     } catch {}
   }
 
-  return merged;
+  return activeBlogs;
 }
 
 export async function deleteSyncedBlog(idOrSlug: string): Promise<void> {

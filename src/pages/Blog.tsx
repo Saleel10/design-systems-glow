@@ -83,8 +83,11 @@ const Blog = () => {
     return () => window.removeEventListener("portfolio_data_updated", loadBlogs);
   }, []);
 
-  const featured = allPosts[0] || POSTS[0];
-  const restPosts = allPosts.slice(1);
+  const featured =
+    allPosts.find((p) => p.slug === "why-your-brand-needs-a-system") ||
+    allPosts[0] ||
+    POSTS[0];
+  const restPosts = allPosts.filter((p) => p.slug !== featured?.slug);
 
   return (
     <PageContainer>
@@ -116,7 +119,7 @@ const Blog = () => {
             to={`/blog/${featured.slug}`}
             className="group grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 mt-8 sm:mt-14 items-center no-underline text-inherit p-3.5 sm:p-6 lg:p-7 rounded-[24px] sm:rounded-[32px] border border-[var(--line)] bg-[var(--card)]/40 hover:border-[#5cb847]/50 hover:bg-[var(--card)]/70 transition-all duration-300"
           >
-            <div className="lg:col-span-7 relative w-full aspect-[1.8/1] rounded-[18px] sm:rounded-[24px] overflow-hidden bg-black/40 flex items-center justify-center shadow-md">
+            <div className="lg:col-span-7 relative w-full aspect-[1.91/1] rounded-[18px] sm:rounded-[24px] overflow-hidden bg-black flex items-center justify-center shadow-md border border-[var(--line)]/40">
               {featured.image_url && !failedImages[featured.slug] ? (
                 <img
                   src={featured.image_url}
