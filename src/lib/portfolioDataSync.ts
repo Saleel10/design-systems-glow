@@ -5,6 +5,10 @@ import blogLogoBeginning from '@/assets/blog-logo-beginning.jpg';
 import blogClarity from '@/assets/blog-clarity.svg';
 import blogBrandSystems from '@/assets/blog-brand-systems.svg';
 import blogFreelancing from '@/assets/blog-freelancing.svg';
+import blogColorPsychology from '@/assets/blog-color-psychology.svg';
+import blogInterfaces from '@/assets/blog-interfaces.svg';
+import blogTypography from '@/assets/blog-typography.svg';
+import blogSystemsScreens from '@/assets/blog-systems-screens.svg';
 
 export interface SyncedWork {
   id: string;
@@ -408,9 +412,14 @@ export function parseBlogContent(content: any): any {
 
 export const DEFAULT_BLOG_COVERS: Record<string, string> = {
   'why-your-brand-needs-a-system': blogLogoBeginning,
+  'a-logo-is-just-the-beginning-of-a-brand': blogLogoBeginning,
   'designing-for-clarity': blogClarity,
   'how-to-build-brand-systems-that-scale': blogBrandSystems,
   'freelancing-client-communication-problems': blogFreelancing,
+  'the-psychology-behind-every-colour-choice': blogColorPsychology,
+  'beautiful-interfaces-dont-always-mean-better-experiences': blogInterfaces,
+  'typography-is-more-than-choosing-a-font': blogTypography,
+  'designing-systems-not-just-screens': blogSystemsScreens,
 };
 
 export const DEFAULT_BLOGS: SyncedBlog[] = [
@@ -568,6 +577,176 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
       ],
       callout: "Great freelancing isn't about being the best designer in the room. It's about being the best communicator.",
       conclusion: 'Invest in your communication systems as much as your design skills, and watch your client relationships — and your business — transform.',
+    },
+  },
+  {
+    id: 'a-logo-is-just-the-beginning-of-a-brand',
+    slug: 'a-logo-is-just-the-beginning-of-a-brand',
+    title: 'A Logo is Just the Beginning of a Brand',
+    subtitle: 'A strong brand is built through every interaction, not just the symbol placed on a business card.',
+    excerpt: 'A strong brand is built through every interaction, not just the symbol placed on a business card.',
+    category_id: '3aa6317c-169f-4506-8aa8-99b37e7d0399',
+    categories: { name: 'Branding' },
+    cat: 'Branding',
+    read: '7 min read',
+    read_time: '7 min read',
+    date: 'Sep 2026',
+    published: true,
+    created_at: new Date('2026-09-09').toISOString(),
+    image_url: blogLogoBeginning,
+    author_name: 'Muhammed Saleel CP',
+    author_role: 'Creative & UI/UX Designer',
+    tags: ['#branding', '#identity', '#strategy'],
+    content: {
+      intro: "Most businesses start with a logo and stop there. But a logo on its own can't carry a brand across a website, a social feed, packaging and a pitch deck. What carries it is the system around the logo.",
+      sections: [
+        {
+          heading: 'A logo is a signature, not a language',
+          body: 'A logo identifies you. A brand system lets you speak — consistently — in every place your customers meet you. Colour, typography, layout, imagery and tone are the vocabulary.\n\nWithout those rules, every new asset is designed from scratch, and small differences pile up until the brand feels like five different companies.',
+        },
+        {
+          heading: 'What a brand system actually includes',
+          body: "At minimum: a logo suite, a colour palette with clear usage, a type hierarchy, spacing and layout principles, and a set of ready-made templates for the things you make most often.\n\nThe goal isn't a thick PDF nobody reads. It's a toolkit that makes the right choice the easy choice.",
+        },
+      ],
+      callout: "Consistency isn't boring. It's what makes a brand recognisable at a glance.",
+      conclusion: "If your brand feels scattered, the fix is rarely a new logo. It's usually a system that ties everything you already have together.",
+    },
+  },
+  {
+    id: 'the-psychology-behind-every-colour-choice',
+    slug: 'the-psychology-behind-every-colour-choice',
+    title: 'The Psychology Behind Every Colour Choice',
+    subtitle: 'Colours do more than make designs attractive. They influence perception, communicate mood, and guide user actions.',
+    excerpt: 'Colours do more than make designs attractive. They influence perception, communicate mood, and guide user actions.',
+    category_id: 'f9f08fc7-5e5a-4eb0-9ff9-6e579f2dfa80',
+    categories: { name: 'Graphic Design' },
+    cat: 'Graphic Design',
+    read: '5 min read',
+    read_time: '5 min read',
+    date: 'Jul 2026',
+    published: true,
+    created_at: new Date('2026-07-20').toISOString(),
+    image_url: blogColorPsychology,
+    author_name: 'Muhammed Saleel CP',
+    author_role: 'Creative & UI/UX Designer',
+    tags: ['#graphic-design', '#color-theory', '#branding'],
+    content: {
+      intro: 'Colours do more than make designs attractive. They influence perception, communicate mood, and guide user actions. Here is how to use colour psychology with purpose.',
+      sections: [
+        {
+          heading: 'Perception Precedes Thought',
+          body: 'Before a user reads a single line of copy, colour has already set the emotional tone. Warm tones provoke urgency and energy, while cool greens and blues signal trust, stability, and growth.',
+        },
+        {
+          heading: 'Contrast Drives Action',
+          body: 'Colour hierarchy determines where the eye lands first. An intentional accent colour draws attention precisely where conversion happens.',
+        },
+      ],
+      callout: 'Every colour choice is a decision about what your brand values most.',
+      conclusion: 'Choose palettes based on strategic intent and accessibility, not personal preference.',
+    },
+  },
+  {
+    id: 'beautiful-interfaces-dont-always-mean-better-experiences',
+    slug: 'beautiful-interfaces-dont-always-mean-better-experiences',
+    title: "Beautiful Interfaces Don't Always Mean Better Experiences",
+    subtitle: 'A visually attractive interface is only successful when people can use it easily and confidently.',
+    excerpt: 'A visually attractive interface is only successful when people can use it easily and confidently.',
+    category_id: '7d0cda15-ead8-46dc-b1ee-386db7590882',
+    categories: { name: 'UI/UX Design' },
+    cat: 'UI/UX Design',
+    read: '5 min read',
+    read_time: '5 min read',
+    date: 'Jun 2026',
+    published: true,
+    created_at: new Date('2026-06-15').toISOString(),
+    image_url: blogInterfaces,
+    author_name: 'Muhammed Saleel CP',
+    author_role: 'Creative & UI/UX Designer',
+    tags: ['#ui-ux', '#experience-design', '#usability'],
+    content: {
+      intro: 'A visually attractive interface is only successful when people can use it easily and confidently. Why usable experience always beats superficial aesthetics.',
+      sections: [
+        {
+          heading: 'Aesthetics Without Functionality is Art, Not Design',
+          body: 'When sleek animations and trendy visual effects slow users down or hide key navigation paths, design has failed its primary objective.',
+        },
+        {
+          heading: 'Clarity Over Decoration',
+          body: 'The greatest interfaces feel invisible because users accomplish their goals without friction or cognitive strain.',
+        },
+      ],
+      callout: 'Design is not just how it looks. Design is how it works.',
+      conclusion: 'Invest in clarity, intuitive hierarchy, and user feedback loops before polishing visual ornaments.',
+    },
+  },
+  {
+    id: 'typography-is-more-than-choosing-a-font',
+    slug: 'typography-is-more-than-choosing-a-font',
+    title: 'Typography is More Than Choosing a Font',
+    subtitle: 'The right typography can completely change how people perceive a brand or product.',
+    excerpt: 'The right typography can completely change how people perceive a brand or product.',
+    category_id: 'f9f08fc7-5e5a-4eb0-9ff9-6e579f2dfa80',
+    categories: { name: 'Graphic Design' },
+    cat: 'Graphic Design',
+    read: '5 min read',
+    read_time: '5 min read',
+    date: 'May 2026',
+    published: true,
+    created_at: new Date('2026-05-18').toISOString(),
+    image_url: blogTypography,
+    author_name: 'Muhammed Saleel CP',
+    author_role: 'Creative & UI/UX Designer',
+    tags: ['#typography', '#graphic-design', '#hierarchy'],
+    content: {
+      intro: 'The right typography can completely change how people perceive a brand or product. Learn the principles of hierarchy, pairing, and legibility.',
+      sections: [
+        {
+          heading: 'Type Establishes Voice',
+          body: 'Typography is the visual tone of voice of your brand. The weight, tracking, and proportion communicate confidence before words are read.',
+        },
+        {
+          heading: 'Rhythm and Proportional Scales',
+          body: 'A well-defined typographic scale creates harmony across screens, headlines, and body copy.',
+        },
+      ],
+      callout: 'Good typography is invisible; great typography is unforgettable.',
+      conclusion: 'Master type scales and spacing to transform cluttered layouts into structured communication.',
+    },
+  },
+  {
+    id: 'designing-systems-not-just-screens',
+    slug: 'designing-systems-not-just-screens',
+    title: 'Designing Systems, Not Just Screens',
+    subtitle: "Good design isn't about creating beautiful individual screens. It's about building consistent, scalable systems.",
+    excerpt: "Good design isn't about creating beautiful individual screens. It's about building consistent, scalable systems.",
+    category_id: '4ae1203b-c5f8-4316-a5c6-8d20696c0b45',
+    categories: { name: 'Design System' },
+    cat: 'Design System',
+    read: '5 min read',
+    read_time: '5 min read',
+    date: 'Apr 2026',
+    published: true,
+    created_at: new Date('2026-04-12').toISOString(),
+    image_url: blogSystemsScreens,
+    author_name: 'Muhammed Saleel CP',
+    author_role: 'Creative & UI/UX Designer',
+    tags: ['#design-systems', '#ui-components', '#scalability'],
+    content: {
+      intro: "Good design isn't about creating beautiful individual screens. It's about building consistent, scalable systems that create seamless user journeys.",
+      sections: [
+        {
+          heading: 'The Power of Component Reusability',
+          body: 'When every element is designed as part of a modular system, new features ship faster with zero visual regressions.',
+        },
+        {
+          heading: 'Design Tokens as Universal Connectors',
+          body: 'Design tokens bridge the gap between design and engineering, creating a single source of truth across all platforms.',
+        },
+      ],
+      callout: 'A screen is temporary. A system powers products for years.',
+      conclusion: 'Build foundations first so your brand scales effortlessly across platforms.',
     },
   },
 ];
@@ -887,6 +1066,11 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
     'designing-for-clarity',
     'how-to-build-brand-systems-that-scale',
     'freelancing-client-communication-problems',
+    'a-logo-is-just-the-beginning-of-a-brand',
+    'the-psychology-behind-every-colour-choice',
+    'beautiful-interfaces-dont-always-mean-better-experiences',
+    'typography-is-more-than-choosing-a-font',
+    'designing-systems-not-just-screens',
   ];
 
   activeBlogs.sort((a, b) => {

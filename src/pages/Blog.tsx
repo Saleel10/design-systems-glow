@@ -87,7 +87,9 @@ const Blog = () => {
     allPosts.find((p) => p.slug === "why-your-brand-needs-a-system") ||
     allPosts[0] ||
     POSTS[0];
-  const restPosts = allPosts.filter((p) => p.slug !== featured?.slug);
+  const restPosts = allPosts.filter(
+    (p) => p !== featured && (p.slug !== "why-your-brand-needs-a-system" || p.id !== featured?.id)
+  );
 
   return (
     <PageContainer>

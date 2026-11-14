@@ -11,6 +11,7 @@ import {
   getSyncedCategories,
   saveSyncedCategory,
   saveSyncedBlog,
+  DEFAULT_BLOG_COVERS,
 } from "@/lib/portfolioDataSync";
 import { Button } from "@/components/ui/button";
 import {
@@ -308,8 +309,14 @@ export default function BlogForm() {
             const idbImg = (await getBlogImageIdb(id || "")) || (await getBlogImageIdb(blog.slug || ""));
             if (idbImg) {
               blog.image_url = idbImg;
+            } else if (DEFAULT_BLOG_COVERS[blog.slug] || DEFAULT_BLOG_COVERS[blog.id]) {
+              blog.image_url = DEFAULT_BLOG_COVERS[blog.slug] || DEFAULT_BLOG_COVERS[blog.id];
             }
-          } catch {}
+          } catch {
+            if (DEFAULT_BLOG_COVERS[blog.slug] || DEFAULT_BLOG_COVERS[blog.id]) {
+              blog.image_url = DEFAULT_BLOG_COVERS[blog.slug] || DEFAULT_BLOG_COVERS[blog.id];
+            }
+          }
         }
 
         let parsedContent = blog.content;
@@ -380,7 +387,7 @@ export default function BlogForm() {
           date: blog.date || "Sep 2026",
           read_time: blog.read_time || "5 min read",
           published: blog.published ?? true,
-          image_url: blog.image_url || "",
+          image_url: blog.image_url || DEFAULT_BLOG_COVERS[blog.slug] || DEFAULT_BLOG_COVERS[blog.id] || "",
           author_name: blog.author_name || "Muhammed Saleel CP",
           author_role: blog.author_role || "Creative & UI/UX Designer",
           tags: Array.isArray(blog.tags) ? blog.tags.join(", ") : blog.tags || "#branding, #design-systems, #strategy",

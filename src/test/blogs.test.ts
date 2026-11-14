@@ -13,15 +13,20 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
     localStorage.clear();
   });
 
-  it('loads exactly the 4 core default blogs when storage is empty', async () => {
+  it('loads all core default blogs when storage is empty', async () => {
     const blogs = await getSyncedBlogs();
-    expect(blogs.length).toBe(4);
+    expect(blogs.length).toBe(DEFAULT_BLOGS.length);
 
     const slugs = blogs.map((b) => b.slug);
     expect(slugs).toContain('why-your-brand-needs-a-system');
     expect(slugs).toContain('designing-for-clarity');
     expect(slugs).toContain('how-to-build-brand-systems-that-scale');
     expect(slugs).toContain('freelancing-client-communication-problems');
+    expect(slugs).toContain('a-logo-is-just-the-beginning-of-a-brand');
+    expect(slugs).toContain('the-psychology-behind-every-colour-choice');
+    expect(slugs).toContain('beautiful-interfaces-dont-always-mean-better-experiences');
+    expect(slugs).toContain('typography-is-more-than-choosing-a-font');
+    expect(slugs).toContain('designing-systems-not-just-screens');
 
     // Asserts obsolete mock blogs are never present
     OBSOLETE_BLOG_SLUGS.forEach((obs) => {
@@ -58,8 +63,8 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
     localStorage.setItem('admin_blogs', JSON.stringify([customBlog]));
 
     const blogs = await getSyncedBlogs();
-    // 1 custom + 4 defaults = 5
-    expect(blogs.length).toBe(5);
+    // 1 custom + defaults
+    expect(blogs.length).toBe(DEFAULT_BLOGS.length + 1);
     expect(blogs.some((b) => b.slug === 'custom-ai-design')).toBe(true);
     expect(blogs.some((b) => b.slug === 'why-your-brand-needs-a-system')).toBe(true);
     expect(blogs.some((b) => b.slug === 'how-to-build-brand-systems-that-scale')).toBe(true);
@@ -71,11 +76,11 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
 
     const blogsAfterDelete = await getSyncedBlogs();
     expect(blogsAfterDelete.some((b) => b.slug === 'how-to-build-brand-systems-that-scale')).toBe(false);
-    expect(blogsAfterDelete.length).toBe(3);
+    expect(blogsAfterDelete.length).toBe(DEFAULT_BLOGS.length - 1);
 
     // Now restore defaults
     const restored = await restoreDefaultBlogs();
-    expect(restored.length).toBe(4);
+    expect(restored.length).toBe(DEFAULT_BLOGS.length);
     expect(restored.some((b) => b.slug === 'how-to-build-brand-systems-that-scale')).toBe(true);
   });
 
