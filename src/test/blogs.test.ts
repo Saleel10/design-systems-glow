@@ -22,11 +22,6 @@ describe('Admin Blogs Sync & Defaults Restoration', () => {
     expect(slugs).toContain('designing-for-clarity');
     expect(slugs).toContain('how-to-build-brand-systems-that-scale');
     expect(slugs).toContain('freelancing-client-communication-problems');
-    expect(slugs).toContain('a-logo-is-just-the-beginning-of-a-brand');
-    expect(slugs).toContain('the-psychology-behind-every-colour-choice');
-    expect(slugs).toContain('beautiful-interfaces-dont-always-mean-better-experiences');
-    expect(slugs).toContain('typography-is-more-than-choosing-a-font');
-    expect(slugs).toContain('designing-systems-not-just-screens');
 
     // Asserts obsolete mock blogs are never present
     OBSOLETE_BLOG_SLUGS.forEach((obs) => {

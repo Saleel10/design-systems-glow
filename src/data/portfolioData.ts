@@ -1,11 +1,4 @@
 import blogLogoBeginning from '@/assets/blog-logo-beginning.jpg';
-import blogClarity from '@/assets/blog-clarity.svg';
-import blogBrandSystems from '@/assets/blog-brand-systems.svg';
-import blogFreelancing from '@/assets/blog-freelancing.svg';
-import blogColorPsychology from '@/assets/blog-color-psychology.svg';
-import blogInterfaces from '@/assets/blog-interfaces.svg';
-import blogTypography from '@/assets/blog-typography.svg';
-import blogSystemsScreens from '@/assets/blog-systems-screens.svg';
 
 export interface Service {
   n: string;
@@ -358,7 +351,6 @@ export const POSTS: PostItem[] = [
     read: '5 min read',
     ex: 'How removing visual noise and focusing on user intent accelerates decision-making.',
     img: 'blog-2',
-    image_url: blogClarity,
   },
   {
     slug: 'how-to-build-brand-systems-that-scale',
@@ -367,7 +359,6 @@ export const POSTS: PostItem[] = [
     read: '8 min read',
     ex: 'A systematic approach to building brand identities that grow with your business.',
     img: 'blog-3',
-    image_url: blogBrandSystems,
   },
   {
     slug: 'freelancing-client-communication-problems',
@@ -376,52 +367,6 @@ export const POSTS: PostItem[] = [
     read: '5 min read',
     ex: 'Common client challenges and frameworks for better project outcomes.',
     img: 'blog-4',
-    image_url: blogFreelancing,
-  },
-  {
-    slug: 'a-logo-is-just-the-beginning-of-a-brand',
-    title: 'A Logo is Just the Beginning of a Brand',
-    cat: 'Branding',
-    read: '7 min read',
-    ex: 'A strong brand is built through every interaction, not just the symbol placed on a business card.',
-    img: 'blog-1',
-    image_url: blogLogoBeginning,
-  },
-  {
-    slug: 'the-psychology-behind-every-colour-choice',
-    title: 'The Psychology Behind Every Colour Choice',
-    cat: 'Graphic Design',
-    read: '5 min read',
-    ex: 'Colours do more than make designs attractive. They influence perception, communicate mood, and guide user actions.',
-    img: 'blog-2',
-    image_url: blogColorPsychology,
-  },
-  {
-    slug: 'beautiful-interfaces-dont-always-mean-better-experiences',
-    title: "Beautiful Interfaces Don't Always Mean Better Experiences",
-    cat: 'UI/UX Design',
-    read: '5 min read',
-    ex: 'A visually attractive interface is only successful when people can use it easily and confidently.',
-    img: 'blog-3',
-    image_url: blogInterfaces,
-  },
-  {
-    slug: 'typography-is-more-than-choosing-a-font',
-    title: 'Typography is More Than Choosing a Font',
-    cat: 'Graphic Design',
-    read: '5 min read',
-    ex: 'The right typography can completely change how people perceive a brand or product.',
-    img: 'blog-4',
-    image_url: blogTypography,
-  },
-  {
-    slug: 'designing-systems-not-just-screens',
-    title: 'Designing Systems, Not Just Screens',
-    cat: 'Design System',
-    read: '5 min read',
-    ex: "Good design isn't about creating beautiful individual screens. It's about building consistent, scalable systems.",
-    img: 'blog-1',
-    image_url: blogSystemsScreens,
   },
 ];
 

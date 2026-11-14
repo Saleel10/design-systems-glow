@@ -287,11 +287,11 @@ export default function BlogPost() {
 
         {/* Article Cover Image Container */}
         {post.coverImage ? (
-          <div className="my-6 sm:my-10 w-full aspect-[1.91/1] rounded-2xl sm:rounded-[32px] overflow-hidden border border-[var(--line)] bg-black shadow-lg">
+          <div className="my-6 sm:my-10 w-full aspect-[1024/562] rounded-2xl sm:rounded-[32px] overflow-hidden border border-[var(--line)] bg-black shadow-lg">
             <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover object-center" />
           </div>
         ) : (
-          <div className="my-6 sm:my-10 w-full aspect-[1.91/1] rounded-2xl sm:rounded-[32px] border border-dashed border-[var(--line2)] bg-[var(--card)]/40 flex flex-col items-center justify-center text-center p-6 sm:p-8 group hover:border-[var(--accent)]/50 transition-colors">
+          <div className="my-6 sm:my-10 w-full aspect-[1024/562] rounded-2xl sm:rounded-[32px] border border-dashed border-[var(--line2)] bg-[var(--card)]/40 flex flex-col items-center justify-center text-center p-6 sm:p-8 group hover:border-[var(--accent)]/50 transition-colors">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[var(--soft)] border border-[var(--line)] flex items-center justify-center text-[var(--muted2)] mb-3 group-hover:scale-105 transition-transform">
               <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.4]" />
             </div>
