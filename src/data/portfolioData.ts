@@ -1,4 +1,7 @@
 import blogLogoBeginning from '@/assets/blog-logo-beginning.jpg';
+import blogClarity from '@/assets/blog-clarity.svg';
+import blogBrandSystems from '@/assets/blog-brand-systems.svg';
+import blogFreelancing from '@/assets/blog-freelancing.svg';
 
 export interface Service {
   n: string;
@@ -351,7 +354,7 @@ export const POSTS: PostItem[] = [
     read: '5 min read',
     ex: 'How removing visual noise and focusing on user intent accelerates decision-making.',
     img: 'blog-2',
-    image_url: blogLogoBeginning,
+    image_url: blogClarity,
   },
   {
     slug: 'how-to-build-brand-systems-that-scale',
@@ -360,6 +363,7 @@ export const POSTS: PostItem[] = [
     read: '8 min read',
     ex: 'A systematic approach to building brand identities that grow with your business.',
     img: 'blog-3',
+    image_url: blogBrandSystems,
   },
   {
     slug: 'freelancing-client-communication-problems',
@@ -368,6 +372,7 @@ export const POSTS: PostItem[] = [
     read: '5 min read',
     ex: 'Common client challenges and frameworks for better project outcomes.',
     img: 'blog-4',
+    image_url: blogFreelancing,
   },
 ];
 

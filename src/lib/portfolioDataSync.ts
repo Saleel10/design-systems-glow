@@ -2,6 +2,9 @@ import { supabase, isSupabaseConfigured } from './supabase';
 import { CASES, CaseStudy } from '@/data/portfolioData';
 import { saveBlogImageIdb, getBlogImageIdb } from './idbStorage';
 import blogLogoBeginning from '@/assets/blog-logo-beginning.jpg';
+import blogClarity from '@/assets/blog-clarity.svg';
+import blogBrandSystems from '@/assets/blog-brand-systems.svg';
+import blogFreelancing from '@/assets/blog-freelancing.svg';
 
 export interface SyncedWork {
   id: string;
@@ -403,6 +406,13 @@ export function parseBlogContent(content: any): any {
   return content;
 }
 
+export const DEFAULT_BLOG_COVERS: Record<string, string> = {
+  'why-your-brand-needs-a-system': blogLogoBeginning,
+  'designing-for-clarity': blogClarity,
+  'how-to-build-brand-systems-that-scale': blogBrandSystems,
+  'freelancing-client-communication-problems': blogFreelancing,
+};
+
 export const DEFAULT_BLOGS: SyncedBlog[] = [
   {
     id: 'why-your-brand-needs-a-system',
@@ -456,7 +466,7 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
     date: 'Aug 2026',
     published: true,
     created_at: new Date('2026-08-15').toISOString(),
-    image_url: '',
+    image_url: blogClarity,
     author_name: 'Muhammed Saleel CP',
     author_role: 'Creative & UI/UX Designer',
     tags: ['#process', '#ui-ux', '#clarity'],
@@ -490,7 +500,7 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
     date: 'Feb 2, 2024',
     published: true,
     created_at: new Date('2024-02-02').toISOString(),
-    image_url: '',
+    image_url: blogBrandSystems,
     author_name: 'Muhammed Saleel CP',
     author_role: 'Creative & UI/UX Designer',
     tags: ['#branding', '#design-systems', '#scalability'],
@@ -532,7 +542,7 @@ export const DEFAULT_BLOGS: SyncedBlog[] = [
     date: 'Mar 10, 2024',
     published: true,
     created_at: new Date('2024-03-10').toISOString(),
-    image_url: '',
+    image_url: blogFreelancing,
     author_name: 'Muhammed Saleel CP',
     author_role: 'Creative & UI/UX Designer',
     tags: ['#freelancing', '#client-communication', '#process'],
@@ -758,7 +768,7 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
               excerpt,
               subtitle: b.subtitle || excerpt,
               content: parsed,
-              image_url: b.image_url || '',
+              image_url: b.image_url || DEFAULT_BLOG_COVERS[b.slug] || DEFAULT_BLOG_COVERS[b.id] || '',
             };
           });
       }
@@ -853,17 +863,21 @@ export async function getSyncedBlogs(forceRestoreDefaults = false): Promise<Sync
     (b) => !deletedIds.includes(b.id) && !deletedIds.includes(b.slug)
   );
 
-  // Enrich with images stored in IndexedDB if missing or empty
+  // Enrich with images stored in IndexedDB or fallback to default branded cover
   for (const b of activeBlogs) {
     if (!b.image_url) {
       try {
         const idbImg = (await getBlogImageIdb(b.id)) || (await getBlogImageIdb(b.slug));
         if (idbImg) {
           b.image_url = idbImg;
-        } else if (b.slug === 'why-your-brand-needs-a-system' || b.id === 'why-your-brand-needs-a-system') {
-          b.image_url = blogLogoBeginning;
+        } else if (DEFAULT_BLOG_COVERS[b.slug] || DEFAULT_BLOG_COVERS[b.id]) {
+          b.image_url = DEFAULT_BLOG_COVERS[b.slug] || DEFAULT_BLOG_COVERS[b.id];
         }
-      } catch {}
+      } catch {
+        if (DEFAULT_BLOG_COVERS[b.slug] || DEFAULT_BLOG_COVERS[b.id]) {
+          b.image_url = DEFAULT_BLOG_COVERS[b.slug] || DEFAULT_BLOG_COVERS[b.id];
+        }
+      }
     }
   }
 
@@ -967,10 +981,14 @@ export async function getSyncedBlog(slugOrId: string): Promise<SyncedBlog | null
         const idbImg = (await getBlogImageIdb(found.id)) || (await getBlogImageIdb(found.slug));
         if (idbImg) {
           found.image_url = idbImg;
-        } else if (found.slug === 'why-your-brand-needs-a-system' || found.id === 'why-your-brand-needs-a-system') {
-          found.image_url = blogLogoBeginning;
+        } else if (DEFAULT_BLOG_COVERS[found.slug] || DEFAULT_BLOG_COVERS[found.id]) {
+          found.image_url = DEFAULT_BLOG_COVERS[found.slug] || DEFAULT_BLOG_COVERS[found.id];
         }
-      } catch {}
+      } catch {
+        if (DEFAULT_BLOG_COVERS[found.slug] || DEFAULT_BLOG_COVERS[found.id]) {
+          found.image_url = DEFAULT_BLOG_COVERS[found.slug] || DEFAULT_BLOG_COVERS[found.id];
+        }
+      }
     }
     found.content = parseBlogContent(found.content);
     return found;

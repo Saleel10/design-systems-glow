@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import SEO from "@/components/SEO";
 import { POSTS } from "@/data/portfolioData";
-import { getSyncedBlogs, DEFAULT_BLOGS, OBSOLETE_BLOG_SLUGS } from "@/lib/portfolioDataSync";
+import { getSyncedBlogs, DEFAULT_BLOGS, DEFAULT_BLOG_COVERS, OBSOLETE_BLOG_SLUGS } from "@/lib/portfolioDataSync";
 
 const Blog = () => {
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
@@ -33,7 +33,7 @@ const Blog = () => {
                     ? b.content.slice(0, 140)
                     : b.content?.intro || ""),
                 img: `blog-${(i % 4) + 1}`,
-                image_url: b.image_url,
+                image_url: b.image_url || DEFAULT_BLOG_COVERS[b.slug] || DEFAULT_BLOG_COVERS[b.id],
               }));
           }
         }
@@ -67,7 +67,7 @@ const Blog = () => {
                   ? b.content.slice(0, 140)
                   : b.content?.intro || ""),
               img: `blog-${(i % 4) + 1}`,
-              image_url: b.image_url,
+              image_url: b.image_url || DEFAULT_BLOG_COVERS[b.slug] || DEFAULT_BLOG_COVERS[b.id],
             }));
           if (formatted.length > 0) {
             setAllPosts(formatted);
